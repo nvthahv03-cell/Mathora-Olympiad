@@ -15,10 +15,20 @@ function mathoraV1Dispatch_(request){
     const owner=maAuthorized_(request.key,'MATHORA_OWNER_KEY');
     const teacher=owner||maAuthorized_(request.key,'MATHORA_TEACHER_KEY');
     if(!teacher)return {ok:false,error:'Khong co quyen. Kiem tra ma truy cap giao vien/chu so huu.'};
+    // STAGING V1 SAFETY GATE. No changes to old Backend functions.
+    // All write actions are disabled unless the owner explicitly designates a TEST database.
+    // Never accept safety flags from client-side request payload.
+    const mutating=['generateDraft','stageDraft','rejectPending','attestPending','approveProblem'];
+    if(mutating.indexOf(action)>=0){
+      const declaredTestId=String(maProp_('MATHORA_V1_TEST_DB_ID')||'');
+      const actualDbId=String(maProp_('MATHORA_DB_ID')||'');
+      if(maProp_('MATHORA_V1_TEST_MODE')!=='YES'||declaredTestId.length<15||actualDbId!==declaredTestId)
+        return {ok:false,error:'V1 STAGING dang khoa thao tac AI/ghi/duyet. Chi mo tren ban sao Apps Script va Google Sheets TEST: MATHORA_V1_TEST_MODE=YES, MATHORA_V1_TEST_DB_ID trung MATHORA_DB_ID.'};
+    }
     const payload=request.payload&&typeof request.payload==='object'&&!Array.isArray(request.payload)?request.payload:{};
     if(JSON.stringify(payload).length>80000)throw Error('Du lieu gui len qua lon.');
     switch(action){
-      case 'health':return {ok:true,service:'MATHORA',backend:MA.VERSION,role:owner?'owner':'teacher',dbConfigured:!!maProp_('MATHORA_DB_ID'),aiConfigured:!!maProp_('MATHORA_GEMINI_KEY'),note:'Co cau hinh khong dong nghia da kiem thu ket noi.'};
+      case 'health':return {ok:true,service:'MATHORA',backend:MA.VERSION,role:owner?'owner':'teacher',dbConfigured:!!maProp_('MATHORA_DB_ID'),aiConfigured:!!maProp_('MATHORA_GEMINI_KEY'),stagingWriteEnabled:maProp_('MATHORA_V1_TEST_MODE')==='YES'&&String(maProp_('MATHORA_V1_TEST_DB_ID')||'').length>=15&&maProp_('MATHORA_V1_TEST_DB_ID')===maProp_('MATHORA_DB_ID'),note:'Co cau hinh khong dong nghia da kiem thu ket noi.'};
       case 'generateDraft':return maGenerate_(payload);
       case 'stageDraft':
         if(!payload.problem||!String(payload.problem.short_answer||'').trim())return {ok:false,error:'Can dap an tra loi ngan truoc khi luu STAGING.'};
