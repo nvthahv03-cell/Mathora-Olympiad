@@ -1,0 +1,7 @@
+MATHORA.gs — PATCH ONLY
+
+Insert in existing doGet() immediately after action is computed:
+
+if(action==='app')return mathoraV1Ui();
+
+Do not replace MATHORA.gs or alter any existing PASS modules.
