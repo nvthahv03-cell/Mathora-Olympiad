@@ -6,7 +6,7 @@
 - Google Apps Script: Gemini calls, mathematical validation, human attestation, publishing controls.
 - Google Sheets: draft, staging, review and approved problem records.
 - `MathoraWebV1.gs`: whitelisted bridge to pre-existing Backend V2.3 functions.
-- `MathoraWebV1.html`: required client HTML **not yet committed to this branch**. Do not deploy bridge alone.
+- `MathoraWebV1.html`: required client HTML committed alongside the bridge. Deployment and end-to-end verification are **not yet complete**.
 
 ## Backend prerequisites
 Preserve existing `MATHORA.gs` V2.3, `MathoraSangTaoPro.gs` V2.3.1 and `MathoraKiemDinhDaThucV2.gs`.
@@ -22,4 +22,4 @@ Never publish API keys, teacher/owner keys or student data in GitHub. Existing t
 Release requires: complete HTML committed; syntax/contract checks; isolated GAS deployment; real Gemini + Sheets smoke test; teacher/owner authorization tests; a blocked draft staying blocked; audited human approval to official bank.
 
 ## Status (2026-11-13)
-Repository rename confirmed; development branch created; bridge committed. The full five-file package is available separately in the conversation, but has **not** yet been entirely committed. No production deployment or end-to-end PASS.
+Repository rename confirmed; development branch created; bridge committed. The Apps Script bridge and HTML interface are committed. Supporting local tests are not yet committed. No production deployment or end-to-end PASS.
