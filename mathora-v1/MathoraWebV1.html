@@ -17,19 +17,21 @@
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
-let secret='',role='',busy=false,pending=null,kho=null;
+let secret='',role='',busy=false,pending=null,kho=null,testWriteEnabled=false;
 const e=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function status(id,msg,kind=''){const el=$(id);el.textContent=msg;el.className='state '+(kind==='error'?'notice error':kind==='success'?'notice':'muted');}
 function call(action,payload={}){return new Promise((resolve,reject)=>{
   if(!secret)return reject(Error('Chưa xác thực.'));
+  if(['generateDraft','stageDraft','rejectPending','attestPending','approveProblem'].includes(action)&&!testWriteEnabled)return reject(Error('Chế độ CHỈ ĐỌC: thao tác này cần bản sao Apps Script và Google Sheets TEST được cấu hình an toàn.'));
   if(typeof google==='undefined'||!google.script||!google.script.run)return reject(Error('Chưa mở bằng Apps Script Web App.'));
   const req={action,key:secret,payload};
   google.script.run.withSuccessHandler(res=>{if(!res||!res.ok)reject(Error(res?.error||'Backend không trả kết quả hợp lệ.'));else resolve(res);})
     .withFailureHandler(err=>reject(Error(err?.message||'Lỗi kết nối Apps Script.'))).mathoraV1Bridge(req);
 });}
 async function work(btn,fn){if(busy)return;busy=true;if(btn)btn.disabled=true;try{await fn();}catch(err){alert(err.message||String(err));}finally{busy=false;if(btn)btn.disabled=false;}}
-$('connect').onclick=()=>work($('connect'),async()=>{secret=$('key').value.trim();const r=await call('health');role=r.role;$('role').textContent=role==='owner'?'Chủ sở hữu':'Giáo viên';$('main').classList.remove('hide');status('connection',`Backend ${r.backend} · Google Sheets: ${r.dbConfigured?'đã khai báo ID':'CHƯA KHAI BÁO ID'} · Gemini: ${r.aiConfigured?'đã khai báo khóa':'CHƯA CÓ KHÓA'}. Chưa phải kiểm thử ghi/đọc thực tế.`,'success');$('key').value='';});
-$('clear').onclick=()=>{secret='';role='';pending=null;kho=null;$('key').value='';$('role').textContent='Chưa xác thực';$('main').classList.add('hide');status('connection','Đã xóa khóa khỏi bộ nhớ trang.');};
+$('connect').onclick=()=>work($('connect'),async()=>{secret=$('key').value.trim();const r=await call('health');role=r.role;testWriteEnabled=r.stagingWriteEnabled===true;$('role').textContent=role==='owner'?'Chủ sở hữu':'Giáo viên';$('main').classList.remove('hide');status('connection',`Backend ${r.backend} · Google Sheets: ${r.dbConfigured?'đã khai báo ID':'CHƯA KHAI BÁO ID'} · Gemini: ${r.aiConfigured?'đã khai báo khóa':'CHƯA CÓ KHÓA'}. ${testWriteEnabled?'TEST đã mở thao tác theo cấu hình':'CHỈ ĐỌC: chưa cấu hình Google Sheets TEST; các nút ghi/AI đã khóa'}. Chưa phải kiểm thử ghi/đọc thực tế.`,'success');
+  ['generateBtn','stageBtn'].forEach(id=>$(id).disabled=!testWriteEnabled);$('key').value='';});
+$('clear').onclick=()=>{secret='';role='';pending=null;kho=null;testWriteEnabled=false;$('key').value='';$('role').textContent='Chưa xác thực';$('main').classList.add('hide');status('connection','Đã xóa khóa khỏi bộ nhớ trang.');};
 document.querySelectorAll('[data-tab]').forEach(btn=>btn.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===btn));document.querySelectorAll('.pane').forEach(x=>x.classList.toggle('hide',x.id!==btn.dataset.tab));if(btn.dataset.tab==='pending')loadPending();if(btn.dataset.tab==='kho')loadKho();});
 $('generateBtn').onclick=()=>work($('generateBtn'),async()=>{status('genStatus','Đang gọi Gemini thật...');try{const r=await call('generateDraft',{scope:$('scope').value,learningOutcome:$('outcome').value,competency:$('competency').value});$('draft').value=JSON.stringify(r.problem,null,2);status('genStatus','Đã nhận bản nháp Gemini. Chưa kiểm định, chưa lưu STAGING. Kiểm tra lời giải và bổ sung short_answer.','success');}catch(err){status('genStatus',err.message,'error');}});
 $('importBtn').onclick=()=>$('importFile').click();
