@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kết nối Backend | MATHORA</title><style>
+:root{font-family:Inter,'Segoe UI',Arial,sans-serif;color:#17324d}*{box-sizing:border-box}body{margin:0;background:#f4f8fc}main{max-width:760px;margin:40px auto;padding:0 18px}.card{background:white;border:1px solid #dce7f1;border-radius:18px;padding:24px;box-shadow:0 8px 35px #092c4c0d}h1{font-size:25px;margin:8px 0}p{line-height:1.65}small,.muted{color:#57718c}.flag{display:inline-block;background:#fff3d7;color:#755411;padding:8px 12px;border-radius:40px;font-size:12px;font-weight:700}a{color:#075b9e;overflow-wrap:anywhere}button{border:0;border-radius:9px;background:#075b9e;color:white;font:inherit;padding:12px 16px;cursor:pointer}.mono{font-family:Consolas,monospace;overflow-wrap:anywhere;background:#f4f7fa;padding:12px;border-radius:8px}.note{padding:13px;background:#f7fafc;border-left:3px solid #6294bf;border-radius:6px}</style></head>
+<body><main><p><a href="../index.html">← Về MATHORA</a></p><div class="card">
+<small>MATHORA OLYMPIAD · KẾT NỐI HỆ THỐNG</small><h1>Backend Apps Script V2.3</h1><span class="flag">Đã khai báo URL · Chưa kiểm thử kết nối</span>
+<p>Giao diện thuộc GitHub Pages. Apps Script xử lý AI, kiểm soát hồ sơ và Google Sheets. Chưa kích hoạt tạo bài, ghi STAGING hoặc duyệt từ trang này.</p>
+<h2>Thông tin cấu hình</h2><p><b>Dịch vụ:</b> MATHORA<br><b>Phiên bản dự kiến:</b> 2.3-controlled-staging<br><b>Trạng thái:</b> Chờ xác minh GET health, xác thực và quyền truy cập</p>
+<p><b>URL kiểm tra sức khỏe (không có khóa):</b></p><p id="url" class="mono"></p>
+<p><a id="healthLink" href="#" target="_blank" rel="noopener noreferrer">Mở kiểm tra Health của Apps Script</a></p>
+<div class="note">Liên kết trên chỉ kiểm tra kết nối công khai. Trang này không yêu cầu và không lưu khóa Gemini, teacher, owner hoặc token. Phải xác minh phiên bản triển khai và kết nối an toàn trước khi bật các nút ghi dữ liệu.</div>
+</div></main><script src="../mathora-backend-config.js"></script><script>
+const cfg=window.MATHORA_BACKEND_CONFIG;if(cfg&&cfg.healthUrl){document.getElementById('url').textContent=cfg.healthUrl;document.getElementById('healthLink').href=cfg.healthUrl;}else{document.getElementById('url').textContent='Chưa có cấu hình';document.getElementById('healthLink').removeAttribute('href');}
+</script></body></html>
