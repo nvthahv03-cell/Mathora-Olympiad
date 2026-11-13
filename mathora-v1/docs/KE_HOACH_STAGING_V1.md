@@ -55,3 +55,22 @@ Mỗi test ghi phiên bản, commit, deployment TEST, thời gian, ID của dữ
 - PRODUCTION: chỉ sau khi PASS NGHIỆM THU và có cách khôi phục commit/phiên bản trước.
 
 **Chưa chuyển GitHub Pages đang có, chưa triển khai Backend thật, chưa thay `main`.**
+
+## 6. Chốt bảo vệ V1 vừa bổ sung (chỉ môi trường TEST)
+Trong `MathoraWebV1.gs`, các thao tác `generateDraft`, `stageDraft`, `rejectPending`, `attestPending`, `approveProblem` bị khóa mặc định. Chỉ mở khi Script Properties của **bản sao Apps Script TEST** có:
+- `MATHORA_V1_TEST_MODE` = `YES`
+- `MATHORA_V1_TEST_DB_ID` = đúng chuỗi ID của Google Sheets **TEST**
+- `MATHORA_DB_ID` = cùng ID TEST nói trên.
+
+**Không thiết lập các biến TEST trên dự án production.** Cơ chế này bảo vệ khỏi cấu hình nhầm, không thể tự xác nhận DB thực sự là TEST nếu người cấu hình cố tình dùng ID dữ liệu production. Chủ nhiệm phải kiểm tra ID Sheets trước khi mở cổng ghi.
+
+`health`, `listPending`, `getPending`, `listKho`, `getProblem`, `listExamEligible` chỉ đọc; yêu cầu xác thực hợp lệ vẫn được giữ nguyên.
+
+## 7. Kết quả đối chiếu hợp đồng API (nguồn MATHORA.gs V2.3)
+- `maGenerate_` nhận `scope, learningOutcome, competency`, sinh `problem` và KHÔNG phát hành.
+- `maSave_` ghi STAGING, nhận `problem`; yêu cầu `short_answer` phải được bổ sung trước khi bấm gửi.
+- `ma23GetPending_` trả `sourceHash`; `ma23AttestPending_` kiểm tra `expectedHash` và các trường `evidence`.
+- `maApprove_` chỉ nhận `DRAFT_REVIEWED` có `human_validation` hợp lệ cùng phiên bản/hash.
+- Kiểm tra cú pháp mã bridge và **8 tình huống mô phỏng bổ sung cho chốt TEST**: đạt trong runtime JS biệt lập; chưa chạy Apps Script/Sheets thật.
+
+Không sử dụng kết quả trên để báo PASS TÍCH HỢP.
