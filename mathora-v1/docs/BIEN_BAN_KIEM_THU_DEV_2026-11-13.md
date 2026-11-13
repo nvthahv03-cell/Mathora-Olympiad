@@ -9,7 +9,7 @@ Ngày: 13/11/2026
 ## Kết quả cục bộ
 1. Node.js v22 kiểm tra cú pháp Javascript cầu nối: **PASS CÚ PHÁP**.
 2. Node.js kiểm tra mã Javascript trích từ HTML: **PASS CÚ PHÁP**.
-3. 12 trường hợp phân quyền và điều phối bằng mock: **12/12 PASS MÔ PHỎNG**. Chúng kiểm tra khóa sai, phân quyền teacher/owner, không cho duyệt/thẩm định/từ chối bằng teacher, bản nháp thiếu đáp án, các action hợp lệ và không hợp lệ. **KHÔNG** chứng minh phân quyền trên Apps Script thật.
+3. **14 phép kiểm tra (assertions)** phân quyền và điều phối bằng mock: **14/14 PASS MÔ PHỎNG**. Chúng kiểm tra khóa sai, phân quyền teacher/owner, không cho duyệt/thẩm định/từ chối bằng teacher, bản nháp thiếu đáp án, các action hợp lệ và không hợp lệ. **KHÔNG** chứng minh phân quyền trên Apps Script thật.
 4. Backend /exec?action=health theo ảnh chủ nhiệm đã xác nhận: `ok:true`, phiên `2.3-controlled-staging`, AI và DB được cấu hình. Đây là kiểm tra read-only, không phải ghi dữ liệu.
 
 ## Những việc CHƯA kiểm thử
