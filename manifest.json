@@ -1,14 +1,13 @@
 {
-  "name": "mathsphere",
-  "short_name": "mathsphere",
-  "description": "Hệ thống học tập số by TS. Nguyễn Văn Thà",
-  "start_url": "/mathsphere/",
-  "scope": "/mathsphere/",
+  "name": "MATHORA OLYMPIAD",
+  "short_name": "MATHORA",
+  "description": "Hệ sinh thái bồi dưỡng học sinh giỏi Toán 12 — MATHORA OLYMPIAD",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#001c3d",
-  "theme_color": "#001c3d",
-
+  "theme_color": "#0d2f45",
   "icons": [
     {
       "src": "icon-192.png",
@@ -26,5 +25,6 @@
       "type": "image/png",
       "purpose": "maskable"
     }
-  ]
+  ],
+  "id": "./"
 }
