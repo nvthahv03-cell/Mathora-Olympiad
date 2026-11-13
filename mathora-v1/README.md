@@ -23,3 +23,10 @@ Release requires: complete HTML committed; syntax/contract checks; isolated GAS 
 
 ## Status (2026-11-13)
 Repository rename confirmed; development branch created; bridge committed. The Apps Script bridge and HTML interface are committed. Supporting local tests are not yet committed. No production deployment or end-to-end PASS.
+
+## Quy trình bắt buộc từ Kim Quy Pro (13/11/2026)
+
+- [Quy trình quản lý mã nguồn, triển khai và nghiệm thu V1.0](docs/QUY_TRINH_KIM_QUY_PRO_V1.md)
+- [Sổ trạng thái và hồ sơ module](docs/SO_THEO_DOI_MODULE.md)
+
+Quy trình này là chuẩn quản trị phiên bản từ thời điểm tiếp nhận; mọi trạng thái PASS/LOCKED phải có bằng chứng phù hợp. Không sửa nhánh main hoặc triển khai production khi chưa nghiệm thu.
