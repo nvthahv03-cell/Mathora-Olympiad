@@ -35,4 +35,4 @@ assert.equal(run(owner,'rejectPending').ok,true);
 assert.equal(run(owner,'noSuchAction').ok,false);
 assert.equal(run(teacher,'generateDraft',{scope:'demo'}).ok,true);
 assert.deepEqual(called,['stage','approve','attest','reject','generate']);
-console.log('12/12: PASS MÔ PHỎNG BRIDGE (không gọi Backend / Gemini / Google Sheets).');
+console.log('14/14: PASS MÔ PHỎNG BRIDGE (không gọi Backend / Gemini / Google Sheets).');
