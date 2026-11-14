@@ -46,7 +46,7 @@ body:not(.ma-locked) #maLoginOverlay{display:none!important}
 .ma-auth-logo{width:65px;height:65px;display:grid;place-items:center;margin:auto auto 15px;border-radius:18px;background:linear-gradient(135deg,#00888e,#0e546c);font:46px Georgia,serif;color:white}
 .ma-auth-eyebrow{font-size:10px;letter-spacing:.1em;font-weight:800;color:#43818a}.ma-auth-card h1{font-size:27px;margin:9px 0;color:#103b53}
 .ma-auth-sub{font-size:13px;color:#5a7484;margin:0 0 25px}
-.ma-auth-card form{text-align:left}.ma-auth-card label{display:block;margin-bottom:7px;font-size:13px;font-weight:700}
+.ma-auth-card form{text-align:left}.ma-auth-card label{display:block;margin-bottom:7px;font-size:13px;font-weight:700}.ma-role-title{font-size:13px;font-weight:750;margin-bottom:8px;text-align:left}.ma-role-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}.ma-role-option{display:flex!important;align-items:center;justify-content:center;gap:7px;padding:9px 6px;margin:0!important;border:1px solid #afccd1;border-radius:10px;background:#f1f7f8;cursor:pointer}.ma-role-option:has(input:checked){border-color:#087f82;background:#e1f3f1}.ma-role-option input{width:16px;height:16px;accent-color:#087f82}.ma-role-option span{font-size:12px;font-weight:750}#maLoginUser{width:100%;height:47px;padding:0 12px;border:1.5px solid #aecbd1;border-radius:10px;background:#fafdff;margin-bottom:13px}
 .ma-auth-inputwrap{position:relative}.ma-auth-inputwrap input{display:block;width:100%;height:48px;padding:0 65px 0 13px;border:1.5px solid #aecbd1;border-radius:10px;background:#fafdff}
 .ma-auth-eye{position:absolute;right:7px;top:7px;padding:7px 10px;border:0;border-radius:7px;background:#e9f4f5;color:#176473;font-size:12px}
 .ma-auth-submit{margin-top:15px;width:100%;min-height:48px;border:0;border-radius:10px;background:linear-gradient(110deg,#087f82,#075b75);color:white;font-size:15px;font-weight:750}
@@ -54,7 +54,7 @@ body:not(.ma-locked) #maLoginOverlay{display:none!important}
 .ma-auth-note{border-top:1px solid #e6eef0;padding-top:14px;margin-top:15px;font-size:11px;color:#637989;line-height:1.5}
 #maLoginHealth{display:inline-block;margin-top:11px;font-size:12px;color:#066c7f}
 @media(max-width:480px){.ma-auth-card{padding:24px 18px}.ma-auth-card h1{font-size:23px}}
-</style></head><body class="ma-locked"><div id="maLoginOverlay" class="ma-auth-screen" role="dialog" aria-modal="true" aria-labelledby="maLoginTitle"><div class="ma-auth-card"><div class="ma-auth-logo">∑</div><div class="ma-auth-eyebrow">HỆ SINH THÁI TOÁN HỌC CHUYÊN SÂU</div><h1 id="maLoginTitle">MATHORA OLYMPIAD</h1><p class="ma-auth-sub">Đăng nhập trước khi sử dụng hệ thống bồi dưỡng HSG Toán 12</p><form id="maLoginForm" autocomplete="off"><label for="maLoginKey">Mã truy cập được cấp</label><div class="ma-auth-inputwrap"><input id="maLoginKey" type="password" minlength="24" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Nhập mã truy cập MATHORA" required><button id="maToggleKey" type="button" class="ma-auth-eye">Hiện</button></div><button id="maLoginSubmit" type="submit" class="ma-auth-submit">Đăng nhập MATHORA</button><div id="maLoginMessage" class="ma-auth-error" role="alert" aria-live="polite"></div></form><p class="ma-auth-note">Hệ thống xác thực qua Apps Script V2.3. Mã chỉ tồn tại trong bộ nhớ tab, không được lưu vào trình duyệt.</p><a id="maLoginHealth" href="#" target="_blank" rel="noopener noreferrer">Kiểm tra trạng thái Backend</a></div></div><div class="mobbar"><b>MATHORA OLYMPIAD</b><button id="mobileMenu">☰ Danh mục</button></div><div class="app"><aside id="sidebar"><div class="mark"><div class="symbol">∑</div><div><strong>MATHORA</strong><small>OLYMPIAD · TOÁN 12</small></div></div><div class="nav-label">Không gian bồi dưỡng</div><div id="nav"></div><div class="aside-foot">Sản phẩm trí tuệ cá nhân Nguyễn Văn Thà<br>Bản thử nghiệm độc lập · Backend đã khai báo · AI chưa kết nối an toàn</div></aside><main><div class="top"><div><div class="kicker">MATHORA / OLYMPIAD</div><div id="breadcrumb" class="muted tiny">Tổng quan</div></div><span class="badge warn">BẢN THỬ NGHIỆM V0.6</span></div><div id="view"></div><footer>MATHORA OLYMPIAD · Bồi dưỡng học sinh giỏi Toán 12 cấp thành phố · Dữ liệu lưu trong trình duyệt hiện tại</footer></main></div>
+</style></head><body class="ma-locked"><div id="maLoginOverlay" class="ma-auth-screen" role="dialog" aria-modal="true" aria-labelledby="maLoginTitle"><div class="ma-auth-card"><div class="ma-auth-logo">∑</div><div class="ma-auth-eyebrow">HỆ SINH THÁI TOÁN HỌC CHUYÊN SÂU</div><h1 id="maLoginTitle">MATHORA OLYMPIAD</h1><p class="ma-auth-sub">Đăng nhập trước khi sử dụng hệ thống bồi dưỡng HSG Toán 12</p><form id="maLoginForm" autocomplete="off"><div class="ma-role-title">Đăng nhập với vai trò</div><div class="ma-role-options"><label class="ma-role-option"><input type="radio" name="maLoginRole" value="teacher" checked><span>Giáo viên / Quản trị</span></label><label class="ma-role-option"><input type="radio" name="maLoginRole" value="student"><span>Học sinh</span></label></div><label for="maLoginUser">Tên đăng nhập</label><input id="maLoginUser" type="text" autocomplete="username" autocapitalize="off" placeholder="Tên đăng nhập" maxlength="50" required><label for="maLoginKey">Mật khẩu</label><div class="ma-auth-inputwrap"><input id="maLoginKey" type="password" autocomplete="current-password" autocapitalize="off" placeholder="Nhập mật khẩu" required><button id="maToggleKey" type="button" class="ma-auth-eye">Hiện</button></div><button id="maLoginSubmit" type="submit" class="ma-auth-submit">Đăng nhập MATHORA</button><div id="maLoginMessage" class="ma-auth-error" role="alert" aria-live="polite"></div></form><p class="ma-auth-note">Tài khoản được xác thực qua Google Sheets. Mật khẩu không lưu trên GitHub hoặc trình duyệt.</p><a id="maLoginHealth" href="#" target="_blank" rel="noopener noreferrer">Kiểm tra trạng thái Backend</a></div></div><div class="mobbar"><b>MATHORA OLYMPIAD</b><button id="mobileMenu">☰ Danh mục</button></div><div class="app"><aside id="sidebar"><div class="mark"><div class="symbol">∑</div><div><strong>MATHORA</strong><small>OLYMPIAD · TOÁN 12</small></div></div><div class="nav-label">Không gian bồi dưỡng</div><div id="nav"></div><div class="aside-foot">Sản phẩm trí tuệ cá nhân Nguyễn Văn Thà<br>Bản thử nghiệm độc lập · Backend đã khai báo · AI chưa kết nối an toàn</div></aside><main><div class="top"><div><div class="kicker">MATHORA / OLYMPIAD</div><div id="breadcrumb" class="muted tiny">Tổng quan</div></div><span class="badge warn">BẢN THỬ NGHIỆM V0.6</span></div><div id="view"></div><footer>MATHORA OLYMPIAD · Bồi dưỡng học sinh giỏi Toán 12 cấp thành phố · Dữ liệu lưu trong trình duyệt hiện tại</footer></main></div>
 <script>
 /* MATHORA – cau hinh cong khai. Khong dua API key, teacher/owner key vao file nay. */
 window.MATHORA_BACKEND_CONFIG = Object.freeze({
@@ -92,8 +92,16 @@ function topicName(id){return data.topics.find(t=>t.id===id)?.name||'Chưa phân
 const navs=[['home','⌂','Tổng quan'],['aiLab','✦','AI tạo bài toán & đề thi'],['topics','▤','Chuyên đề'],['problems','✎','Ngân hàng bài toán'],['practice','◷','Luyện tập'],['exams','▣','Đề thi – Thi thử'],['examAudit','♧','Phản biện đề thi (3 vòng)'],['create','✦','Sáng tạo bài toán'],['draw','△','Vẽ hình Toán học'],['review','✓','Kiểm định'],['assign','☷','Giao & quản lý nhiệm vụ'],['mytasks','☑','Nhiệm vụ của tôi'],['data','⚙','Dữ liệu – Sao lưu']];
 function go(p){page=p;editing=null;selected=[];examId=null;render();$('sidebar').classList.remove('open');scrollTo(0,0)}
 function render(){ $('nav').innerHTML=navs.filter(([id])=>demoRole==='teacher'?id!=='mytasks':!['topics','problems','exams','create','review','examAudit','assign','data','aiLab'].includes(id)).map(([id,ico,label])=>`<button class="nav ${id===page?'active':''}" data-go="${id}"><span>${ico}</span>${label}</button>`).join('');$('breadcrumb').textContent=navs.find(n=>n[0]===page)?.[2]||'';const obj={home,aiLab,topics,problems,practice,exams,examAudit,create,draw,review,assign,mytasks,data:backup};if(demoRole==='student'&&!['home','practice','draw','mytasks'].includes(page))page='home';if(demoRole==='teacher'&&page==='mytasks')page='home';$('view').innerHTML=(page==='home'&&demoRole==='student'?studentHome:obj[page])();renderDemoRole();bind();addContextAssistant()}
-function renderDemoRole(){let el=document.getElementById('demoRoleArea');if(!el){el=document.createElement('div');el.id='demoRoleArea';el.className='demo-role-area';document.querySelector('.top').appendChild(el)}el.innerHTML='<label for="demoRole">Chế độ xem thử</label><select id="demoRole"><option value="teacher" '+(demoRole==='teacher'?'selected':'')+'>Giáo viên (mô phỏng)</option><option value="student" '+(demoRole==='student'?'selected':'')+'>Học sinh (mô phỏng)</option></select>'+(demoRole==='student'?'<select aria-label="Chọn học sinh mẫu" id="demoStudent">'+DEMO_STUDENTS.map(s=>'<option value="'+s.id+'" '+(demoStudent===s.id?'selected':'')+'>'+esc(s.name)+'</option>').join('')+'</select>':'');el.querySelector('#demoRole').onchange=e=>{demoRole=e.target.value;go('home')};el.querySelector('#demoStudent')?.addEventListener('change',e=>{demoStudent=e.target.value;go('mytasks')})}
-function studentHome(){const ts=taskData.tasks.filter(t=>t.recipients.includes(demoStudent));return head('Không gian học tập','Tài khoản học sinh mẫu · Chỉ dành để kiểm thử giao diện và quy trình trên cùng thiết bị.')+`<div class="hero"><div class="eyebrow">MATHORA OLYMPIAD</div><h1>Chào ${esc(stuName(demoStudent))}</h1><p>Học chuyên đề, nhận nhiệm vụ, nộp lời giải và xem phản hồi của giáo viên.</p><button class="btn secondary" data-go="mytasks">Xem nhiệm vụ của tôi →</button></div><div class="grid"><div class="panel"><div class="stat">${ts.length}</div><div class="stat-caption">Nhiệm vụ được giao</div></div><div class="panel"><div class="stat">${ts.filter(t=>taskStatus(t,demoStudent)==='Chưa nộp').length}</div><div class="stat-caption">Chưa nộp bài</div></div><div class="panel"><div class="stat">${ts.filter(t=>taskStatus(t,demoStudent)==='Đã nhận xét').length}</div><div class="stat-caption">Đã nhận xét</div></div></div><div class="notice">Đây là mô phỏng vai trò bằng lựa chọn trên trình duyệt, KHÔNG phải đăng nhập bảo mật.</div>`}
+function renderDemoRole(){
+ let el=document.getElementById('demoRoleArea');
+ if(!el){el=document.createElement('div');el.id='demoRoleArea';el.className='demo-role-area';document.querySelector('.top').appendChild(el);}
+ el.textContent=(demoRole==='student'?'HỌC SINH':'GIÁO VIÊN / QUẢN TRỊ')+' · '+(window.MATHORA_displayName||'');
+}
+window.MATHORA_applyRole=(role,displayName)=>{
+ demoRole=role==='student'?'student':'teacher';window.MATHORA_displayName=String(displayName||'');page='home';render();
+};
+
+function studentHome(){const ts=taskData.tasks.filter(t=>t.recipients.includes(demoStudent));return head('Không gian học tập','Học sinh đã đăng nhập; dữ liệu nhiệm vụ mẫu chỉ lưu cục bộ.')+`<div class="hero"><div class="eyebrow">MATHORA OLYMPIAD</div><h1>Chào ${esc(stuName(demoStudent))}</h1><p>Học chuyên đề, nhận nhiệm vụ, nộp lời giải và xem phản hồi của giáo viên.</p><button class="btn secondary" data-go="mytasks">Xem nhiệm vụ của tôi →</button></div><div class="grid"><div class="panel"><div class="stat">${ts.length}</div><div class="stat-caption">Nhiệm vụ được giao</div></div><div class="panel"><div class="stat">${ts.filter(t=>taskStatus(t,demoStudent)==='Chưa nộp').length}</div><div class="stat-caption">Chưa nộp bài</div></div><div class="panel"><div class="stat">${ts.filter(t=>taskStatus(t,demoStudent)==='Đã nhận xét').length}</div><div class="stat-caption">Đã nhận xét</div></div></div><div class="notice">Vai trò do Apps Script xác thực; nhiệm vụ mẫu chưa đồng bộ Google Sheets.</div>`}
 function head(title,sub){return `<h1>${title}</h1><p class="sub">${sub}</p>`}
 function home(){return `<div class="hero"><div class="eyebrow">HỆ SINH THÁI TOÁN HỌC CHUYÊN SÂU</div><h1>MATHORA OLYMPIAD</h1><p>AI hỗ trợ sáng tạo bài toán và đề thi HSG Toán 12; ba vòng phản biện, giáo viên thẩm định, sau đó tổ chức dạy học.</p><button class="btn secondary noprint" data-go="aiLab">AI tạo bài toán & đề thi →</button></div><div class="grid"><div class="panel"><div class="stat">${data.topics.length}</div><div class="stat-caption">Chuyên đề được khai báo</div></div><div class="panel"><div class="stat">${data.problems.length}</div><div class="stat-caption">Bài toán trong ngân hàng</div></div><div class="panel"><div class="stat">${data.exams.length}</div><div class="stat-caption">Bộ đề đang quản lý</div></div></div><div class="grid two" style="margin-top:16px"><div class="panel"><h2>Quy trình biên soạn</h2>${[['01','Xây dựng chuyên đề','Phân định phạm vi và yêu cầu cần đạt'],['02','Biên soạn bài toán','Ghi lời giải, kiểm tra và phân hóa'],['03','Tổ hợp đề thi','Chọn bài toán, lập hướng dẫn chấm'],['04','Phản biện độc lập 3 vòng','Kiểm tra Toán học, khảo thí và tổng thể']].map(s=>`<div class="step"><b>${s[0]} · ${s[1]}</b><small>${s[2]}</small></div>`).join('')}</div><div class="panel soft"><h2>Nguyên tắc học thuật</h2><p>Độ khó không được xác định chỉ qua hình thức đề. Bài toán phải có lời giải đầy đủ, kiểm tra điều kiện, xem xét cách giải nhanh và phản biện độc lập khi cần.</p><div class="notice">Danh mục chuyên đề hiện là gợi ý khởi tạo, <b>chưa được đối chiếu đầy đủ với quy định HSG thành phố từng năm</b>. Chưa nhập đề hoặc kết quả chính thức.</div><div class="divider"></div><button class="btn" data-go="problems">Bắt đầu biên soạn bài toán</button></div></div>`}
 function topics(){return head('Chuyên đề HSG Toán 12','Kho chuyên đề riêng cho kỳ thi HSG cấp thành phố. Giáo viên rà soát phạm vi trước khi dùng.')+`<div class="panel"><h2>${editing==='topic'?'Chỉnh sửa chuyên đề':'Thêm chuyên đề'}</h2><form id="topicForm" class="stack"><div class="field"><label>Tên chuyên đề</label><input name="name" required maxlength="130" value="${esc(editing?.name||'')}" placeholder="Ví dụ: Bất đẳng thức – Cực trị"></div><div class="field"><label>Nội dung và định hướng</label><textarea name="description" maxlength="2000" placeholder="Phạm vi kiến thức, phương pháp, yêu cầu cần đạt...">${esc(editing?.description||'')}</textarea></div><div class="row"><button class="btn" type="submit">${editing?.id?'Lưu thay đổi':'Thêm chuyên đề'}</button>${editing?.id?'<button type="button" id="cancelEdit" class="btn secondary">Hủy</button>':''}</div></form></div><div class="grid two" style="margin-top:16px">${data.topics.map(t=>`<div class="panel"><h3>${esc(t.name)}</h3><p class="muted tiny">${nl(t.description)}</p><span class="pill">${data.problems.filter(p=>p.topic===t.id).length} bài toán</span><div class="divider"></div><div class="row"><button class="btn small secondary" data-edit-topic="${esc(t.id)}">Sửa</button><button class="btn small danger" data-del-topic="${esc(t.id)}">Xóa</button></div></div>`).join('')||'<div class="empty">Chưa có chuyên đề</div>'}</div>`}
@@ -210,14 +218,11 @@ async function gasRequest(payload){
  }finally{clearTimeout(timer)}
 }
 async function api(action,body={}){
- if(!hasSetup())throw Error('Chưa có địa chỉ Apps Script hợp lệ.');
- if(!identityToken)throw Error('Vui lòng đăng nhập bằng mã truy cập Backend của tài khoản được cấp quyền.');
- const data={action,...body,key:identityToken};
- delete data.idToken;delete data.role;delete data.authenticatedRole;
+ if(!identityToken)throw Error('Phiên đăng nhập đã hết hạn.');
+ const data={action,...body,sessionToken:identityToken};
+ delete data.key;delete data.idToken;delete data.role;
  const result=await gasRequest(data);
- if(!result||result.ok!==true)throw Error(result?.error||'Backend từ chối yêu cầu.');
- // This flag is returned by authenticated server-side doPost, never trusted from client input.
- authRole=String(result.authenticatedRole||authRole||'');
+ if(result?.ok!==true){if(String(result?.error||'').includes('Phiên đăng nhập'))signOutMathora();throw Error(result?.error||'Backend từ chối.');}
  return result;
 }
 
@@ -256,40 +261,46 @@ function makeSection(title){
 }
 function connectSection(root){
  const sec=makeSection('Phiên kết nối Apps Script V2.3');
- sec.appendChild(make('p','Đã đăng nhập qua Backend; các thao tác phê duyệt vẫn do Apps Script kiểm tra quyền.'));
+ sec.appendChild(make('p','Tài khoản được xác thực qua Google Sheets; việc phê duyệt do Apps Script kiểm tra quyền.'));
  gridButtons(sec,button('Kiểm tra Backend /health',async()=>{
   const d=await health();setStatus('Backend '+d.service+' · '+d.version+' · AI '+(d.aiConfigured?'đã cấu hình':'chưa cấu hình')+' · Sheets '+(d.dbConfigured?'đã cấu hình':'chưa cấu hình')+'.','success');
  }),button('Đăng xuất',async()=>signOutMathora()));
  root.appendChild(sec);
 }
 function signOutMathora(){
- identityToken='';authRole='';activeDraft=null;selectedPending=null;selectedKho=null;
- document.body.classList.add('ma-locked');const input=$('maLoginKey');
- if(input){input.value='';input.type='password';input.focus();}
- const toggle=$('maToggleKey');if(toggle)toggle.textContent='Hiện';
- const m=$('maLoginMessage');if(m)m.textContent='';
+ const token=identityToken;identityToken='';authRole='';activeDraft=null;selectedPending=null;selectedKho=null;
+ document.body.classList.add('ma-locked');
+ for(const id of ['maLoginUser','maLoginKey']){const x=$(id);if(x)x.value='';}
+ if($('maLoginKey'))$('maLoginKey').type='password';
+ if($('maToggleKey'))$('maToggleKey').textContent='Hiện';
+ if($('maLoginMessage'))$('maLoginMessage').textContent='';
+ if(token)gasRequest({action:'logout',sessionToken:token}).catch(()=>{});
+ $('maLoginUser')?.focus();
 }
 function prepareEntryLogin(){
  const form=$('maLoginForm');if(!form||form.dataset.wired==='1')return;
- form.dataset.wired='1';
- const input=$('maLoginKey'),submit=$('maLoginSubmit'),msg=$('maLoginMessage'),toggle=$('maToggleKey');
- toggle.addEventListener('click',()=>{const visible=input.type==='password';input.type=visible?'text':'password';toggle.textContent=visible?'Ẩn':'Hiện';});
- form.addEventListener('submit',async e=>{
-  e.preventDefault();if(working)return;const key=input.value.trim();
-  if(key.length<24){msg.textContent='Mã truy cập phải có ít nhất 24 ký tự.';return;}
-  working=true;submit.disabled=true;submit.textContent='Đang xác thực...';msg.textContent='';
+ form.dataset.wired='1';const input=$('maLoginKey'),user=$('maLoginUser'),btn=$('maLoginSubmit'),msg=$('maLoginMessage'),toggle=$('maToggleKey');
+ toggle.onclick=()=>{const show=input.type==='password';input.type=show?'text':'password';toggle.textContent=show?'Ẩn':'Hiện';};
+ form.onsubmit=async e=>{
+  e.preventDefault();if(working)return;
+  const username=user.value.trim(),password=input.value,role=form.querySelector('input[name="maLoginRole"]:checked')?.value||'';
+  if(!/^[a-z0-9._-]{3,50}$/i.test(username)||!password){msg.textContent='Vui lòng nhập đúng tên đăng nhập và mật khẩu.';return;}
+  working=true;btn.disabled=true;btn.textContent='Đang xác thực...';msg.textContent='';
   try{
-   if(!validEndpoint())throw Error('Đường dẫn Apps Script chưa hợp lệ.');
-   const response=await gasRequest({action:'listPending',key,limit:1,status:'WAITING_HUMAN'});
-   if(response?.ok!==true)throw Error(response?.error||'Backend từ chối đăng nhập.');
-   identityToken=key;authRole=response.authenticatedRole==='owner'?'owner':response.authenticatedRole==='teacher'?'teacher':'';
-   input.value='';document.body.classList.remove('ma-locked');
+   const res=await gasRequest({action:'login',username,password,role});
+   if(res?.ok!==true||!res.sessionToken)throw Error(res?.error||'Thông tin đăng nhập không hợp lệ.');
+   const actual=String(res.authenticatedRole||'');
+   if(!['admin','teacher','student'].includes(actual)||((actual==='student')!==(role==='student')))throw Error('Vai trò tài khoản không hợp lệ.');
+   identityToken=String(res.sessionToken);authRole=actual;input.value='';
+   document.body.classList.remove('ma-locked');
+   window.MATHORA_applyRole?.(actual,res.displayName||username);
    render();
-  }catch(err){identityToken='';authRole='';msg.textContent=err.message||'Không kết nối được Backend.';}
-  finally{working=false;submit.disabled=false;submit.textContent='Đăng nhập MATHORA';}
- });
+  }catch(error){identityToken='';authRole='';input.value='';msg.textContent=error?.message||'Không kết nối được Backend.';}
+  finally{working=false;btn.disabled=false;btn.textContent='Đăng nhập MATHORA';}
+ };
  $('maLoginHealth').href=cfg().healthUrl||'#';
 }
+
 function draftSection(root){
  const sec=makeSection('1. Gemini tạo bản nháp → lưu STAGING');
  sec.appendChild(make('p','Chỉ tạo bản nháp chưa kiểm định. Không đưa vào Kho nếu chưa có minh chứng thẩm định độc lập.'));
