@@ -342,7 +342,7 @@ function renderPending(host,record){
  const problemHost=make('div');showProblem(record.problem,problemHost);host.appendChild(problemHost);
  host.appendChild(make('p','SHA256 nguồn: '+record.sourceHash));
  if(authRole==='teacher'){host.appendChild(make('p','Mã giáo viên chỉ có quyền xem; thẩm định thuộc Chủ sở hữu.'));return;}
- if(authRole!=='owner'){host.appendChild(make('p','Chỉ owner được Backend xác thực mới được thẩm định.'));return;}
+ if(authRole!=='admin' && authRole!=='owner'){host.appendChild(make('p','Chỉ owner được Backend xác thực mới được thẩm định.'));return;}
  let ev=make('div');ev.className='mg-review';
  for(const [id,label] of [
  ['mgReviewer','Người thẩm định (≥5 ký tự)'],
@@ -385,7 +385,7 @@ function khoSection(root){
  list.appendChild(button((item.title||item.id)+' — '+item.status,async()=>{
  const o=await api('getProblem',{id:item.id});selectedKho=o;detail.replaceChildren();detail.appendChild(make('p',o.id+' v'+o.version+' — '+o.status+' · SHA256 '+o.hash));
  const x=make('div');showProblem(o.problem,x);detail.appendChild(x);
- if(authRole==='owner'&&o.status==='DRAFT_REVIEWED'&&o.intact===true){
+ if((authRole==='admin'||authRole==='owner')&&o.status==='DRAFT_REVIEWED'&&o.intact===true){
  detail.appendChild(field('mgApproveNote','Nhận xét quyết định cuối (≥15 ký tự)',''));
  gridButtons(detail,button('Phê duyệt APPROVED',async()=>{
  const note=value('mgApproveNote');if(note.length<15)throw Error('Nhận xét phải có ít nhất 15 ký tự.');
