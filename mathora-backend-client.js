@@ -91,9 +91,9 @@ function connectSection(root){
  );
  if(hasSetup()){
    const googleBox=make('div');googleBox.id='mgGoogleLogin';sec.appendChild(googleBox);
-   prepareGoogleLogin();
  }
  root.appendChild(sec);
+ if(hasSetup())prepareGoogleLogin();
 }
 function prepareGoogleLogin(){
  if(!hasSetup())return;
