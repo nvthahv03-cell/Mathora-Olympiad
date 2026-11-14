@@ -81,16 +81,16 @@ export default {
     if(request.method==='OPTIONS'){
       return origin?new Response(null,{status:204,headers:{'Access-Control-Allow-Origin':origin,'Access-Control-Allow-Methods':'GET,POST,OPTIONS','Access-Control-Allow-Headers':'Authorization,Content-Type','Access-Control-Max-Age':'600','Vary':'Origin'}}):json({ok:false,error:'Origin not allowed'},403);
     }
-    if(!origin)return json({ok:false,error:'Origin not allowed'},403);
     if(url.pathname==='/health' && request.method==='GET'){
       try{
         const backend=await fetch(safeEndpoint(env)+'?action=health',{redirect:'follow'});
         if(!backend.ok)throw Error('BACKEND_HTTP_'+backend.status);
         const body=await backend.json();
         // Never expose database identifiers or sensitive settings.
-        return json({ok:body.ok===true,service:'MATHORA-GATEWAY',backendVersion:body.version||'',backendReady:body.ok===true,authRequired:true,writeEnabled:!!env.GAS_TEACHER_KEY&&!!env.GAS_OWNER_KEY},body.ok?200:503,origin);
+        return json({ok:body.ok===true,service:'MATHORA-GATEWAY',backendVersion:body.version||'',backendReady:body.ok===true,authRequired:true,writeEnabled:env.MATHORA_WRITE_ENABLED==='YES'&&env.GAS_TEST_APPROVED==='YES'&&!!env.GAS_TEACHER_KEY&&!!env.GAS_OWNER_KEY},body.ok?200:503,origin);
       }catch(e){return json({ok:false,error:'BACKEND_HEALTH_UNAVAILABLE'},503,origin)}
     }
+    if(!origin)return json({ok:false,error:'Origin not allowed'},403);
     if(url.pathname!=='/api' || request.method!=='POST')return json({ok:false,error:'Not found'},404,origin);
     const length=Number(request.headers.get('Content-Length')||0);
     if(length>BODY_MAX)return json({ok:false,error:'Request too large'},413,origin);
