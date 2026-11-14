@@ -39,7 +39,19 @@ button,input,textarea,select {font-family:var(--ui-font) !important;}
 .demo-role-area{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.demo-role-area label{font-size:12px;font-weight:650}.demo-role-area select{max-width:200px;border:1px solid #b4cbd8;border-radius:9px;padding:7px;background:white;color:#15344d}.submissionForm textarea,.gradeForm textarea{font-family:inherit}.top{flex-wrap:wrap}@media(max-width:720px){.demo-role-area{width:100%}.demo-role-area select{max-width:100%}}
 .ai-context,.ai-inline{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:#e7f4f2;border:1px solid #b9deda;border-radius:12px;padding:10px 14px;margin-bottom:14px}.ai-inline{justify-content:flex-start}.ai-text{white-space:pre-wrap;overflow-wrap:anywhere;font:14px/1.65 "Segoe UI",Arial,sans-serif;background:#f5f8fa;padding:14px;border-radius:9px;max-height:500px;overflow:auto}#aiResult .item{margin-top:12px}@media(max-width:650px){.ai-context{align-items:flex-start}}
 </style></head><body><div class="mobbar"><b>MATHORA OLYMPIAD</b><button id="mobileMenu">☰ Danh mục</button></div><div class="app"><aside id="sidebar"><div class="mark"><div class="symbol">∑</div><div><strong>MATHORA</strong><small>OLYMPIAD · TOÁN 12</small></div></div><div class="nav-label">Không gian bồi dưỡng</div><div id="nav"></div><div class="aside-foot">Sản phẩm trí tuệ cá nhân Nguyễn Văn Thà<br>Bản thử nghiệm độc lập · Backend đã khai báo · AI chưa kết nối an toàn</div></aside><main><div class="top"><div><div class="kicker">MATHORA / OLYMPIAD</div><div id="breadcrumb" class="muted tiny">Tổng quan</div></div><span class="badge warn">BẢN THỬ NGHIỆM V0.6</span></div><div id="view"></div><footer>MATHORA OLYMPIAD · Bồi dưỡng học sinh giỏi Toán 12 cấp thành phố · Dữ liệu lưu trong trình duyệt hiện tại</footer></main></div>
-<script src="./mathora-backend-config.js"></script>
+<script>
+/* MATHORA – cau hinh cong khai. Khong dua API key, teacher/owner key vao file nay. */
+window.MATHORA_BACKEND_CONFIG = Object.freeze({
+  endpoint: "https://script.google.com/macros/s/AKfycbwJVgZj04G1gWfdTzt-3lJlcXBLJW6Z7-zCbK-s99DzNy_-PAcvZwhtrALyz2QvTDolyw/exec",
+  healthUrl: "https://script.google.com/macros/s/AKfycbwJVgZj04G1gWfdTzt-3lJlcXBLJW6Z7-zCbK-s99DzNy_-PAcvZwhtrALyz2QvTDolyw/exec?action=health",
+  expectedService: "MATHORA",
+  expectedVersion: "2.3-controlled-staging",
+  connectionStatus: "DIRECT_GAS_RESTRICTED_PROTOTYPE",
+  // No OAuth or third-party gateway required for restricted prototype login.
+  writeEnabled: false,
+  note: "GitHub Pages POST text/plain to Apps Script V2.3. Restricted operator enters teacher/owner key during tab session; never stored or committed."
+});
+</script>
 <script>
 (()=>{'use strict';
 const STORE='mathora_olympiad_v01';
@@ -144,7 +156,240 @@ if(page==='data'){$('exportData').onclick=()=>download('mathora-olympiad-backup-
 render();
 })();
 </script>
-<script src="./mathora-backend-client.js"></script>
+<script>
+/* MATHORA V2.3 – EDOS-style direct GitHub Pages → Apps Script.
+   Teacher/owner credentials are entered by the authorized operator, never committed,
+   persisted, or placed in URLs. This is a restricted prototype login. */
+(function(){
+'use strict';
+const cfg=()=>window.MATHORA_BACKEND_CONFIG||{};
+let identityToken='',authRole='',activeDraft=null,selectedPending=null,selectedKho=null;
+let mountedNode=null,working=false,googleReady=false;
+const $=id=>document.getElementById(id);
+const make=(tag,text)=>{let x=document.createElement(tag);if(text!==undefined)x.textContent=String(text);return x};
+const validEndpoint=()=>{try{const u=new URL(String(cfg().endpoint||''));return u.protocol==='https:'&&u.hostname==='script.google.com'&&/^\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(u.pathname)&&!u.search&&!u.hash;}catch{return false}};
+const hasSetup=()=>validEndpoint();
+const apiUrl=()=>String(cfg().endpoint||'').replace(/\/$/,'');
+function setStatus(msg,kind){const e=$('mgState');if(!e)return;e.textContent=msg;e.dataset.kind=kind||'';}
+function jtext(id,obj){const e=$(id);if(e)e.textContent=typeof obj==='string'?obj:JSON.stringify(obj,null,2);}
+function value(id){return String($(id)?.value||'').trim();}
+function validateDraft(p){if(!p||typeof p!=='object'||Array.isArray(p))throw Error('Bản nháp phải là đối tượng JSON.');if(!String(p.statement||'').trim()||!String(p.solution||'').trim())throw Error('Thiếu đề bài hoặc lời giải.');if(!/^[-+]?\d+(?:\.\d+)?(?:\/\d+)?$/.test(String(p.short_answer||''))||String(p.short_answer||'').length>4)throw Error('short_answer phải là đáp số từ 1 đến 4 ký tự hợp lệ.');}
+async function gasRequest(payload){
+ if(!validEndpoint())throw Error('Đường dẫn Apps Script /exec chưa hợp lệ.');
+ // HVA-EDOS pattern: simple CORS POST — avoids JSON content-type preflight.
+ // GAS must authenticate idToken server-side; never include teacher/owner key.
+ const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),65000);
+ try {
+   const response=await fetch(apiUrl(),{
+     method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},
+     body:JSON.stringify(payload),signal:controller.signal,redirect:'follow',cache:'no-store'
+   });
+   if(!response.ok)throw Error('HTTP '+response.status+' khi kết nối Apps Script.');
+   let result;try{result=await response.json()}catch{throw Error('Apps Script không trả JSON hợp lệ hoặc bị chặn CORS.');}
+   return result;
+ }catch(err){
+   if(err.name==='AbortError')throw Error('Apps Script không phản hồi trong 65 giây.');
+   if(err instanceof TypeError)throw Error('Không đọc được phản hồi Apps Script: kiểm tra quyền Web App và CORS. Không có dữ liệu nào được xác nhận đã ghi.');
+   throw err;
+ }finally{clearTimeout(timer)}
+}
+async function api(action,body={}){
+ if(!hasSetup())throw Error('Chưa có địa chỉ Apps Script hợp lệ.');
+ if(!identityToken)throw Error('Vui lòng đăng nhập bằng mã truy cập Backend của tài khoản được cấp quyền.');
+ const data={action,...body,key:identityToken};
+ delete data.idToken;delete data.role;delete data.authenticatedRole;
+ const result=await gasRequest(data);
+ if(!result||result.ok!==true)throw Error(result?.error||'Backend từ chối yêu cầu.');
+ // This flag is returned by authenticated server-side doPost, never trusted from client input.
+ authRole=String(result.authenticatedRole||authRole||'');
+ return result;
+}
+
+async function health(){
+ if(!validEndpoint())throw Error('Đường dẫn Backend không hợp lệ.');
+ const u=apiUrl()+'?action=health';
+ const res=await fetch(u,{method:'GET',redirect:'follow',cache:'no-store'});
+ if(!res.ok)throw Error('Health HTTP '+res.status);
+ const d=await res.json();
+ if(d.ok!==true||d.service!=='MATHORA')throw Error('Health không khớp dịch vụ MATHORA.');
+ return d;
+}
+async function busy(fn){
+ if(working)return;working=true;document.querySelectorAll('#mathoraGateway button.mg-write').forEach(x=>x.disabled=true);
+ try{await fn()}catch(err){setStatus(err.message||String(err),'error')}
+ finally{working=false;document.querySelectorAll('#mathoraGateway button.mg-write').forEach(x=>x.disabled=!identityToken);}
+}
+function field(id,label,text='',type='textarea'){
+ const wrap=make('label');wrap.className='mg-field';const cap=make('span',label);wrap.appendChild(cap);
+ const ctl=make(type==='textarea'?'textarea':'input');ctl.id=id;if(type!=='textarea')ctl.type=type;ctl.value=text;wrap.appendChild(ctl);return wrap;
+}
+function button(text,fn,{write=false,danger=false}={}){
+ const b=make('button',text);b.type='button';b.className='mg-btn'+(write?' mg-write':'')+(danger?' mg-danger':'');b.disabled=write&&!identityToken;b.addEventListener('click',()=>busy(fn));return b;
+}
+function gridButtons(container,...buttons){let w=make('div');w.className='mg-actions';for(const b of buttons)w.appendChild(b);container.appendChild(w);}
+function showProblem(p,host){
+ host.replaceChildren();
+ if(!p){host.textContent='Chưa có nội dung.';return;}
+ let title=make('h4',p.title||'Bài toán');host.appendChild(title);
+ for(const [key,label] of [['statement','Đề bài'],['conditions','Điều kiện'],['short_answer','Đáp án ngắn'],['solution','Lời giải'],['alternative_solution','Cách giải khác'],['casio_assessment','Phản biện Casio'],['difficulty_analysis','Đánh giá độ khó']]){
+ if(p[key]){host.appendChild(make('strong',label));let pre=make('pre',p[key]);pre.className='mg-pre';host.appendChild(pre);}
+ }
+}
+function makeSection(title){
+ const sec=make('section');sec.className='mg-card';sec.appendChild(make('h3',title));return sec;
+}
+function connectSection(root){
+ const sec=makeSection('Kết nối trực tiếp Apps Script V2.3 · như EDOS');
+ const message=make('p','Không cần Cloudflare, OAuth Client ID hoặc đăng nhập Google. Backend V2.3 hiện nhận mã teacher/owner. Chỉ nhập mã trong phiên làm việc cá nhân; mã không được ghi vào GitHub, trình duyệt lưu trữ hay URL.');
+ message.className='mg-subtle';sec.appendChild(message);
+ const link=make('a','Mở health Apps Script trong tab riêng');link.href=cfg().healthUrl||'#';link.target='_blank';link.rel='noopener noreferrer';sec.appendChild(link);
+ gridButtons(sec,button('Kiểm tra Backend /health',async()=>{
+   const d=await health();
+   setStatus('Backend phản hồi: '+d.service+' · '+d.version+'. AI: '+(d.aiConfigured?'đã khai báo':'chưa khai báo')+'; Sheets: '+(d.dbConfigured?'đã khai báo':'chưa khai báo')+'. Đây chưa phải PASS nghiệp vụ.','success');
+ }));
+ const row=make('div');row.className='mg-loginrow';
+ const fieldWrap=make('label');fieldWrap.className='mg-field';
+ fieldWrap.appendChild(make('span','Mã truy cập MATHORA teacher hoặc owner (chỉ giữ trong bộ nhớ tab)'));
+ const input=make('input');input.type='password';input.id='mgAccessKey';input.autocomplete='off';input.placeholder='Nhập mã từ Apps Script Script Properties';input.spellcheck=false;fieldWrap.appendChild(input);row.appendChild(fieldWrap);
+ const action=make('div');action.className='mg-actions';row.appendChild(action);
+ action.appendChild(button('Đăng nhập',async()=>{
+   const candidate=value('mgAccessKey');if(candidate.length<24)throw Error('Mã truy cập phải có ít nhất 24 ký tự theo Backend V2.3.');
+   identityToken=candidate;authRole='';
+   input.value='';
+   try{
+     const verified=await api('listPending',{limit:1,status:'WAITING_HUMAN'});
+     if(!verified.ok)throw Error(verified.error||'Không xác minh được quyền.');
+     const role=authRole||'teacher';
+     setStatus('Đã xác thực trên Apps Script; vai trò: '+(role==='owner'?'chủ sở hữu':role==='teacher'?'giáo viên':'chưa rõ')+'. Các thao tác được phân quyền tại Backend.','success');
+     render();
+     setStatus('Đã xác thực trên Apps Script; vai trò: '+(role==='owner'?'chủ sở hữu':'giáo viên')+'. Không lưu mã truy cập trên thiết bị.','success');
+   }catch(err){identityToken='';authRole='';throw err}
+ }));
+ action.appendChild(button('Đăng xuất',async()=>{identityToken='';authRole='';render();setStatus('Đã thoát phiên; mã truy cập đã được xóa khỏi bộ nhớ tab.');}));
+ sec.appendChild(row);
+ const footer=make('p','Lưu ý: đây là chế độ truy cập hạn chế dành cho người đã được cấp mã, không phải hệ thống tài khoản cá nhân đầy đủ như HVA–EDOS. Nếu mở cho nhiều giáo viên, cần Backend cấp session riêng và thu hồi được.');
+ footer.className='mg-subtle';sec.appendChild(footer);
+ root.appendChild(sec);
+}
+function draftSection(root){
+ const sec=makeSection('1. Gemini tạo bản nháp → lưu STAGING');
+ sec.appendChild(make('p','Chỉ tạo bản nháp chưa kiểm định. Không đưa vào Kho nếu chưa có minh chứng thẩm định độc lập.'));
+ sec.appendChild(field('mgScope','Phạm vi sáng tạo Toán học','Mũ – lôgarit kết hợp đạo hàm, giải quyết bài toán HSG 12; ưu tiên chiều sâu suy luận.'));
+ sec.appendChild(field('mgOutcome','Yêu cầu cần đạt CT GDPT 2018','Vận dụng đạo hàm để giải quyết bài toán liên quan đến hàm số mũ và lôgarit, cần giáo viên đối chiếu chương trình.'));
+ let label=make('label');label.className='mg-field';label.appendChild(make('span','Năng lực trọng tâm'));
+ let comp=make('select');comp.id='mgCompetence';
+ for(const v of ['Tư duy và lập luận toán học','Mô hình hóa toán học','Giải quyết vấn đề toán học','Giao tiếp toán học','Sử dụng công cụ, phương tiện học toán']){let o=make('option',v);o.value=v;comp.appendChild(o)}label.appendChild(comp);sec.appendChild(label);
+ let draftField=field('mgDraft','Bản nháp JSON (giáo viên rà soát, bổ sung short_answer)','');draftField.querySelector('textarea').rows=9;sec.appendChild(draftField);
+ gridButtons(sec,
+ button('Tạo một bản nháp bằng Gemini',async()=>{
+ const r=await api('generateProblem',{scope:value('mgScope'),learningOutcome:value('mgOutcome'),competency:value('mgCompetence')});
+ activeDraft=r.problem; $('mgDraft').value=JSON.stringify(activeDraft,null,2);
+ setStatus('Gemini đã sinh bản nháp chưa thẩm định. Chưa ghi Sheets.','success');
+ },{write:true}),
+ button('Ghi bản nháp vào STAGING (chỉ môi trường được phép)',async()=>{
+ const p=JSON.parse(value('mgDraft'));validateDraft(p);
+ if(!window.confirm('Ghi hồ sơ vào Google Sheets STAGING qua Gateway? Chỉ thực hiện khi đã xác minh dữ liệu TEST.'))return;
+ const r=await api('saveToKho',{problem:p});setStatus('Hồ sơ STAGING: '+r.id+' · '+r.status+'. Chưa được APPROVED.','success');
+ },{write:true})
+ );
+ root.appendChild(sec);
+}
+function pendingSection(root){
+ const sec=makeSection('2. Hồ sơ chờ thẩm định → xác minh độc lập');
+ let list=make('div');list.id='mgPendingList';sec.appendChild(list);
+ let detail=make('div');detail.id='mgPendingDetail';sec.appendChild(detail);
+ gridButtons(sec,button('Tải hồ sơ WAITING_HUMAN',async()=>{
+ const r=await api('listPending',{status:'WAITING_HUMAN',limit:30});list.replaceChildren();detail.replaceChildren();
+ if(!r.items.length){list.appendChild(make('p','Không có hồ sơ chờ thẩm định.'));return;}
+ for(const it of r.items)list.appendChild(button(it.id+' — '+it.status,async()=>{
+ const p=await api('getPending',{id:it.id});selectedPending=p;renderPending(detail,p);
+ }));
+ }));
+ root.appendChild(sec);
+}
+function renderPending(host,record){
+ host.replaceChildren();if(!record)return;
+ const problemHost=make('div');showProblem(record.problem,problemHost);host.appendChild(problemHost);
+ host.appendChild(make('p','SHA256 nguồn: '+record.sourceHash));
+ if(authRole==='teacher'){host.appendChild(make('p','Mã giáo viên chỉ có quyền xem; thẩm định thuộc Chủ sở hữu.'));return;}
+ if(authRole!=='owner'){host.appendChild(make('p','Chỉ owner được Backend xác thực mới được thẩm định.'));return;}
+ let ev=make('div');ev.className='mg-review';
+ for(const [id,label] of [
+ ['mgReviewer','Người thẩm định (≥5 ký tự)'],
+ ['mgAnswer','Đáp án độc lập (≤4 ký tự)'],
+ ['mgProof','Chứng minh tự kiểm tra Toán học (≥70 ký tự)'],
+ ['mgCurriculum','Đối chiếu chương trình (≥55 ký tự)'],
+ ['mgDifficulty','Phân tích độ khó (≥45 ký tự)'],
+ ['mgOriginality','Tra cứu trùng lặp (≥35 ký tự)'],
+ ['mgCasio','Phản biện Casio (≥25 ký tự)'],
+ ['mgNotes','Nhận xét (≥15 ký tự)']])ev.appendChild(field(id,label,'',id==='mgReviewer'||id==='mgAnswer'?'text':'textarea'));
+ const checks=[['mgMathOk','Đã kiểm tra toán học'],['mgCurrOk','Đã đối chiếu CT2018'],['mgAnswerOk','Đã giải độc lập'],['mgOriginOk','Đã rà soát trùng lặp']];
+ for(const [id,label] of checks){let l=make('label');l.className='mg-check';let x=make('input');x.type='checkbox';x.id=id;l.append(x,make('span',label));ev.appendChild(l)}
+ host.appendChild(ev);
+ gridButtons(host,
+ button('Xác nhận chứng cứ → DRAFT_REVIEWED',async()=>{
+ const evidence={reviewer:value('mgReviewer'),independentAnswer:value('mgAnswer'),proof:value('mgProof'),curriculumCrosswalk:value('mgCurriculum'),difficultyEvidence:value('mgDifficulty'),originalitySearch:value('mgOriginality'),casioReview:value('mgCasio'),reviewNote:value('mgNotes'),mathVerified:$('mgMathOk').checked,curriculumVerified:$('mgCurrOk').checked,independentAnswerVerified:$('mgAnswerOk').checked,originalityReviewed:$('mgOriginOk').checked};
+ if(!window.confirm('Xác nhận đã thực hiện kiểm tra thực tế, chịu trách nhiệm về minh chứng và đưa bài vào DRAFT_REVIEWED?'))return;
+ const r=await api('attestPending',{id:record.id,expectedHash:record.sourceHash,humanReviewed:true,evidence});
+ setStatus('Đã ghi quyết định '+r.id+' · '+r.status+'. Chưa APPROVED.','success');
+ },{write:true}),
+ button('Từ chối hồ sơ',async()=>{
+ const reason=window.prompt('Lý do từ chối (ít nhất 15 ký tự)');if(reason===null)return;if(reason.trim().length<15)throw Error('Lý do cần ít nhất 15 ký tự.');
+ const r=await api('rejectPending',{id:record.id,reason});setStatus('Đã từ chối hồ sơ '+r.id,'success');
+ },{write:true,danger:true})
+ );
+}
+function khoSection(root){
+ const sec=makeSection('3. Kho đã thẩm định và bài đủ điều kiện sử dụng');
+ const list=make('div');list.id='mgKhoList';sec.appendChild(list);
+ const detail=make('div');detail.id='mgKhoDetail';sec.appendChild(detail);
+ gridButtons(sec,
+ button('Bài DRAFT_REVIEWED',async()=>await loadKho('DRAFT_REVIEWED')),
+ button('Bài APPROVED',async()=>await loadKho('APPROVED')),
+ button('Bài đủ điều kiện ra đề',async()=>await loadKho('EXAM_ELIGIBLE'))
+ );
+ async function loadKho(status){
+ const r=await api(status==='EXAM_ELIGIBLE'?'listExamEligible':'listKho',status==='EXAM_ELIGIBLE'?{limit:50}:{status,limit:50});
+ list.replaceChildren();detail.replaceChildren();if(!r.items.length){list.textContent='Không có bài ở trạng thái '+status+'.';return;}
+ for(const item of r.items){
+ list.appendChild(button((item.title||item.id)+' — '+item.status,async()=>{
+ const o=await api('getProblem',{id:item.id});selectedKho=o;detail.replaceChildren();detail.appendChild(make('p',o.id+' v'+o.version+' — '+o.status+' · SHA256 '+o.hash));
+ const x=make('div');showProblem(o.problem,x);detail.appendChild(x);
+ if(authRole==='owner'&&o.status==='DRAFT_REVIEWED'&&o.intact===true){
+ detail.appendChild(field('mgApproveNote','Nhận xét quyết định cuối (≥15 ký tự)',''));
+ gridButtons(detail,button('Phê duyệt APPROVED',async()=>{
+ const note=value('mgApproveNote');if(note.length<15)throw Error('Nhận xét phải có ít nhất 15 ký tự.');
+ if(!window.confirm('Xác nhận phê duyệt hồ sơ này vào Kho sau khi đã kiểm tra phiên bản, hash và minh chứng?'))return;
+ const out=await api('approveProblem',{id:o.id,expectedVersion:o.version,expectedHash:o.hash,humanReviewed:true,reviewNote:note});
+ setStatus('Đã phê duyệt '+out.id+' · '+out.status,'success');
+ },{write:true}));
+ }
+ }));
+ }
+ }
+ root.appendChild(sec);
+}
+function render(){
+ if(!mountedNode||!mountedNode.isConnected)return;
+ mountedNode.replaceChildren();
+ let head=make('div');head.className='mg-title';head.appendChild(make('h2','MATHORA OLYMPIAD · Kết nối Apps Script V2.3'));
+ const status=make('p');status.id='mgState';status.textContent='GitHub Pages kết nối trực tiếp Apps Script V2.3; dùng mã phiên nhập bởi người được cấp quyền (không lưu vào GitHub).';head.appendChild(status);mountedNode.appendChild(head);
+ connectSection(mountedNode);
+ draftSection(mountedNode);pendingSection(mountedNode);khoSection(mountedNode);
+}
+function mount(){
+ const view=$('view');if(!view||!$('aiHealth')){mountedNode=null;return;}
+ if($('mathoraGateway'))return;
+ const container=make('div');container.id='mathoraGateway';container.className='mg-root';
+ view.insertBefore(container,view.firstChild);mountedNode=container;render();
+}
+const css=make('style');
+css.textContent='.mg-root{font-family:inherit;margin-bottom:18px}.mg-title{background:#eaf4f4;border:1px solid #bcdddd;border-radius:14px;padding:12px 16px}.mg-title h2{margin:0 0 5px}.mg-title p{margin:0;font-size:13px}.mg-card{background:#fff;border:1px solid #d9e4eb;border-radius:13px;padding:16px;margin:12px 0;box-shadow:0 4px 16px #123a5608}.mg-card h3{margin:0 0 9px;font-size:18px}.mg-card p,.mg-subtle{font-size:13px;color:#607385}.mg-field{display:block;margin:12px 0}.mg-field>span{display:block;font-weight:650;font-size:13px;margin-bottom:5px}.mg-field textarea,.mg-field input,.mg-field select{width:100%;padding:10px;border:1px solid #aebfcd;border-radius:8px;font:inherit;background:#fff;color:#17334d}.mg-field textarea{min-height:75px;resize:vertical}.mg-loginrow{margin-top:13px;padding:12px;background:#f0f8fb;border:1px solid #cbe3ed;border-radius:11px}.mg-loginrow .mg-field{margin:3px 0}.mg-loginrow .mg-actions{margin:8px 0 0}.mg-actions{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.mg-btn{background:#007e83;color:#fff;border:0;border-radius:9px;padding:9px 12px;cursor:pointer;font:600 13px inherit}.mg-btn.mg-danger{background:#a73e51}.mg-btn:disabled{opacity:.45;cursor:not-allowed}.mg-check{display:flex;gap:8px;align-items:flex-start;margin:7px 0}.mg-pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:320px;overflow:auto;padding:9px;background:#f4f7fa;border:1px solid #dae5ea;border-radius:8px;font-size:13px}.mg-card a{display:inline-block;margin:8px 0;color:#006582}#mgState[data-kind=error]{color:#b13640;font-weight:650}#mgState[data-kind=success]{color:#086960;font-weight:650}@media(max-width:690px){.mg-card{padding:12px}.mg-btn{width:100%}}';
+document.head.appendChild(css);
+const observer=new MutationObserver(()=>mount());observer.observe(document.documentElement,{subtree:true,childList:true});
+document.addEventListener('DOMContentLoaded',mount);mount();
+window.MathoraBridge={mount,configured:hasSetup};
+})();</script>
 <script>
 if('serviceWorker' in navigator && location.protocol==='https:'){
   window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
