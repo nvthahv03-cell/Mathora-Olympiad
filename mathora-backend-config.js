@@ -5,6 +5,8 @@ window.MATHORA_BACKEND_CONFIG = Object.freeze({
   expectedService: "MATHORA",
   expectedVersion: "2.3-controlled-staging",
   connectionStatus: "PENDING_VERIFICATION",
+  gatewayUrl: "", // URL Cloudflare Worker trusted gateway, public origin only
+  googleClientId: "", // Google OAuth Web Client ID (public identifier, not secret)
   writeEnabled: false,
   note: "Frontend GitHub Pages; Backend Apps Script V2.3. Chua kich hoat cac thao tac POST truoc khi co xac thuc phia may chu va kiem thu CORS."
 });
