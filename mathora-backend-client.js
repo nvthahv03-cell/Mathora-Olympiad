@@ -173,9 +173,7 @@ function render(){
  let head=make('div');head.className='mg-title';head.appendChild(make('h2','Kết nối nghiệp vụ MATHORA V2.3'));
  const status=make('p');status.id='mgState';status.textContent='Giao diện GitHub Pages; Gemini và Kho chỉ hoạt động qua Gateway xác thực phía máy chủ.';head.appendChild(status);mountedNode.appendChild(head);
  connectSection(mountedNode);
- if(hasSetup()){
  draftSection(mountedNode);pendingSection(mountedNode);khoSection(mountedNode);
- }
 }
 function mount(){
  const view=$('view');if(!view||!$('aiHealth')){mountedNode=null;return;}
