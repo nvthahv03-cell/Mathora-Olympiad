@@ -144,6 +144,7 @@ if(page==='data'){$('exportData').onclick=()=>download('mathora-olympiad-backup-
 render();
 })();
 </script>
+<script src="./mathora-backend-client.js"></script>
 <script>
 if('serviceWorker' in navigator && location.protocol==='https:'){
   window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
