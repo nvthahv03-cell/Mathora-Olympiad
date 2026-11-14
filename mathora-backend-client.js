@@ -1,5 +1,5 @@
-/* MATHORA V2.3 Gateway panel — no secret stored in GitHub or localStorage.
-   Reacts to existing MATHORA OLYMPIAD AI Lab; preserves every original module. */
+/* MATHORA V2.3 Direct Apps Script panel — no owner/teacher key stored in GitHub.
+   User login via Google ID token; server verifies token before privileged actions. */
 (function(){
 'use strict';
 const cfg=()=>window.MATHORA_BACKEND_CONFIG||{};
@@ -7,21 +7,50 @@ let identityToken='',authRole='',activeDraft=null,selectedPending=null,selectedK
 let mountedNode=null,working=false,googleReady=false;
 const $=id=>document.getElementById(id);
 const make=(tag,text)=>{let x=document.createElement(tag);if(text!==undefined)x.textContent=String(text);return x};
-const hasSetup=()=>/^https:\/\/[\w.-]+\/?$/.test(String(cfg().gatewayUrl||'')) && String(cfg().googleClientId||'').endsWith('.apps.googleusercontent.com');
-const apiUrl=()=>String(cfg().gatewayUrl||'').replace(/\/$/,'');
+const validEndpoint=()=>{try{const u=new URL(String(cfg().endpoint||''));return u.protocol==='https:'&&u.hostname==='script.google.com'&&/^\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(u.pathname)&&!u.search&&!u.hash;}catch{return false}};
+const hasSetup=()=>validEndpoint() && String(cfg().googleClientId||'').endsWith('.apps.googleusercontent.com');
+const apiUrl=()=>String(cfg().endpoint||'').replace(/\/$/,'');
 function setStatus(msg,kind){const e=$('mgState');if(!e)return;e.textContent=msg;e.dataset.kind=kind||'';}
 function jtext(id,obj){const e=$(id);if(e)e.textContent=typeof obj==='string'?obj:JSON.stringify(obj,null,2);}
 function value(id){return String($(id)?.value||'').trim();}
 function validateDraft(p){if(!p||typeof p!=='object'||Array.isArray(p))throw Error('Bản nháp phải là đối tượng JSON.');if(!String(p.statement||'').trim()||!String(p.solution||'').trim())throw Error('Thiếu đề bài hoặc lời giải.');if(!/^[-+]?\d+(?:\.\d+)?(?:\/\d+)?$/.test(String(p.short_answer||''))||String(p.short_answer||'').length>4)throw Error('short_answer phải là đáp số từ 1 đến 4 ký tự hợp lệ.');}
+async function gasRequest(payload){
+ if(!validEndpoint())throw Error('Đường dẫn Apps Script /exec chưa hợp lệ.');
+ // HVA-EDOS pattern: simple CORS POST — avoids JSON content-type preflight.
+ // GAS must authenticate idToken server-side; never include teacher/owner key.
+ const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),65000);
+ try {
+   const response=await fetch(apiUrl(),{
+     method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},
+     body:JSON.stringify(payload),signal:controller.signal,redirect:'follow',cache:'no-store'
+   });
+   if(!response.ok)throw Error('HTTP '+response.status+' khi kết nối Apps Script.');
+   let result;try{result=await response.json()}catch{throw Error('Apps Script không trả JSON hợp lệ hoặc bị chặn CORS.');}
+   return result;
+ }catch(err){
+   if(err.name==='AbortError')throw Error('Apps Script không phản hồi trong 65 giây.');
+   if(err instanceof TypeError)throw Error('Không đọc được phản hồi Apps Script: kiểm tra quyền Web App và CORS. Không có dữ liệu nào được xác nhận đã ghi.');
+   throw err;
+ }finally{clearTimeout(timer)}
+}
 async function api(action,body={}){
- if(!hasSetup())throw Error('Gateway chưa được triển khai và cấu hình. Không gọi trực tiếp Apps Script từ GitHub Pages.');
- if(!identityToken)throw Error('Phải đăng nhập Google bằng tài khoản được phân quyền.');
- const data={action,...body};delete data.key;delete data.role;
- const response=await fetch(apiUrl()+'/api',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+identityToken},body:JSON.stringify(data),cache:'no-store'});
- let result;try{result=await response.json()}catch{throw Error('Gateway trả dữ liệu không phải JSON.');}
- if(!response.ok||!result.ok)throw Error(result.error||'Yêu cầu không thành công ('+response.status+').');
- authRole=result.authenticatedRole||authRole;
+ if(!hasSetup())throw Error('Chưa cấu hình Google OAuth Client ID và Apps Script. Không gửi khóa bí mật từ GitHub.');
+ if(!identityToken)throw Error('Đăng nhập Google bằng tài khoản đã được chủ sở hữu cấp quyền.');
+ const data={action,...body,idToken:identityToken};
+ delete data.key;delete data.role;delete data.authenticatedRole;
+ const result=await gasRequest(data);
+ if(!result||result.ok!==true)throw Error(result?.error||'Backend từ chối yêu cầu.');
+ authRole=String(result.authenticatedRole||authRole||'');
  return result;
+}
+async function health(){
+ if(!validEndpoint())throw Error('Đường dẫn Backend không hợp lệ.');
+ const u=apiUrl()+'?action=health';
+ const res=await fetch(u,{method:'GET',redirect:'follow',cache:'no-store'});
+ if(!res.ok)throw Error('Health HTTP '+res.status);
+ const d=await res.json();
+ if(d.ok!==true||d.service!=='MATHORA')throw Error('Health không khớp dịch vụ MATHORA.');
+ return d;
 }
 async function busy(fn){
  if(working)return;working=true;document.querySelectorAll('#mathoraGateway button.mg-write').forEach(x=>x.disabled=true);
@@ -48,24 +77,27 @@ function makeSection(title){
  const sec=make('section');sec.className='mg-card';sec.appendChild(make('h3',title));return sec;
 }
 function connectSection(root){
- const sec=makeSection('Kết nối Backend V2.3 và xác thực');
- const message=make('p',hasSetup()?'Gateway đã khai báo. Cần kiểm tra sức khỏe và đăng nhập Google trước khi gọi API.':'Gateway xác thực chưa được triển khai. Chỉ mở kiểm tra health ở tab riêng; mọi thao tác ghi/AI qua GitHub Pages đều bị khóa.');message.className='mg-subtle';sec.appendChild(message);
+ const sec=makeSection('Kết nối trực tiếp Apps Script V2.3');
+ const message=make('p',hasSetup()?'Đã có URL Apps Script và Client ID. Đăng nhập Google để Backend kiểm tra quyền tài khoản.':'Đã có URL Apps Script. Để kích hoạt nghiệp vụ cần bổ sung Google OAuth Client ID công khai và cơ chế xác thực idToken phía Apps Script. Chưa gửi yêu cầu ghi dữ liệu.');
+ message.className='mg-subtle';sec.appendChild(message);
  const auth=make('div');auth.id='mgAuth';sec.appendChild(auth);
+ const link=make('a','Mở health Apps Script trong tab riêng');link.href=cfg().healthUrl||'#';link.target='_blank';link.rel='noopener noreferrer';sec.appendChild(link);
+ gridButtons(sec,
+   button('Kiểm tra Backend /health',async()=>{
+     const d=await health();
+     setStatus('Backend phản hồi: '+d.service+' · '+d.version+'. AI: '+(d.aiConfigured?'đã khai báo':'chưa khai báo')+'; Sheets: '+(d.dbConfigured?'đã khai báo':'chưa khai báo')+'. Đây chưa phải PASS nghiệp vụ.','success');
+   }),
+   button('Đăng xuất khỏi MATHORA',async()=>{identityToken='';authRole='';setStatus('Đã xóa token khỏi bộ nhớ phiên.');render();})
+ );
  if(hasSetup()){
- const link=make('a','Kiểm tra Gateway /health');link.href=apiUrl()+'/health';link.target='_blank';link.rel='noopener noreferrer';sec.appendChild(link);
- const googleBox=make('div');googleBox.id='mgGoogleLogin';sec.appendChild(googleBox);
- gridButtons(sec,button('Kiểm tra Gateway',async()=>{
- const res=await fetch(apiUrl()+'/health',{cache:'no-store'});const d=await res.json();if(!res.ok||!d.ok)throw Error(d.error||'Gateway không sẵn sàng');setStatus('Gateway hoạt động; Backend '+(d.backendVersion||'chưa xác định')+'. Ghi dữ liệu: '+(d.writeEnabled?'mở theo môi trường':'đang khóa')+'.','success');
- }),button('Đăng xuất',async()=>{identityToken='';authRole='';setStatus('Đã xóa phiên đăng nhập khỏi bộ nhớ tab.');render();}));
- prepareGoogleLogin();
- }else{
- const link=make('a','Mở trạng thái Backend Apps Script (chỉ đọc)');link.href=cfg().healthUrl||'#';link.target='_blank';link.rel='noopener noreferrer';sec.appendChild(link);
+   const googleBox=make('div');googleBox.id='mgGoogleLogin';sec.appendChild(googleBox);
+   prepareGoogleLogin();
  }
  root.appendChild(sec);
 }
 function prepareGoogleLogin(){
  if(!hasSetup())return;
- if(window.google?.accounts?.id){googleReady=true;window.google.accounts.id.initialize({client_id:cfg().googleClientId,callback:r=>{identityToken=String(r.credential||'');authRole='';setStatus('Đã nhận phiên đăng nhập Google. Gateway sẽ kiểm tra quyền ở lần gọi API.','success');render();}});window.google.accounts.id.renderButton($('mgGoogleLogin'),{theme:'outline',size:'large',text:'signin_with',shape:'rectangular'});return;}
+ if(window.google?.accounts?.id){googleReady=true;window.google.accounts.id.initialize({client_id:cfg().googleClientId,callback:r=>{identityToken=String(r.credential||'');authRole='';setStatus('Đã nhận phiên đăng nhập Google. Apps Script sẽ kiểm tra quyền ở lần gọi API.','success');render();}});window.google.accounts.id.renderButton($('mgGoogleLogin'),{theme:'outline',size:'large',text:'signin_with',shape:'rectangular'});return;}
  if(googleReady)return;googleReady=true;
  const script=make('script');script.src='https://accounts.google.com/gsi/client';script.async=true;script.onload=()=>{googleReady=false;prepareGoogleLogin()};script.onerror=()=>setStatus('Không tải được dịch vụ đăng nhập Google.','error');document.head.appendChild(script);
 }
@@ -84,7 +116,7 @@ function draftSection(root){
  activeDraft=r.problem; $('mgDraft').value=JSON.stringify(activeDraft,null,2);
  setStatus('Gemini đã sinh bản nháp chưa thẩm định. Chưa ghi Sheets.','success');
  },{write:true}),
- button('Ghi bản nháp vào STAGING TEST',async()=>{
+ button('Ghi bản nháp vào STAGING (chỉ môi trường được phép)',async()=>{
  const p=JSON.parse(value('mgDraft'));validateDraft(p);
  if(!window.confirm('Ghi hồ sơ vào Google Sheets STAGING qua Gateway? Chỉ thực hiện khi đã xác minh dữ liệu TEST.'))return;
  const r=await api('saveToKho',{problem:p});setStatus('Hồ sơ STAGING: '+r.id+' · '+r.status+'. Chưa được APPROVED.','success');
@@ -170,8 +202,8 @@ function khoSection(root){
 function render(){
  if(!mountedNode||!mountedNode.isConnected)return;
  mountedNode.replaceChildren();
- let head=make('div');head.className='mg-title';head.appendChild(make('h2','Kết nối nghiệp vụ MATHORA V2.3'));
- const status=make('p');status.id='mgState';status.textContent='Giao diện GitHub Pages; Gemini và Kho chỉ hoạt động qua Gateway xác thực phía máy chủ.';head.appendChild(status);mountedNode.appendChild(head);
+ let head=make('div');head.className='mg-title';head.appendChild(make('h2','Kết nối trực tiếp MATHORA V2.3'));
+ const status=make('p');status.id='mgState';status.textContent='Giao diện GitHub Pages; Gemini và Kho chỉ hoạt động sau khi Apps Script xác thực Google và kiểm tra phân quyền.';head.appendChild(status);mountedNode.appendChild(head);
  connectSection(mountedNode);
  draftSection(mountedNode);pendingSection(mountedNode);khoSection(mountedNode);
 }
