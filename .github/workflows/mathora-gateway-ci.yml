@@ -1,4 +1,4 @@
-name: MATHORA gateway checks
+name: MATHORA direct Apps Script checks
 
 on:
   push:
@@ -7,6 +7,7 @@ on:
       - "gateway/**"
       - "mathora-backend-client.js"
       - "mathora-backend-config.js"
+      - "backend/MATHORA_V23_GOOGLE_AUTH_ADDON.gs"
       - ".github/workflows/mathora-gateway-ci.yml"
   pull_request:
     paths:
@@ -29,6 +30,22 @@ jobs:
           node-version: "22"
       - name: Check backend client syntax
         run: node --check mathora-backend-client.js
+      - name: Check direct Google-auth Apps Script addon syntax
+        run: node -e "new Function(require('fs').readFileSync('backend/MATHORA_V23_GOOGLE_AUTH_ADDON.gs','utf8'))"
+      - name: Verify direct Apps Script transport and action bindings
+        run: |
+          node - <<'NODE'
+          const fs=require('node:fs');
+          const client=fs.readFileSync('mathora-backend-client.js','utf8');
+          const conf=fs.readFileSync('mathora-backend-config.js','utf8');
+          const required=['generateProblem','saveToKho','listPending','getPending','attestPending','rejectPending','listKho','getProblem','approveProblem','listExamEligible'];
+          for(const action of required)if(!client.includes("'"+action+"'"))throw Error('Missing action '+action);
+          if(!client.includes("'Content-Type':'text/plain;charset=UTF-8'"))throw Error('Wrong Apps Script transport');
+          if(!client.includes('idToken:identityToken'))throw Error('Google identity missing');
+          if(client.includes("apiUrl()+'/api'"))throw Error('Legacy gateway transport remains');
+          if(!conf.includes('DIRECT_GAS_AUTH_PENDING'))throw Error('Config claims unsupported integration status');
+          console.log('Direct GAS transport source check PASS. NOT an integrated runtime check.');
+          NODE
       - name: Check worker syntax
         run: node --check gateway/cloudflare-worker.mjs
       - name: Test gateway authentication and routing (mock only)
