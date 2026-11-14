@@ -1,0 +1,14 @@
+# MATHORA V2.3 gateway — safe defaults. Deploy requires authorized Cloudflare account.
+# No API keys or owner/teacher credentials belong in this file.
+name = "mathora-olympiad-gateway"
+main = "cloudflare-worker.mjs"
+compatibility_date = "2026-11-14"
+workers_dev = true
+
+[vars]
+ALLOWED_ORIGIN = "https://nvthahv03-cell.github.io"
+GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwJVgZj04G1gWfdTzt-3lJlcXBLJW6Z7-zCbK-s99DzNy_-PAcvZwhtrALyz2QvTDolyw/exec"
+MATHORA_WRITE_ENABLED = "NO"
+GAS_TEST_APPROVED = "NO"
+# Google OAuth client ID and allowed account emails are configured in Worker settings.
+# GAS_OWNER_KEY and GAS_TEACHER_KEY MUST be Cloudflare Worker Secrets.
