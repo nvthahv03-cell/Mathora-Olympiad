@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MATHORA — STAGING · Nghiệm thu V1</title>
+<style>
+:root{color-scheme:light;--ink:#183047;--muted:#63768a;--a:#006c7a;--line:#dfe7ed;--bg:#f5f8fb}*{box-sizing:border-box}
+body{margin:0;font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg)}
+header{background:linear-gradient(120deg,#142b43,#006a77);color:#fff;padding:32px 20px}
+.wrap{max-width:900px;margin:auto;padding:20px}h1{margin:0;font-size:clamp(24px,4vw,35px)}.lead{opacity:.88;margin:6px 0 0}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;margin:16px 0}
+.notice{border-left:4px solid #c57619;padding:12px 15px;background:#fff6e8;border-radius:5px}
+h2{font-size:20px;margin:0 0 10px}p{margin:10px 0}a{color:var(--a)}a:focus-visible{outline:2px solid #e99b32;outline-offset:4px}
+ul{padding-left:24px}li{margin:9px 0}.chip{display:inline-block;border:1px solid #b8cad6;border-radius:22px;padding:4px 12px;font-size:13px}
+.small{font-size:13px;color:var(--muted)}
+footer{padding:20px 0 30px;color:var(--muted);font-size:13px}
+button{border:1px solid #9eb6c1;background:#fff;color:var(--ink);border-radius:7px;padding:9px 14px;cursor:pointer}
+button:hover{background:#e6f4f6}label{display:block;margin:8px 0}
+</style></head><body>
+<header><div class="wrap"><p class="chip">DEVELOPMENT / STAGING — KHÔNG PHẢI PRODUCTION</p><h1>MATHORA OLYMPIAD</h1><p class="lead">Bảng điều phối kiểm thử tích hợp V1 · Kim Quy Pro SOP 1.0</p></div></header>
+<main class="wrap">
+<section class="notice" role="status"><strong>Chưa triển khai tích hợp thật.</strong> Đây là trang theo dõi nghiệm thu tĩnh, không phải giao diện đã kết nối Gemini hoặc Google Sheets. Chưa công bố ứng dụng cho giáo viên và học sinh.</section>
+<section class="card"><h2>1. Mã nguồn và Backend</h2>
+<p><a href="https://github.com/nvthahv03-cell/Mathora-Olympiad/tree/develop/mathora-v1-apps-script/mathora-v1">Xem mã nguồn MATHORA V1 trên nhánh phát triển</a></p>
+<p><a href="https://script.google.com/macros/s/AKfycbwJVgZj04G1gWfdTzt-3lJlcXBLJW6Z7-zCbK-s99DzNy_-PAcvZwhtrALyz2QvTDolyw/exec?action=health" target="_blank" rel="noopener noreferrer">Mở kiểm tra sức khỏe Backend (chỉ đọc)</a></p>
+<p class="small">Trạng thái health được giáo viên xác nhận qua ảnh; không đồng nghĩa PASS Gemini, ghi Sheets hay duyệt Kho. Các chức năng Apps Script được thiết kế chạy cùng `HtmlService`, không chạy độc lập trong GitHub Pages.</p>
+</section>
+<section class="card"><h2>2. Kế hoạch nghiệm thu</h2>
+<p class="small">Các ô sau là checklist cục bộ trên trang, không ghi bằng chứng hoặc lưu kết quả lên máy chủ.</p>
+<label><input type="checkbox"> Kiểm tra cú pháp HTML/JS và mã bridge</label>
+<label><input type="checkbox"> Rà soát hợp đồng API và phân quyền Backend</label>
+<label><input type="checkbox"> Triển khai Apps Script trong bản sao TEST, giới hạn quyền</label>
+<label><input type="checkbox"> Gemini sinh bản nháp với yêu cầu thử nghiệm</label>
+<label><input type="checkbox"> STAGING ghi và đọc lại bản nháp trong Sheets TEST</label>
+<label><input type="checkbox"> Owner xác minh minh chứng trước khi duyệt</label>
+<label><input type="checkbox"> Kiểm tra hồi quy các module V2.3 đã PASS trước đó</label>
+<label><input type="checkbox"> Chủ nhiệm sản phẩm nghiệm thu bằng biên bản</label>
+<p><button type="button" id="reset">Xóa đánh dấu thử trên trang</button></p>
+</section>
+<section class="card"><h2>3. Các chốt an toàn</h2>
+<ul><li>Không nhập khóa API, mã owner/teacher, token hoặc dữ liệu học sinh vào trang này.</li><li>Không thay đổi `main`, `manifest`, Service Worker hay cấu hình Pages của ứng dụng hiện hữu.</li><li>Không nhập yêu cầu duyệt thật qua giao diện GitHub Pages tĩnh.</li><li>Chỉ ghi PASS TÍCH HỢP sau khi có log và đối chiếu bản ghi Backend/Sheets.</li></ul>
+<p><a href="https://github.com/nvthahv03-cell/Mathora-Olympiad/blob/develop/mathora-v1-apps-script/mathora-v1/docs/KE_HOACH_STAGING_V1.md">Kế hoạch STAGING</a> · <a href="https://github.com/nvthahv03-cell/Mathora-Olympiad/blob/develop/mathora-v1-apps-script/mathora-v1/docs/SO_THEO_DOI_MODULE.md">Sổ trạng thái module</a></p>
+</section>
+<footer>MATHORA · STAGING control page · 13/11/2026. Không có gọi API hay lưu dữ liệu bí mật từ trang này.</footer>
+</main><script>document.getElementById('reset').addEventListener('click',()=>{document.querySelectorAll('input[type=checkbox]').forEach(x=>{x.checked=false})})</script>
+</body></html>
