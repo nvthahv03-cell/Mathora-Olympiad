@@ -61,7 +61,7 @@ window.MATHORA_BACKEND_CONFIG = Object.freeze({
   endpoint: "https://script.google.com/macros/s/AKfycbwJVgZj04G1gWfdTzt-3lJlcXBLJW6Z7-zCbK-s99DzNy_-PAcvZwhtrALyz2QvTDolyw/exec",
   healthUrl: "https://script.google.com/macros/s/AKfycbwJVgZj04G1gWfdTzt-3lJlcXBLJW6Z7-zCbK-s99DzNy_-PAcvZwhtrALyz2QvTDolyw/exec?action=health",
   expectedService: "MATHORA",
-  expectedVersion: "2.5-quality-consistency",
+  expectedVersion: "2.6-parameter-domain",
   connectionStatus: "DIRECT_GAS_SHEETS_SESSION",
   // No OAuth or third-party gateway required for restricted prototype login.
   writeEnabled: false,
@@ -233,7 +233,7 @@ async function health(){
  if(!res.ok)throw Error('Health HTTP '+res.status);
  const d=await res.json();
  if(d.ok!==true||d.service!=='MATHORA')throw Error('Health không khớp dịch vụ MATHORA.');
- if(String(d.version)!==String(cfg().expectedVersion))throw Error('Backend chưa đúng V2.5: đang chạy '+String(d.version||'không rõ')+'. Hãy kiểm tra bản triển khai Apps Script.');
+ if(String(d.version)!==String(cfg().expectedVersion))throw Error('Backend chưa đúng V2.6: đang chạy '+String(d.version||'không rõ')+'. Hãy kiểm tra bản triển khai Apps Script.');
  return d;
 }
 async function busy(fn){
@@ -261,7 +261,7 @@ function makeSection(title){
  const sec=make('section');sec.className='mg-card';sec.appendChild(make('h3',title));return sec;
 }
 function connectSection(root){
- const sec=makeSection('Phiên kết nối Apps Script V2.5');
+ const sec=makeSection('Phiên kết nối Apps Script V2.6');
  sec.appendChild(make('p','Tài khoản được xác thực qua Google Sheets; việc phê duyệt do Apps Script kiểm tra quyền.'));
  gridButtons(sec,button('Kiểm tra Backend /health',async()=>{
   const d=await health();setStatus('Backend '+d.service+' · '+d.version+' · AI '+(d.aiConfigured?'đã cấu hình':'chưa cấu hình')+' · Sheets '+(d.dbConfigured?'đã cấu hình':'chưa cấu hình')+'.','success');
@@ -329,6 +329,8 @@ function draftSection(root){
     'Lý do: '+(r.independentReason||'chưa có'),
     'Phân tích độ khó: '+(r.difficultyEvidence||'chưa có'),
     'Điểm độ khó AI (0–5): '+(r.difficultyScore===undefined?'chưa có':r.difficultyScore),
+    'Đại lượng đề yêu cầu: '+(r.answerTarget||'chưa phân loại'),
+    'Đối chiếu miền tham số: '+(r.domainAnalysis?JSON.stringify(r.domainAnalysis,null,2):'chưa có kết quả nhận diện chuyên biệt'),
     'Cách giải ngắn nhất AI rà soát: '+(r.shortestSolution||'chưa xác định'),
     ...((r.issues||[]).map((x,i)=>(i+1)+'. '+x)),
     'Chú ý: phản biện AI KHÔNG chứng minh bài toán đúng.'
@@ -424,8 +426,8 @@ function khoSection(root){
 function render(){
  if(!mountedNode||!mountedNode.isConnected)return;
  mountedNode.replaceChildren();
- let head=make('div');head.className='mg-title';head.appendChild(make('h2','MATHORA OLYMPIAD · Kết nối Apps Script V2.5'));
- const status=make('p');status.id='mgState';status.textContent='GitHub Pages kết nối Apps Script V2.5; xác thực phiên qua Google Sheets. Kiểm tra Backend /health trước khi kiểm thử.';head.appendChild(status);mountedNode.appendChild(head);
+ let head=make('div');head.className='mg-title';head.appendChild(make('h2','MATHORA OLYMPIAD · Kết nối Apps Script V2.6'));
+ const status=make('p');status.id='mgState';status.textContent='GitHub Pages kết nối Apps Script V2.6; phân tích miền tham số và đối chiếu yêu cầu đáp án trước STAGING.';head.appendChild(status);mountedNode.appendChild(head);
  connectSection(mountedNode);
  draftSection(mountedNode);pendingSection(mountedNode);khoSection(mountedNode);
 }
