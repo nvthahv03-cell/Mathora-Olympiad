@@ -328,6 +328,8 @@ function draftSection(root){
     'Đáp án giải độc lập: '+(r.independentAnswer??'không xác định'),
     'Lý do: '+(r.independentReason||'chưa có'),
     'Phân tích độ khó: '+(r.difficultyEvidence||'chưa có'),
+    'Điểm độ khó AI (0–5): '+(r.difficultyScore===undefined?'chưa có':r.difficultyScore),
+    'Cách giải ngắn nhất AI rà soát: '+(r.shortestSolution||'chưa xác định'),
     ...((r.issues||[]).map((x,i)=>(i+1)+'. '+x)),
     'Chú ý: phản biện AI KHÔNG chứng minh bài toán đúng.'
   ];
