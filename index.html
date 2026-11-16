@@ -188,6 +188,7 @@ render();
 'use strict';
 const cfg=()=>window.MATHORA_BACKEND_CONFIG||{};
 let identityToken='',authRole='',activeDraft=null,selectedPending=null,selectedKho=null;
+let qualityTicket=''; // V2.4 server-issued, temporary and bound to the draft
 let mountedNode=null,working=false,googleReady=false;
 const $=id=>document.getElementById(id);
 const make=(tag,text)=>{let x=document.createElement(tag);if(text!==undefined)x.textContent=String(text);return x};
@@ -310,16 +311,35 @@ function draftSection(root){
  let comp=make('select');comp.id='mgCompetence';
  for(const v of ['Tư duy và lập luận toán học','Mô hình hóa toán học','Giải quyết vấn đề toán học','Giao tiếp toán học','Sử dụng công cụ, phương tiện học toán']){let o=make('option',v);o.value=v;comp.appendChild(o)}label.appendChild(comp);sec.appendChild(label);
  let draftField=field('mgDraft','Bản nháp JSON (giáo viên rà soát, bổ sung short_answer)','');draftField.querySelector('textarea').rows=9;sec.appendChild(draftField);
+ const preflightReport=make('pre','Chưa phản biện sơ bộ. Phải phản biện AI trước khi ghi STAGING.');preflightReport.id='mgQualityReport';preflightReport.className='mg-pre';sec.appendChild(preflightReport);
  gridButtons(sec,
  button('Tạo một bản nháp bằng Gemini',async()=>{
  const r=await api('generateProblem',{scope:value('mgScope'),learningOutcome:value('mgOutcome'),competency:value('mgCompetence')});
- activeDraft=r.problem; $('mgDraft').value=JSON.stringify(activeDraft,null,2);
+ activeDraft=r.problem; qualityTicket=''; $('mgDraft').value=JSON.stringify(activeDraft,null,2); $('mgQualityReport').textContent='Bản nháp mới: chưa phản biện sơ bộ.';
  setStatus('Gemini đã sinh bản nháp chưa thẩm định. Chưa ghi Sheets.','success');
+ },{write:true}),
+ button('Phản biện AI độc lập trước STAGING',async()=>{
+  qualityTicket='';
+  const problem=JSON.parse(value('mgDraft'));validateDraft(problem);
+  setStatus('Đang kiểm tra Toán học, đáp án và độ khó bằng Gemini độc lập...');
+  const r=await api('preflightProblem',{problem});
+  const details=[
+    r.stageAllowed ? 'SƠ BỘ ĐẠT — chờ thẩm định giáo viên' : 'CHẶN STAGING — bản nháp cần sửa',
+    'Đáp án giải độc lập: '+(r.independentAnswer??'không xác định'),
+    'Lý do: '+(r.independentReason||'chưa có'),
+    'Phân tích độ khó: '+(r.difficultyEvidence||'chưa có'),
+    ...((r.issues||[]).map((x,i)=>(i+1)+'. '+x)),
+    'Chú ý: phản biện AI KHÔNG chứng minh bài toán đúng.'
+  ];
+  $('mgQualityReport').textContent=details.join('\n');
+  qualityTicket=r.stageAllowed?String(r.reviewTicket||''):'';
+  setStatus(r.stageAllowed?'Sàng lọc AI đạt. Có thể gửi STAGING để giáo viên thẩm định.':'Bản nháp bị chặn; sửa và phản biện lại.',r.stageAllowed?'success':'error');
  },{write:true}),
  button('Ghi bản nháp vào STAGING (chỉ môi trường được phép)',async()=>{
  const p=JSON.parse(value('mgDraft'));validateDraft(p);
- if(!window.confirm('Ghi hồ sơ vào Google Sheets STAGING qua Gateway? Chỉ thực hiện khi đã xác minh dữ liệu TEST.'))return;
- const r=await api('saveToKho',{problem:p});setStatus('Hồ sơ STAGING: '+r.id+' · '+r.status+'. Chưa được APPROVED.','success');
+ if(!qualityTicket)throw Error('Chưa có phiếu phản biện AI hợp lệ. Nhấn Phản biện AI độc lập trước STAGING.');
+ if(!window.confirm('Ghi bản nháp đã sàng lọc vào STAGING (chưa duyệt Toán học)?'))return;
+ const r=await api('saveToKho',{problem:p,reviewTicket:qualityTicket});qualityTicket='';setStatus('Hồ sơ STAGING: '+r.id+' · '+r.status+'. Chờ giáo viên thẩm định, chưa APPROVED.','success');
  },{write:true})
  );
  root.appendChild(sec);
