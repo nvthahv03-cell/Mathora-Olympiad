@@ -479,10 +479,18 @@ css.textContent='.mg-root{font-family:inherit;margin-bottom:18px}.mg-title{backg
 document.head.appendChild(css);
 const observer=new MutationObserver(()=>mount());observer.observe(document.documentElement,{subtree:true,childList:true});
 document.addEventListener('DOMContentLoaded',()=>{prepareEntryLogin();mount()});prepareEntryLogin();mount();
-window.MathoraBridge={mount,configured:hasSetup};
+window.MathoraBridge={mount,configured:hasSetup,
+  mccsCall:async(action,body={})=>{
+    if(!['mccsRegistry','mccsExecute'].includes(action))throw Error('Action MCCS không hợp lệ.');
+    if(!identityToken||!['admin','teacher'].includes(authRole))
+      throw Error('Cần đăng nhập MATHORA bằng tài khoản giáo viên hoặc quản trị.');
+    return api(action,body);
+  }
+};
 })();</script>
 <script>
 if('serviceWorker' in navigator && location.protocol==='https:'){
   window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));
 }
-</script></body></html>
+</script>
+<script src="./labs/mccs-inline-runtime.js" defer></script></body></html>
