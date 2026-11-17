@@ -1,0 +1,292 @@
+{
+  "version": "1.0",
+  "date": "2026-11-17",
+  "system": "MATHORA CREATIVE COMMAND SYSTEM",
+  "scope": "LAB_ONLY",
+  "commands": [
+    {
+      "id": "MCCS-00",
+      "key": "KHOI_TAO",
+      "purpose": "Nhận yêu cầu; xác định lớp, chuyên đề, dạng đề, thời điểm kiểm tra; lập hợp đồng nhiệm vụ.",
+      "output": "task_contract",
+      "allowed_status": [
+        "RESEARCH_ONLY",
+        "NEEDS_REVIEW",
+        "READY_FOR_HUMAN_REVIEW"
+      ],
+      "may_approve": false
+    },
+    {
+      "id": "MCCS-01",
+      "key": "TRUY_XUAT_NGUON",
+      "purpose": "Tìm đề gốc trong RAG, đối chiếu mã, chứng thực toàn văn và quyền sử dụng.",
+      "output": "source_dossier",
+      "allowed_status": [
+        "RESEARCH_ONLY",
+        "NEEDS_REVIEW",
+        "READY_FOR_HUMAN_REVIEW"
+      ],
+      "may_approve": false
+    },
+    {
+      "id": "MCCS-02",
+      "key": "GIAI_BAI_GOC",
+      "purpose": "Độc lập giải bài gốc; kiểm nghiệm biên và tính đủ giả thiết; không đoán lời giải.",
+      "output": "proof_original",
+      "allowed_status": [
+        "RESEARCH_ONLY",
+        "NEEDS_REVIEW",
+        "READY_FOR_HUMAN_REVIEW"
+      ],
+      "may_approve": false
+    },
+    {
+      "id": "MCCS-03",
+      "key": "TRICH_XUAT_BO_DE",
+      "purpose": "Phát hiện điểm khóa, phát biểu bổ đề, chứng minh và phản ví dụ.",
+      "output": "lemma_dossier",
+      "allowed_status": [
+        "RESEARCH_ONLY",
+        "NEEDS_REVIEW",
+        "READY_FOR_HUMAN_REVIEW"
+      ],
+      "may_approve": false
+    },
+    {
+      "id": "MCCS-04",
+      "key": "PHAN_TICH_CAU_TRUC",
+      "purpose": "Biểu diễn đồ thị ý tưởng, bước suy luận, điểm không thể thay bằng phép tính máy.",
+      "output": "structure_map",
+      "allowed_status": [
+        "RESEARCH_ONLY",
+        "NEEDS_REVIEW",
+        "READY_FOR_HUMAN_REVIEW"
+      ],
+      "may_approve": false
+    },
+    {
+      "id": "MCCS-05",
+      "key": "SANG_TAO_BAI",
+      "purpose": "Đề xuất cấu trúc bài mới thực chất; nêu bảng thay đổi so với nguồn và phương án giải.",
+      "output": "new_problem_draft",
+      "allowed_status": [
+        "RESEARCH_ONLY",
+        "NEEDS_REVIEW",
+        "READY_FOR_HUMAN_REVIEW"
+      ],
+      "may_approve": false
+    },
+    {
+      "id": "MCCS-06",
+      "key": "GIAI_NGUOC",
+      "purpose": "Giải lại bài mới độc lập từ đầu, xác minh tồn tại và tính duy nhất của đáp án.",
+      "output": "independent_solution",
+      "allowed_status": [
+        "RESEARCH_ONLY",
+        "NEEDS_REVIEW",
+        "READY_FOR_HUMAN_REVIEW"
+      ],
+      "may_approve": false
+    },
+    {
+      "id": "MCCS-07",
+      "key": "KIEM_DINH_TOAN",
+      "purpose": "Rà lỗi logic, trường hợp suy biến, sai dấu, điều kiện, đơn vị; dùng kiểm tra số phụ trợ khi cần.",
+      "output": "math_audit",
+      "allowed_status": [
+        "RESEARCH_ONLY",
+        "NEEDS_REVIEW",
+        "READY_FOR_HUMAN_REVIEW"
+      ],
+      "may_approve": false
+    },
+    {
+      "id": "MCCS-08",
+      "key": "KIEM_DINH_CT2018",
+      "purpose": "Kiểm tra yêu cầu cần đạt cụ thể, tiến độ học, dụng cụ được phép, kiến thức vượt chương trình.",
+      "output": "curriculum_audit",
+      "allowed_status": [
+        "RESEARCH_ONLY",
+        "NEEDS_REVIEW",
+        "READY_FOR_HUMAN_REVIEW"
+      ],
+      "may_approve": false
+    },
+    {
+      "id": "MCCS-09",
+      "key": "DANH_GIA_NANG_LUC",
+      "purpose": "Đánh giá TD&LL, MHH, GQVĐ bằng hành vi có thể quan sát; không gán nhãn hình thức.",
+      "output": "competency_evidence",
+      "allowed_status": [
+        "RESEARCH_ONLY",
+        "NEEDS_REVIEW",
+        "READY_FOR_HUMAN_REVIEW"
+      ],
+      "may_approve": false
+    },
+    {
+      "id": "MCCS-10",
+      "key": "KIEM_TRA_TRUNG_CASIO",
+      "purpose": "Đối chiếu trùng cấu trúc nguồn, lối giải nhanh, mức thao tác Casio; không tuyên bố chống Casio tuyệt đối.",
+      "output": "novelty_casio_audit",
+      "allowed_status": [
+        "RESEARCH_ONLY",
+        "NEEDS_REVIEW",
+        "READY_FOR_HUMAN_REVIEW"
+      ],
+      "may_approve": false
+    },
+    {
+      "id": "MCCS-11",
+      "key": "LAP_MA_TRAN",
+      "purpose": "Phân bổ điểm từng đơn vị chấm, mạch kiến thức, độ khó, năng lực; tính tổng và kiểm chéo.",
+      "output": "assessment_matrix",
+      "allowed_status": [
+        "RESEARCH_ONLY",
+        "NEEDS_REVIEW",
+        "READY_FOR_HUMAN_REVIEW"
+      ],
+      "may_approve": false
+    },
+    {
+      "id": "MCCS-12",
+      "key": "TAO_DE_22_CAU",
+      "purpose": "Lắp đề HSG Đà Nẵng 12 A-D / 4 Đúng-Sai / 6 ngắn; gắn phiên bản và độ tin cậy.",
+      "output": "exam_draft",
+      "allowed_status": [
+        "RESEARCH_ONLY",
+        "NEEDS_REVIEW",
+        "READY_FOR_HUMAN_REVIEW"
+      ],
+      "may_approve": false
+    },
+    {
+      "id": "MCCS-13",
+      "key": "PHAN_BIEN_3_VONG",
+      "purpose": "Phản biện toán học, CT2018 & ma trận, tính mới & độ phân hóa trong các lần gọi độc lập.",
+      "output": "review_triplet",
+      "allowed_status": [
+        "RESEARCH_ONLY",
+        "NEEDS_REVIEW",
+        "READY_FOR_HUMAN_REVIEW"
+      ],
+      "may_approve": false
+    },
+    {
+      "id": "MCCS-14",
+      "key": "XUAT_HO_SO",
+      "purpose": "Xuất đề, lời giải, kiểm định hình, bảng điểm, log nguồn và phiếu chưa duyệt.",
+      "output": "package",
+      "allowed_status": [
+        "RESEARCH_ONLY",
+        "NEEDS_REVIEW",
+        "READY_FOR_HUMAN_REVIEW"
+      ],
+      "may_approve": false
+    },
+    {
+      "id": "MCCS-15",
+      "key": "NGHIEM_THU_GV",
+      "purpose": "Trình giáo viên phê duyệt; không tự đổi sang APPROVED.",
+      "output": "approval_request",
+      "allowed_status": [
+        "RESEARCH_ONLY",
+        "NEEDS_REVIEW",
+        "READY_FOR_HUMAN_REVIEW"
+      ],
+      "may_approve": false
+    },
+    {
+      "id": "MCCS-16",
+      "key": "HOC_TU_PHAN_BIEN",
+      "purpose": "Lưu lỗi, nguyên nhân và kết quả sửa; không đưa dữ liệu lỗi vào kho tham chiếu đã duyệt.",
+      "output": "feedback_record",
+      "allowed_status": [
+        "RESEARCH_ONLY",
+        "NEEDS_REVIEW",
+        "READY_FOR_HUMAN_REVIEW"
+      ],
+      "may_approve": false
+    },
+    {
+      "id": "MCCS-17",
+      "key": "XAC_MINH_MO_HINH",
+      "purpose": "Kiểm tra mô hình thực tế: biến, giả định, đơn vị, ràng buộc, độ nhạy, diễn giải.",
+      "output": "modeling_audit",
+      "allowed_status": [
+        "RESEARCH_ONLY",
+        "NEEDS_REVIEW",
+        "READY_FOR_HUMAN_REVIEW"
+      ],
+      "may_approve": false
+    }
+  ],
+  "policies": {
+    "no_fake_proofs": true,
+    "no_automatic_pass": true,
+    "independent_review_call_required": true,
+    "provenance_required": true,
+    "all_published_sources_must_have_exact_url": true,
+    "unverified_index_summaries_are_not_full_questions": true,
+    "teacher_approval_required": true,
+    "no_secret_or_unpublished_exams_in_public_repo": true,
+    "curriculum_check_requires_exact_learning_outcome_and_teaching_date": true,
+    "structure_danang_2025_2026": {
+      "duration_minutes": 90,
+      "sections": [
+        {
+          "type": "MCQ",
+          "count": 12,
+          "points": 3,
+          "distribution": {
+            "recognition": 3,
+            "understanding": 3,
+            "application": 6
+          }
+        },
+        {
+          "type": "TRUE_FALSE",
+          "count": 4,
+          "points": 4
+        },
+        {
+          "type": "SHORT_ANSWER",
+          "count": 6,
+          "points": 3
+        }
+      ],
+      "content_point_shares": {
+        "algebra_calculus": 0.5,
+        "geometry_measurement": 0.35,
+        "statistics_probability": 0.15
+      },
+      "cognition_point_shares": {
+        "recognition": 0.2,
+        "understanding": 0.25,
+        "application": 0.55
+      },
+      "competency_point_shares": {
+        "reasoning": 0.3,
+        "modeling": 0.3,
+        "problem_solving": 0.4
+      },
+      "scope": "reference_matrix_not_legal_requirement"
+    }
+  },
+  "review_state_model": {
+    "states": [
+      "RESEARCH_ONLY",
+      "NEEDS_REVIEW",
+      "READY_FOR_HUMAN_REVIEW",
+      "APPROVED",
+      "REJECTED"
+    ],
+    "transition_to_APPROVED": "teacher_explicit_approval_only"
+  },
+  "data_dependencies": [
+    "topics.ct2018.json",
+    "lemmas.seed.json",
+    "rag/source-manifest.json",
+    "rag/questions.research-index.json"
+  ]
+}
