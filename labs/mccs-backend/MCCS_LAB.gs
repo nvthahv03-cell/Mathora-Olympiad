@@ -66,33 +66,53 @@ var MCCS_CREATE_RULES_=[
  "Trường hợp mái trụ parabol: ưu tiên chặn dưới dây cung/chặn trên tiếp tuyến; không bắt buộc tích phân chiều dài cung.",
  "Output fields: status, problem, solution, alternative_solution, competency_evidence, curriculum_review, source_trace, casio_review, blockers."
 ].join("\n");
-var MCCS_REVIEW_RULES_=[
- "Bạn là người PHẢN BIỆN độc lập MCCS, KHÔNG phải người sáng tạo.",
- "Chỉ dựa trên yêu cầu gốc và bản nháp; không tin kết luận của người đề xuất.",
- "Kiểm tra tính đúng đắn toán học, CT2018 và minh chứng năng lực; chỉ ra lỗi cụ thể, phản ví dụ và lời giải tắt.",
- "Không tự tuyên bố phê duyệt; không dùng APPROVED/PASS.",
- "Output JSON: status (NEEDS_REVIEW|READY_FOR_HUMAN_REVIEW), math_audit, curriculum_audit, novelty_and_casio, blockers, recommended_corrections."
-].join("\n");
+var MCCS_REVIEW_MATH_=[
+ "Vai trò: PHẢN BIỆN TOÁN HỌC ĐỘC LẬP, ngữ cảnh gọi riêng không có kết luận của vòng khác.",
+ "Kiểm tra tồn tại, điều kiện, chứng minh, đáp án, phản ví dụ, ví dụ suy biến, hình vẽ và đơn vị.",
+ "Trả JSON gồm review_type, verified_claims, errors, counterexamples, corrected_solution, decision (NEEDS_REVIEW hoặc READY_FOR_HUMAN_REVIEW).",
+ "Không phê duyệt, không dựa vào kết luận của người đề xuất."
+].join("\\n");
+var MCCS_REVIEW_CURRICULUM_=[
+ "Vai trò: PHẢN BIỆN CTGDPT 2018 VÀ KHẢO THÍ ĐỘC LẬP; ngữ cảnh gọi riêng.",
+ "Đối chiếu phạm vi chương trình, thời điểm đã học (không tự giả định), yêu cầu cần đạt cụ thể, minh chứng năng lực, ma trận và khả năng chấm.",
+ "Không mặc định độ dài cung bằng tích phân thuộc chương trình phổ thông; không tự gọi một bài thực tế là MHH VDC.",
+ "Trả JSON gồm review_type, curriculum_flags, competency_evidence, matrix_issues, decision, blockers.",
+ "Nếu không có nguồn văn bản CTGDPT 2018, ghi UNVERIFIED thay vì bịa điều khoản."
+].join("\\n");
+var MCCS_REVIEW_NOVELTY_=[
+ "Vai trò: PHẢN BIỆN TÍNH MỚI, ĐỘ PHÂN HÓA VÀ CASIO ĐỘC LẬP; ngữ cảnh gọi riêng.",
+ "So sánh cấu trúc lời giải so với các nguồn ĐÃ ĐƯỢC CẤP trong đầu vào; không tự nói đã tìm kiếm toàn bộ internet.",
+ "Chỉ ra lối giải nhanh, khả năng kiểm tra bằng máy tính Casio và giá trị sáng tạo toán học; thay số không tạo tính mới.",
+ "Trả JSON gồm review_type, structural_comparison, casio_shortcut_risk, difficulty_rationale, decision, blockers.",
+ "Không tuyên bố chống Casio tuyệt đối hoặc hoàn toàn mới nếu chưa có log kiểm thử, đối chiếu."
+].join("\\n");
 function MCCS_execute_(body, email) {
-  MCCS_assertCommand_(body.command_id);
-  var request=MCCS_requireText_(body.request,6000);
-  var topic=String(body.topic||"").slice(0,250);
-  var source=String(body.source_id||"").slice(0,150);
-  var mode=String(body.mode||"propose");
-  if(mode!=="propose"&&mode!=="review")throw new Error("INVALID_MODE");
-  var output;
-  if(mode==="review"){
-    var draft=MCCS_requireText_(body.draft_json,18000);
-    output=MCCS_generate_(MCCS_REVIEW_RULES_,"MÃ: "+body.command_id+"\nCHỦ ĐỀ: "+topic+"\nNGUỒN: "+source+"\nYÊU CẦU GỐC:\n"+request+"\nBẢN NHÁP CẦN PHẢN BIỆN:\n"+draft,0.15);
-  } else {
-    output=MCCS_generate_(MCCS_CREATE_RULES_,"MÃ: "+body.command_id+"\nCHỦ ĐỀ: "+topic+"\nNGUỒN (PHẢI XÁC MINH TRƯỚC KHI TRÍCH): "+source+"\nNHIỆM VỤ:\n"+request,0.5);
-  }
-  var generatedStatus=String(output.status||"NEEDS_REVIEW");
-  if(generatedStatus==="APPROVED"||generatedStatus==="PASS") generatedStatus="NEEDS_REVIEW";
-  return {ok:true,version:MCCS_VERSION,mode:mode,command_id:body.command_id,
-    status:generatedStatus==="READY_FOR_HUMAN_REVIEW"?"READY_FOR_HUMAN_REVIEW":"NEEDS_REVIEW",
-    teacher_approved:false,independent_model_context:mode==="review",result:output,
-    response_generated_at:new Date().toISOString()};
+ MCCS_assertCommand_(body.command_id);
+ var request=MCCS_requireText_(body.request,6000);
+ var topic=String(body.topic||"").slice(0,250), source=String(body.source_id||"").slice(0,150);
+ var mode=String(body.mode||"propose");
+ if(["propose","review3"].indexOf(mode)<0)throw new Error("INVALID_MODE");
+ var context="MÃ: "+body.command_id+"\\nCHỦ ĐỀ: "+topic+"\\nNGUỒN CHƯA XÁC MINH (không được suy diễn đề gốc): "+source+"\\nYÊU CẦU GỐC:\\n"+request;
+ var result,callCount;
+ if(mode==="review3"){
+   var draft=MCCS_requireText_(body.draft_json,18000);
+   var reviewPrompt=context+"\\n\\nBẢN NHÁP CẦN PHẢN BIỆN:\\n"+draft;
+   // Three entirely fresh requests with DISTINCT system instructions.
+   result={
+      math:MCCS_generate_(MCCS_REVIEW_MATH_,reviewPrompt,0.1),
+      curriculum:MCCS_generate_(MCCS_REVIEW_CURRICULUM_,reviewPrompt,0.1),
+      novelty:MCCS_generate_(MCCS_REVIEW_NOVELTY_,reviewPrompt,0.1)
+   };
+   callCount=3;
+ }else{
+   result=MCCS_generate_(MCCS_CREATE_RULES_,context,0.5);
+   callCount=1;
+ }
+ // Never accept model self-approval as an approval gate.
+ return {ok:true,service:"MCCS_LAB",version:MCCS_VERSION,mode:mode,command_id:body.command_id,
+   status:"NEEDS_REVIEW",teacher_approved:false,
+   reviewer_calls_separate:mode==="review3",reviewer_call_count:callCount,
+   result:result,response_generated_at:new Date().toISOString()};
 }
 function doGet(e){return MCCS_json_({ok:true,service:"MCCS_LAB",version:MCCS_VERSION,ai_call_available:false,
   note:"Health does not prove Google sign-in or Gemini access. POST requires verified Google ID token."});}
@@ -106,8 +126,8 @@ function doPost(e) {
     // Validate before spending the teacher's rate limit slot.
     MCCS_assertCommand_(body.command_id);
     MCCS_requireText_(body.request,6000);
-    if(body.mode!=="propose"&&body.mode!=="review") throw new Error("INVALID_MODE");
-    if(body.mode==="review") MCCS_requireText_(body.draft_json,18000);
+    if(body.mode!=="propose"&&body.mode!=="review3") throw new Error("INVALID_MODE");
+    if(body.mode==="review3") MCCS_requireText_(body.draft_json,18000);
     var cache=CacheService.getScriptCache();
     var rateKey="mccs-rate-"+Utilities.base64EncodeWebSafe(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256,email)).slice(0,30);
     if(cache.get(rateKey))return MCCS_json_(MCCS_error_("RATE_LIMITED","Try again after the 15-second cooldown"));
