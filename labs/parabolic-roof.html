@@ -58,7 +58,7 @@ function renderRoof(m){
  const line=arr=>arr.map((p,i)=>(i?'L':'M')+p.map(z=>z.toFixed(1)).join(' ')).join(' ');
  const frontp=line(front),backp=line(back),lo=front[0],ro=front.at(-1),lb=back[0],rb=back.at(-1);
  const mapped=Array.from({length:m.n+1},(_,i)=>{let x=-W/2+W*i/m.n;return [PX(x),PY(H*(1-4*x*x/W/W))]});
- const shade='<path d="'+frontp+' L '+rb.join(' ')+' '+backp.slice(1)+' Z" fill="#a6cfdf" fill-opacity=".53" stroke="#3c8299" stroke-width="1.5"/>';
+ const shade='<path d="'+frontp+' L '+back.slice().reverse().map(p=>p.join(' ')).join(' L ')+' Z" fill="#a6cfdf" fill-opacity=".53" stroke="#3c8299" stroke-width="1.5"/>';
  const face='<path d="'+frontp+'" fill="none" stroke="#0c6d89" stroke-width="3"/>';
  const ribs=mapped.filter((_,i)=>i%Math.max(1,Math.round(m.n/10))===0).map(p=>'<path d="M'+p.join(' ')+' l74 -45" stroke="#5299ae" stroke-width="1" opacity=".65"/>').join('');
  const L=m.approximation,rectW=220,rectH=83, rx=407,ry=100;
