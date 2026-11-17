@@ -89,7 +89,7 @@ section.innerHTML='<h2 style="font-size:20px;margin:0 0 8px">7. THỰC THI GEMIN
 '<p class="hint">Dùng hai cuộc gọi model tách biệt: tạo bản nháp và phản biện từ ngữ cảnh mới. Chỉ bật khi quản trị viên đã cấu hình backend LAB, Google OAuth và thử nghiệm CORS. Không dán khóa Gemini vào đây.</p>'+
 '<div id="mccsConnection" class="warn" role="status"></div>'+
 '<div id="mccsAuth" style="margin:12px 0"></div>'+
-'<div class="actions"><button id="mccsPropose" disabled type="button">1. Chạy lệnh sáng tạo</button><button id="mccsReview" disabled type="button" class="secondary">2. Phản biện từ ngữ cảnh mới</button><button id="mccsExport" type="button" class="secondary">Xuất hồ sơ chạy AI</button></div>'+
+'<div class="actions"><button id="mccsPropose" disabled type="button">1. Chạy lệnh sáng tạo</button><button id="mccsReview" disabled type="button" class="secondary">2. Phản biện 3 vòng độc lập</button><button id="mccsExport" type="button" class="secondary">Xuất hồ sơ chạy AI</button></div>'+
 '<p class="hint">Phản hồi thô, không qua phê duyệt của giáo viên:</p><pre id="mccsOutput">Chưa có phiên thực thi.</pre>'+
 '<p class="hint" id="mccsAudit"></p>';
 document.querySelector('.wrap').appendChild(section);
@@ -120,12 +120,12 @@ function packet(){
 async function invoke(mode){
  if(creating||!enabled||!idToken)return;
  let p;try{p=packet();}catch(e){note(String(e.message||e));return;}
- if(mode==='review'&&!draft){note('Phải tạo bản nháp trước khi phản biện riêng.');return;}
+ if(mode==='review3'&&!draft){note('Phải tạo bản nháp trước khi phản biện riêng.');return;}
  creating=true;$('mccsPropose').disabled=true;$('mccsReview').disabled=true;
  note('Đang gửi yêu cầu tới MCCS LAB; chưa có kết quả.');
  try{
   const payload={...p,mode,id_token:idToken};
-  if(mode==='review')payload.draft_json=JSON.stringify(draft.result||draft);
+  if(mode==='review3')payload.draft_json=JSON.stringify(draft.result||draft);
   const response=await fetch(cfg.endpoint,{method:'POST',mode:'cors',credentials:'omit',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify(payload)});
   if(!response.ok)throw Error('HTTP '+response.status);
   const result=await response.json();
@@ -135,15 +135,15 @@ async function invoke(mode){
   if(mode==='propose'){draft=result;review=null;}else review=result;
   history.push({mode,command_id:p.command_id,request:p.request,returned:result,recorded_at:new Date().toISOString()});
   $('mccsOutput').textContent=JSON.stringify({draft:draft&&draft.result,review:review&&review.result},null,2);
-  $('mccsAudit').textContent='Bản nháp: '+(draft?'đã sinh':'chưa sinh')+' · Phản biện: '+(review?'đã gọi lượt riêng':'chưa có')+' · Phê duyệt: CHƯA CÓ';
-  note(mode==='propose'?'Đã nhận bản nháp — chưa phản biện.':'Đã nhận phản biện từ cuộc gọi model riêng — cần GV kiểm chứng.');
+  $('mccsAudit').textContent='Bản nháp: '+(draft?'đã sinh':'chưa sinh')+' · Phản biện: '+(review?'3 lượt Gemini riêng (nếu backend xác nhận)':'chưa có')+' · Phê duyệt: CHƯA CÓ';
+  note(mode==='propose'?'Đã nhận bản nháp — chưa phản biện.':'Đã nhận 3 phản biện từ các lượt gọi Gemini riêng — cần GV kiểm chứng.');
  }catch(err){
   note('CHƯA THỰC THI THÀNH CÔNG: '+String(err.message||err)+'. Nếu bị CORS/redirect Apps Script, phải dùng gateway máy chủ phù hợp; không được tắt cơ chế xác thực.');
  }finally{
    creating=false;$('mccsPropose').disabled=!idToken;$('mccsReview').disabled=!idToken||!draft;
  }
 }
-$('mccsPropose').onclick=()=>invoke('propose');$('mccsReview').onclick=()=>invoke('review');
+$('mccsPropose').onclick=()=>invoke('propose');$('mccsReview').onclick=()=>invoke('review3');
 $('mccsExport').onclick=()=>{
  const obj={lab:'MCCS_GEMINI_LAB',version:'1.0',exported_at:new Date().toISOString(),
    model_run_count:history.length,teacher_approved:false,history,
