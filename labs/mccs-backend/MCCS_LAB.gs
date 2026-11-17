@@ -103,6 +103,11 @@ function doPost(e) {
     var body=JSON.parse(e.postData.contents);
     // VERIFY before accessing or executing the model.
     var email=MCCS_id_(body.id_token);
+    // Validate before spending the teacher's rate limit slot.
+    MCCS_assertCommand_(body.command_id);
+    MCCS_requireText_(body.request,6000);
+    if(body.mode!=="propose"&&body.mode!=="review") throw new Error("INVALID_MODE");
+    if(body.mode==="review") MCCS_requireText_(body.draft_json,18000);
     var cache=CacheService.getScriptCache();
     var rateKey="mccs-rate-"+Utilities.base64EncodeWebSafe(Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256,email)).slice(0,30);
     if(cache.get(rateKey))return MCCS_json_(MCCS_error_("RATE_LIMITED","Try again after the 15-second cooldown"));
