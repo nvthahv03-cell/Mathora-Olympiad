@@ -1,0 +1,232 @@
+{
+  "schema_version": "1.0",
+  "purpose": "Tra cứu chuyên đề để sáng tạo và phản biện bài HSG 12; KHÔNG phải bảng phân phối chương trình chính thức",
+  "notes": [
+    "Phân loại chỉ là danh mục khởi tạo theo CT2018, chưa đối chiếu từng yêu cầu cần đạt với văn bản gốc.",
+    "Chỉ lấy các kiến thức thực sự đã học trước kỳ thi làm kiến thức bắt buộc.",
+    "Đề Đà Nẵng tham khảo cấu trúc, không sử dụng câu cũ để thay số.",
+    "Không dùng thiết diện phức tạp, công thức tích có hướng hoặc tích phân độ dài cung làm kiến thức bắt buộc."
+  ],
+  "topics": [
+    {
+      "id": "T10-ALG-01",
+      "grade": 10,
+      "name": "Mệnh đề và tập hợp",
+      "domain": "Đại số",
+      "focus": "suy luận, điều kiện cần/đủ",
+      "verified_curriculum_clause": false,
+      "availability": "CHECK_TEACHING_PROGRESS",
+      "status": "RESEARCH_INDEX"
+    },
+    {
+      "id": "T10-ALG-02",
+      "grade": 10,
+      "name": "Bất phương trình, hệ bất phương trình bậc nhất hai ẩn",
+      "domain": "Đại số",
+      "focus": "miền nghiệm, bài toán tối ưu tuyến tính",
+      "verified_curriculum_clause": false,
+      "availability": "CHECK_TEACHING_PROGRESS",
+      "status": "RESEARCH_INDEX"
+    },
+    {
+      "id": "T10-ALG-03",
+      "grade": 10,
+      "name": "Hàm số và đồ thị; hàm số bậc hai",
+      "domain": "Đại số",
+      "focus": "tọa độ, tham số, tính chất parabol",
+      "verified_curriculum_clause": false,
+      "availability": "CHECK_TEACHING_PROGRESS",
+      "status": "RESEARCH_INDEX"
+    },
+    {
+      "id": "T10-ALG-04",
+      "grade": 10,
+      "name": "Phương trình và hệ phương trình",
+      "domain": "Đại số",
+      "focus": "điều kiện nghiệm, tương đương",
+      "verified_curriculum_clause": false,
+      "availability": "CHECK_TEACHING_PROGRESS",
+      "status": "RESEARCH_INDEX"
+    },
+    {
+      "id": "T10-GEO-01",
+      "grade": 10,
+      "name": "Hệ thức lượng trong tam giác",
+      "domain": "Hình học",
+      "focus": "mô hình hóa đo đạc",
+      "verified_curriculum_clause": false,
+      "availability": "CHECK_TEACHING_PROGRESS",
+      "status": "RESEARCH_INDEX"
+    },
+    {
+      "id": "T10-GEO-02",
+      "grade": 10,
+      "name": "Vectơ và tích vô hướng trong mặt phẳng",
+      "domain": "Hình học",
+      "focus": "đẳng thức vectơ, độ dài, góc",
+      "verified_curriculum_clause": false,
+      "availability": "CHECK_TEACHING_PROGRESS",
+      "status": "RESEARCH_INDEX"
+    },
+    {
+      "id": "T10-GEO-03",
+      "grade": 10,
+      "name": "Phương pháp tọa độ trong mặt phẳng",
+      "domain": "Hình học",
+      "focus": "đường thẳng, đường tròn, ba đường conic theo phạm vi học",
+      "verified_curriculum_clause": false,
+      "availability": "CHECK_TEACHING_PROGRESS",
+      "status": "RESEARCH_INDEX"
+    },
+    {
+      "id": "T10-STAT-01",
+      "grade": 10,
+      "name": "Thống kê mô tả và xác suất",
+      "domain": "Thống kê và xác suất",
+      "focus": "số đặc trưng mẫu số liệu, biến cố",
+      "verified_curriculum_clause": false,
+      "availability": "CHECK_TEACHING_PROGRESS",
+      "status": "RESEARCH_INDEX"
+    },
+    {
+      "id": "T11-ALG-01",
+      "grade": 11,
+      "name": "Hàm số lượng giác và phương trình lượng giác",
+      "domain": "Đại số",
+      "focus": "biến đổi và điều kiện",
+      "verified_curriculum_clause": false,
+      "availability": "CHECK_TEACHING_PROGRESS",
+      "status": "RESEARCH_INDEX"
+    },
+    {
+      "id": "T11-ALG-02",
+      "grade": 11,
+      "name": "Dãy số, cấp số cộng và cấp số nhân",
+      "domain": "Đại số",
+      "focus": "quy luật, truy hồi cơ bản",
+      "verified_curriculum_clause": false,
+      "availability": "CHECK_TEACHING_PROGRESS",
+      "status": "RESEARCH_INDEX"
+    },
+    {
+      "id": "T11-CAL-01",
+      "grade": 11,
+      "name": "Giới hạn và hàm số liên tục",
+      "domain": "Đại số",
+      "focus": "giới hạn dãy, giới hạn hàm số",
+      "verified_curriculum_clause": false,
+      "availability": "CHECK_TEACHING_PROGRESS",
+      "status": "RESEARCH_INDEX"
+    },
+    {
+      "id": "T11-CAL-02",
+      "grade": 11,
+      "name": "Đạo hàm",
+      "domain": "Đại số",
+      "focus": "tiếp tuyến, tốc độ biến thiên",
+      "verified_curriculum_clause": false,
+      "availability": "CHECK_TEACHING_PROGRESS",
+      "status": "RESEARCH_INDEX"
+    },
+    {
+      "id": "T11-GEO-01",
+      "grade": 11,
+      "name": "Đường thẳng và mặt phẳng trong không gian; quan hệ song song",
+      "domain": "Hình học",
+      "focus": "giao tuyến, giao điểm; không lấy dựng thiết diện phức tạp làm chuẩn",
+      "verified_curriculum_clause": false,
+      "availability": "CHECK_TEACHING_PROGRESS",
+      "status": "RESEARCH_INDEX"
+    },
+    {
+      "id": "T11-GEO-02",
+      "grade": 11,
+      "name": "Quan hệ vuông góc trong không gian",
+      "domain": "Hình học",
+      "focus": "hình chiếu, góc, khoảng cách, góc nhị diện",
+      "verified_curriculum_clause": false,
+      "availability": "CHECK_TEACHING_PROGRESS",
+      "status": "RESEARCH_INDEX"
+    },
+    {
+      "id": "T11-STAT-01",
+      "grade": 11,
+      "name": "Xác suất cổ điển và quy tắc tính xác suất",
+      "domain": "Thống kê và xác suất",
+      "focus": "đếm, biến cố, xác suất",
+      "verified_curriculum_clause": false,
+      "availability": "CHECK_TEACHING_PROGRESS",
+      "status": "RESEARCH_INDEX"
+    },
+    {
+      "id": "T12-CAL-01",
+      "grade": 12,
+      "name": "Ứng dụng đạo hàm khảo sát và vẽ đồ thị",
+      "domain": "Đại số",
+      "focus": "đơn điệu, cực trị, mô hình",
+      "verified_curriculum_clause": false,
+      "availability": "CHECK_TEACHING_PROGRESS",
+      "status": "RESEARCH_INDEX"
+    },
+    {
+      "id": "T12-CAL-02",
+      "grade": 12,
+      "name": "Nguyên hàm và tích phân",
+      "domain": "Đại số",
+      "focus": "diện tích, thể tích theo yêu cầu cần đạt; không mặc định độ dài cung",
+      "verified_curriculum_clause": false,
+      "availability": "CHECK_TEACHING_PROGRESS",
+      "status": "RESEARCH_INDEX"
+    },
+    {
+      "id": "T12-ALG-01",
+      "grade": 12,
+      "name": "Hàm số mũ và hàm số lôgarit",
+      "domain": "Đại số",
+      "focus": "phương trình, bất phương trình, mô hình tăng trưởng",
+      "verified_curriculum_clause": false,
+      "availability": "CHECK_TEACHING_PROGRESS",
+      "status": "RESEARCH_INDEX"
+    },
+    {
+      "id": "T12-GEO-01",
+      "grade": 12,
+      "name": "Vectơ trong không gian và hệ tọa độ Oxyz",
+      "domain": "Hình học",
+      "focus": "tọa độ, tích vô hướng, góc",
+      "verified_curriculum_clause": false,
+      "availability": "CHECK_TEACHING_PROGRESS",
+      "status": "RESEARCH_INDEX"
+    },
+    {
+      "id": "T12-GEO-02",
+      "grade": 12,
+      "name": "Phương trình mặt phẳng, đường thẳng, mặt cầu trong Oxyz",
+      "domain": "Hình học",
+      "focus": "phụ thuộc tiến độ dạy học cụ thể trước ngày thi",
+      "verified_curriculum_clause": false,
+      "availability": "CHECK_TEACHING_PROGRESS",
+      "status": "RESEARCH_INDEX"
+    },
+    {
+      "id": "T12-STAT-01",
+      "grade": 12,
+      "name": "Thống kê ghép nhóm",
+      "domain": "Thống kê và xác suất",
+      "focus": "trung bình, trung vị, tứ phân vị theo phạm vi học",
+      "verified_curriculum_clause": false,
+      "availability": "CHECK_TEACHING_PROGRESS",
+      "status": "RESEARCH_INDEX"
+    },
+    {
+      "id": "T12-STAT-02",
+      "grade": 12,
+      "name": "Xác suất có điều kiện và quy tắc nhân xác suất",
+      "domain": "Thống kê và xác suất",
+      "focus": "mô hình tình huống và điều kiện",
+      "verified_curriculum_clause": false,
+      "availability": "CHECK_TEACHING_PROGRESS",
+      "status": "RESEARCH_INDEX"
+    }
+  ]
+}
