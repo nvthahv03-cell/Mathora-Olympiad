@@ -1,0 +1,137 @@
+{
+  "schema_version": "1.0",
+  "training_round": 1,
+  "records": [
+    {
+      "id": "ALG-001",
+      "topic_ids": [
+        "T12-CAL-01"
+      ],
+      "name": "Hàm lẻ và nghịch biến",
+      "statement": "Nếu f:R→R lẻ và nghịch biến nghiêm ngặt thì f(u)+f(v)≤0 khi và chỉ khi u+v≥0.",
+      "conditions": [
+        "f xác định trên R",
+        "f lẻ",
+        "f nghịch biến nghiêm ngặt"
+      ],
+      "proof": "f(u)+f(v)≤0 ↔ f(u)≤f(−v) ↔ u≥−v.",
+      "false_use": "f(x)=x lẻ nhưng đồng biến: u=1,v=0 không thỏa kết luận.",
+      "creativity_risk": "Đổi biểu thức f mà vẫn hỏi cùng một tổng hai đối số là trùng cấu trúc.",
+      "source": "Bổ đề phổ thông; seed MATHORA Lemma Bank V1; không tự gán là bài toán mới.",
+      "knowledge_status": "REFERENCE_ONLY",
+      "proof_review": "INTERNAL_DERIVATION",
+      "human_approved": false,
+      "model_tested": false
+    },
+    {
+      "id": "GEO3-001",
+      "topic_ids": [
+        "T12-GEO-01",
+        "T11-GEO-02"
+      ],
+      "name": "Hai cặp cạnh đối vuông góc trong tứ diện",
+      "statement": "Nếu AB⊥CD và AC⊥BD trong tứ diện ABCD thì AD⊥BC.",
+      "conditions": [
+        "A,B,C,D không đồng phẳng",
+        "hai quan hệ vuông góc cạnh đối thực sự được chứng minh"
+      ],
+      "proof": "AB·CD − AC·BD + AD·BC=0; hai tích đầu bằng 0 nên tích cuối bằng 0.",
+      "false_use": "Chỉ một cặp cạnh đối vuông góc thì không đủ.",
+      "creativity_risk": "Đổi tên đỉnh và cạnh không tạo bài mới.",
+      "source": "Bổ đề phổ thông; seed MATHORA Lemma Bank V1; không tự gán là bài toán mới.",
+      "knowledge_status": "REFERENCE_ONLY",
+      "proof_review": "INTERNAL_DERIVATION",
+      "human_approved": false,
+      "model_tested": false
+    },
+    {
+      "id": "GEO3-002",
+      "topic_ids": [
+        "T11-GEO-02"
+      ],
+      "name": "Quỹ tích điểm cách đều ba đỉnh tam giác",
+      "statement": "Với A,B,C không thẳng hàng, M cách đều A,B,C khi và chỉ khi M thuộc đường thẳng qua tâm ngoại tiếp O và vuông góc (ABC).",
+      "conditions": [
+        "A,B,C không thẳng hàng"
+      ],
+      "proof": "Nếu H là hình chiếu vuông góc M lên (ABC), từ MA²=MH²+HA² và tương tự suy ra HA=HB=HC; vậy H=O. Chiều đảo đúng theo Pythagore.",
+      "false_use": "A,B,C thẳng hàng phân biệt thì không có điểm cách đều cả ba.",
+      "creativity_risk": "Không gọi nhiệm vụ tìm quỹ tích lặp lại là cấu trúc VDC mới.",
+      "source": "Bổ đề phổ thông; seed MATHORA Lemma Bank V1; không tự gán là bài toán mới.",
+      "knowledge_status": "REFERENCE_ONLY",
+      "proof_review": "INTERNAL_DERIVATION",
+      "human_approved": false,
+      "model_tested": false
+    },
+    {
+      "id": "GEO3-003",
+      "topic_ids": [
+        "T11-GEO-02"
+      ],
+      "name": "Thể tích khối chóp bằng diện tích đáy nhân chiều cao chia ba",
+      "statement": "Nếu H là hình chiếu vuông góc S lên (ABC), V(S.ABC)=S(ABC)×SH/3.",
+      "conditions": [
+        "A,B,C không thẳng hàng",
+        "S không thuộc (ABC)"
+      ],
+      "proof": "Áp dụng công thức thể tích khối chóp với chiều cao SH.",
+      "false_use": "Không thay SH bằng SA nếu SA không vuông góc (ABC).",
+      "creativity_risk": "Đây là kiến thức nền, không đủ làm điểm khóa VDC.",
+      "source": "Bổ đề phổ thông; seed MATHORA Lemma Bank V1; không tự gán là bài toán mới.",
+      "knowledge_status": "REFERENCE_ONLY",
+      "proof_review": "INTERNAL_DERIVATION",
+      "human_approved": false,
+      "model_tested": false
+    },
+    {
+      "id": "ALG-002",
+      "topic_ids": [
+        "T10-ALG-03",
+        "T11-CAL-02"
+      ],
+      "name": "Hệ số góc dây cung parabol bằng đạo hàm tại trung điểm",
+      "statement": "Nếu f(x)=ax²+bx+c và u<v thì MN=(v−u)√(1+f'((u+v)/2)²), M=(u,f(u)),N=(v,f(v)).",
+      "conditions": [
+        "f bậc không quá 2",
+        "u<v"
+      ],
+      "proof": "[f(v)−f(u)]/(v−u)=a(u+v)+b=f'((u+v)/2); dùng công thức khoảng cách.",
+      "false_use": "f(x)=x³, u=0,v=2: hệ số góc dây là 4 nhưng f'(1)=3.",
+      "creativity_risk": "Không suy ra học sinh phải biết tích phân độ dài cung.",
+      "source": "Bổ đề phổ thông; seed MATHORA Lemma Bank V1; không tự gán là bài toán mới.",
+      "knowledge_status": "REFERENCE_ONLY",
+      "proof_review": "INTERNAL_DERIVATION",
+      "human_approved": false,
+      "model_tested": false
+    },
+    {
+      "id": "MODEL-001",
+      "topic_ids": [
+        "T12-GEO-01",
+        "T12-GEO-02"
+      ],
+      "name": "Điểm đổ bóng trên mặt phẳng ngang từ tia thẳng",
+      "statement": "P=(p,q,h), hướng d=(a,b,c), c≠0; giao với z=0 là Q=(p−ha/c,q−hb/c,0). Với tia cần −h/c≥0.",
+      "conditions": [
+        "mặt đất được xấp xỉ z=0",
+        "tia truyền thẳng theo d",
+        "c≠0",
+        "t=−h/c≥0 nếu dùng tia"
+      ],
+      "proof": "P+t d có tọa độ z=h+tc; giải bằng 0 rồi thế vào x,y.",
+      "false_use": "c=0,h≠0 thì không có giao điểm; t<0 thì giao thuộc đường kéo dài, không thuộc tia.",
+      "creativity_risk": "Đưa sẵn P,d rồi thay số không đủ là đánh giá mô hình hóa.",
+      "source": "Bổ đề phổ thông; seed MATHORA Lemma Bank V1; không tự gán là bài toán mới.",
+      "knowledge_status": "REFERENCE_ONLY",
+      "proof_review": "INTERNAL_DERIVATION",
+      "human_approved": false,
+      "model_tested": false
+    }
+  ],
+  "policy": {
+    "no_automatic_approval": true,
+    "model_train_method": "retrieval_augmented_prompt_not_weight_finetuning",
+    "use_only_if_preconditions": true,
+    "curriculum_check_required": true
+  }
+}
