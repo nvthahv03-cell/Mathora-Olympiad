@@ -1,0 +1,132 @@
+/* MATHORA OLYMPIAD · UI REFRESH 2026-11-17
+   Layered overrides only: no authentication, routing, or backend changes. */
+:root{
+ --navy:#102c3c;--teal:#087b80;--bg:#f5f7f9;--ink:#213744;
+ --muted:#617784;--line:#dde7ec;--gold:#d9a546;--pale:#eaf5f4;
+ --ma-radius:16px;--ma-shadow:0 8px 28px rgba(22,48,67,.045);
+}
+html{scroll-behavior:smooth;scroll-padding-top:26px}
+body{background:var(--bg);color:var(--ink);font-size:15px;line-height:1.62}
+.app{grid-template-columns:254px minmax(0,1fr)}
+aside{background:linear-gradient(165deg,#102c3c,#123748 72%,#102e3e);padding:24px 13px;scrollbar-width:thin;scrollbar-color:#567280 transparent}
+.mark{padding:8px 11px 23px;gap:11px}
+.symbol{background:linear-gradient(140deg,#18a6a5,#087780);box-shadow:0 6px 18px #001b2730;border-radius:12px}
+.mark strong{letter-spacing:.055em;font-size:18px}
+.mark small{font-size:10px;letter-spacing:.03em}
+.nav-label{color:#9db9c5;font-size:10px;letter-spacing:.12em!important;margin-top:20px!important}
+.nav{font-size:13px;line-height:1.4;gap:10px;padding:10px 12px;border-radius:10px;min-height:44px;transition:background .16s ease,box-shadow .16s ease,transform .16s ease}
+.nav span:first-child{font-size:17px;width:21px;flex:0 0 21px}
+.nav:hover{background:#ffffff18;transform:translateX(2px)}
+.nav.active{background:#ffffff1d;box-shadow:inset 3px 0 #e5bb6d;color:#fff}
+.aside-foot{font-size:11px;line-height:1.55}
+main{max-width:1480px;padding:28px clamp(20px,3.2vw,48px) 70px}
+.top{margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.kicker{font-size:10px;color:#467784;letter-spacing:.11em!important}
+#breadcrumb{font-size:13px;color:#425e6d;font-weight:650}
+h1,.hero h1{font-size:clamp(25px,2.7vw,36px);letter-spacing:-.035em!important;line-height:1.23}
+h2,.panel h2{font-size:20px;letter-spacing:-.012em!important;line-height:1.35}
+h3,.item h3{font-size:16px;line-height:1.4}
+.sub{color:#617784;font-size:14px;max-width:860px;margin-bottom:20px}
+.panel{border:1px solid #e0e8ec;border-radius:var(--ma-radius);padding:22px;box-shadow:var(--ma-shadow);background:#fff}
+.panel.soft{background:#f0f8f7;border-color:#cfe3df}
+.grid{gap:16px}
+.grid.two,.split{gap:16px}
+.hero{border-radius:19px;background:linear-gradient(116deg,#102f43 0%,#125d67 96%);padding:32px 35px;box-shadow:0 14px 28px #103d4715}
+.hero:after{font-size:200px;right:30px;top:-20px}
+.hero p{font-size:14px;line-height:1.7;max-width:660px}
+.stat{font-size:30px;line-height:1.22;font-variant-numeric:tabular-nums}
+.stat-caption{margin-top:6px;font-size:13px}
+.btn{border-radius:10px;min-height:42px;padding:10px 15px;letter-spacing:0;font-weight:650;transition:transform .15s ease,background .15s ease,box-shadow .15s ease;box-shadow:none}
+.btn:hover:not(:disabled){filter:none;background:#086b70;transform:translateY(-1px);box-shadow:0 5px 12px #123e4616}
+.btn.secondary:hover:not(:disabled){background:#edf6f6}
+.btn.ghost:hover:not(:disabled){background:#e5eff2}
+.btn.small{min-height:36px;padding:7px 11px}
+.btn:disabled{opacity:.55}
+.field{gap:6px;min-width:0}
+.field label{font-size:12px;color:#375568;font-weight:700}
+.field input,.field select,.field textarea,.toolbar input,.toolbar select{border-color:#c9d9e1;border-radius:10px;min-height:42px;transition:border-color .14s ease,box-shadow .14s ease}
+.field input:hover,.field select:hover,.field textarea:hover{border-color:#a8c6d0}
+.field input:focus,.field select:focus,.field textarea:focus,.toolbar input:focus,.toolbar select:focus{border-color:#087b80;outline:0;box-shadow:0 0 0 3px #087b801c}
+.field textarea{min-height:100px;line-height:1.6}
+.item{border-color:#dfe8ec;box-shadow:0 2px 8px #213f4a05}
+.badge{font-size:11px;font-weight:750;letter-spacing:0}
+.pill{font-size:11px}
+.notice,.good{line-height:1.6;border-radius:10px}
+.empty{background:#fbfcfd}
+.step{margin:14px 0}
+.step b{font-size:14px}
+.step small{line-height:1.55;margin-top:2px}
+pre,.ai-text,.mg-pre{font-family:ui-monospace,SFMono-Regular,Consolas,'Liberation Mono',monospace!important;font-size:12px;line-height:1.65;tab-size:2}
+pre{overflow-x:auto;max-width:100%;border-radius:10px}
+#ecosystemMccs{border-top:3px solid #0f8589}
+#ecosystemMccs .grid.two{align-items:start}
+#ecosystemCommandFields{padding-top:3px}
+#ecosystemResult,#mccsAiResult{font-family:ui-monospace,SFMono-Regular,Consolas,monospace!important;font-size:12px;line-height:1.7;background:#f8fafb!important;border:1px solid #dce7ed!important}
+#ecosystemResult{max-height:390px;overflow:auto}
+#mccsInlineRuntime{border-top:3px solid #d9a546;box-shadow:var(--ma-shadow)}
+#mccsInlineRuntime .row{align-items:center}
+#mccsReviewActions{padding:12px;background:#f7fafb;border:1px solid #e2ebef;border-radius:12px}
+#mccsReviewActions .btn{flex:1 1 170px;white-space:normal}
+#mccsAiResult{max-height:520px;min-height:130px}
+#ecosystemMccs details{padding:12px 14px;border:1px solid var(--line);background:#fbfcfd;border-radius:12px}
+#ecosystemMccs summary{color:#23485c}
+#ecosystemMccs summary:focus-visible{outline-offset:4px}
+.mg-card{border-radius:14px!important;box-shadow:var(--ma-shadow)!important}
+.mg-title{border-radius:14px!important}
+.ma-auth-card{box-shadow:0 22px 60px #001d2b50;border-radius:20px}
+.ma-auth-submit{min-height:46px}
+.exampaper{font-family:'Times New Roman',serif;line-height:1.7}
+.exampaper .q{line-height:1.75}
+footer{font-size:11px;color:#7a909c}
+@media(min-width:1480px){main{padding-left:54px;padding-right:54px}}
+@media(max-width:1050px){.app{grid-template-columns:225px minmax(0,1fr)}aside{padding:20px 10px}.nav{font-size:12px;padding:10px}.panel{padding:19px}}
+@media(max-width:730px){
+ .app{display:block}
+ aside{width:min(300px,88vw);position:fixed;z-index:60;box-shadow:12px 0 36px #0a2a3d40}
+ .mobbar{min-height:56px;gap:12px;position:sticky;top:0;z-index:39;background:#102f43;box-shadow:0 3px 12px #11303d1a}
+ .mobbar b{font-size:13px;letter-spacing:.035em}
+ main{padding:19px 14px 42px}
+ .top{margin-bottom:19px}
+ .hero{padding:25px 22px}
+ .hero:after{font-size:160px;right:-30px;top:10px}
+ .panel{padding:17px}
+ .grid,.grid.two,.split{grid-template-columns:minmax(0,1fr)}
+ #ecosystemMccs .row>.btn,#mccsInlineRuntime .row>.btn{flex:1 1 150px}
+ #mccsReviewActions .btn{flex-basis:100%}
+ .btn{min-height:43px}
+ .top .badge{max-width:100%}
+}
+@media(max-width:420px){
+ h1,.hero h1{font-size:26px}
+ h2,.panel h2{font-size:19px}
+ .panel{padding:15px}
+ .hero{padding:22px 19px}
+ #ecosystemMccs .row>.btn,#mccsInlineRuntime .row>.btn{flex:1 1 100%}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+@media print{
+ body{background:#fff!important}
+ .panel,.item{box-shadow:none!important}
+ .hero,#mccsInlineRuntime,#ecosystemMccs{break-inside:avoid}
+ #ecosystemMccs .btn,#mccsInlineRuntime .btn{display:none!important}
+ pre{max-height:none!important;white-space:pre-wrap!important;overflow:visible!important}
+}
+
+/* MCCS: concise reading surface, advanced data only on demand */
+.mccs-readable{display:grid;gap:12px;margin-top:12px}
+.mccs-result-card{background:#fff;border:1px solid #e0e9ed;border-radius:12px;padding:17px 18px}
+.mccs-result-card h4{margin:0 0 12px;color:#123b4d;font-size:15px;font-weight:750;padding-bottom:10px;border-bottom:1px solid #e6eef1}
+.mccs-result-row{margin:0 0 12px}
+.mccs-result-row:last-child{margin-bottom:0}
+.mccs-result-row strong{display:block;color:#486879;font-size:12px;margin:0 0 3px}
+.mccs-result-row p{white-space:pre-wrap;overflow-wrap:anywhere;margin:0;font-size:14px;line-height:1.72;color:#223946}
+.mccs-result-warning{background:#fff8eb;border-left:3px solid #d8a04b;border-radius:8px;padding:10px 13px;margin-top:12px}
+.mccs-result-warning strong{font-size:13px}
+.mccs-result-warning ul{padding-left:19px;margin:6px 0}
+.mccs-result-warning li{margin:6px 0;font-size:13px;line-height:1.6}
+.mccs-technical{margin-top:12px;background:#f8fafb;border:1px solid #e0e8ed;border-radius:12px;padding:12px 14px}
+.mccs-technical summary{cursor:pointer;font-weight:650;font-size:13px;color:#476a7d}
+.mccs-technical summary:hover{color:#087b80}
+.mccs-technical pre{margin:12px 0 0}
+#mccsCopyFeedback:empty{display:none}
+@media(max-width:730px){.mccs-result-card{padding:14px}.mccs-result-row p{font-size:13px}}
