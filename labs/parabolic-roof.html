@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MATHORA LAB | Trải mái trụ parabol</title>
+<style>
+:root{font-family:Segoe UI,Arial,sans-serif;color:#173344;background:#f3f7fa}*{box-sizing:border-box}body{margin:0}header{background:#10374c;color:white;padding:20px max(20px,calc((100vw - 1120px)/2))}header h1{font-size:25px;margin:6px 0}header p{color:#c0d9e2;margin:0}a{color:#087c83}.back{color:#c1eee7}.wrap{max-width:1120px;margin:auto;padding:20px}.grid{display:grid;grid-template-columns:340px 1fr;gap:16px}.card{background:white;border:1px solid #d7e4ea;border-radius:15px;padding:18px;margin-bottom:16px;box-shadow:0 4px 15px #15344806}.field{display:grid;gap:5px;margin-bottom:13px}label{font-size:13px;font-weight:700}input,button{font:inherit}input{padding:9px;border:1px solid #c5d5df;border-radius:8px;width:100%}button{background:#087e83;color:white;border:0;border-radius:9px;padding:11px 15px;font-weight:700;cursor:pointer}button.secondary{background:#e9f3f4;color:#075f69}.actions{display:flex;gap:8px;flex-wrap:wrap}.pill{display:inline-block;background:#e9f5f3;border-radius:20px;font-size:12px;padding:4px 9px;color:#16675c}h2{font-size:18px;margin:0 0 12px}h3{font-size:15px;margin:16px 0 7px}.muted{color:#607784;font-size:13px}.math{font-family:Cambria,Georgia,serif;font-size:18px}.status{font-weight:800;padding:12px;border-radius:10px;background:#eff5f7}.status.insufficient{background:#fff0e6;color:#a23b2e}.status.sufficient{background:#eaf7ee;color:#176343}.status.uncertain{background:#fff8e7;color:#815f22}svg{width:100%;height:auto;border:1px solid #dce8ed;border-radius:12px;background:#faffff}details{border-top:1px solid #e6ecef;margin-top:12px;padding-top:10px}summary{cursor:pointer;font-weight:700}#proof{white-space:pre-wrap;line-height:1.75}footer{font-size:12px;color:#6c8290;text-align:center;margin:22px}.mini{font-size:12px;color:#647987}.kv{display:grid;grid-template-columns:1fr auto;gap:8px;font-size:14px;border-bottom:1px dashed #dbe5e8;padding:7px 0}@media(max-width:800px){.grid{grid-template-columns:1fr}header{padding:20px}.wrap{padding:14px}}@media print{header,.actions,.formcard{display:none}.grid{display:block}body{background:white}.card{box-shadow:none}}
+</style></head><body>
+<header><div class="mini">MATHORA OLYMPIAD · PHÒNG THỬ NGHIỆM TOÁN HỌC · LAB R1</div><h1>Trải phẳng mái tôn trụ parabol</h1><p>Mô hình hóa · Hình học không gian · Xấp xỉ độ dài cung bằng dây cung và tiếp tuyến</p><p><a class="back" href="../index.html">‹ Quay lại MATHORA</a></p></header>
+<div class="wrap"><div class="grid"><div><section class="card formcard"><h2>Dữ kiện thiết kế</h2>
+<div class="field"><label for="span">Nhịp mái — khoảng cách hai chân (m)</label><input id="span" type="number" min="0.2" max="30" step="0.1" value="6"></div>
+<div class="field"><label for="rise">Độ vồng ở đỉnh (m)</label><input id="rise" type="number" min="0.05" max="15" step="0.05" value="2"></div>
+<div class="field"><label for="length">Chiều dài công trình (m)</label><input id="length" type="number" min="0.5" max="100" step="0.5" value="12"></div>
+<div class="field"><label for="sheet">Chiều rộng tấm tôn phẳng (m)</label><input id="sheet" type="number" min="0.2" max="40" step="0.01" value="7.5"></div>
+<div class="field"><label for="allow">Tổng phần mép giữ tôn (m)</label><input id="allow" type="number" min="0" max="3" step="0.01" value="0.05"></div>
+<div class="field"><label for="pieces">Số đoạn chia để đánh giá</label><input id="pieces" type="number" min="2" max="512" step="1" value="8"></div>
+<div class="actions"><button id="calc">Dựng hình & kiểm chứng</button><button class="secondary" id="reset">Khôi phục bài gốc</button></div>
+<p class="mini">Mô hình lý tưởng: tôn không co giãn, độ dày bỏ qua, mái tạo thành từ phép tịnh tiến một cung parabol theo đường sinh thẳng dài 12 m (giá trị mặc định).</p>
+</section>
+<section class="card"><h2>Phản biện học thuật</h2><span class="pill">RESEARCH_ONLY — chưa duyệt VDC</span><p class="muted">Đây là bài toán kỹ thuật có mô hình xác định sẵn. Năng lực mô hình hóa được thể hiện ở lập hệ tọa độ, lựa chọn đại lượng cần kiểm tra và diễn giải quyết định; muốn đánh giá VDC cần thay đổi nhiệm vụ chứ không chỉ số liệu.</p>
+<div class="actions"><button class="secondary" id="copy">Sao chép đề bài</button><button class="secondary" id="print">In phiếu</button></div><p id="notice" class="mini" aria-live="polite"></p></section></div>
+<div><section class="card"><h2>1. Mái cong và bản trải phẳng</h2>
+<svg id="roof" viewBox="0 0 690 290" aria-label="Phối cảnh mái trụ parabol và hình trải tôn"></svg>
+<p class="mini">Sơ đồ dựng theo dữ kiện đầu vào; phối cảnh chỉ nhằm minh họa, không dùng để đo độ dài trực tiếp.</p>
+<div class="kv"><span>Phương trình mặt cắt (gốc tại trung điểm chân mái)</span><span id="equation" class="math"></span></div>
+<div class="kv"><span>Hình trải phẳng</span><span id="flat" class="math"></span></div>
+</section>
+<section class="card"><h2>2. Kết quả tính toán và chứng minh</h2>
+<div id="status" class="status"></div>
+<div class="kv"><span>Bề rộng tôn khả dụng</span><strong id="usable"></strong></div>
+<div class="kv"><span>Chặn dưới bằng tổng dây cung</span><strong id="lower"></strong></div>
+<div class="kv"><span>Chặn trên bằng đa giác tiếp tuyến</span><strong id="upper"></strong></div>
+<div class="kv"><span>Độ dài cung gần đúng (chỉ để đối chiếu)</span><strong id="approx"></strong></div>
+<details open><summary>Chứng minh không dùng tích phân độ dài cung</summary><div id="proof"></div></details>
+<details><summary>Đề bài học sinh và tiêu chí đánh giá</summary><div id="task"></div></details>
+</section></div></div><footer>MATHORA Creative Research Lab · không lưu dữ liệu vào ngân hàng đề và không gọi Gemini. Trạng thái: kiểm thử thủ công chờ giáo viên nghiệm thu.</footer></div>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const fmt=(n,d=5)=>Number(n).toLocaleString('vi-VN',{minimumFractionDigits:d,maximumFractionDigits:d});
+const val=id=>Number($(id).value);
+function model(){
+ const w=val('span'),h=val('rise'),len=val('length'),sheet=val('sheet'),allow=val('allow'),n=val('pieces');
+ if(![w,h,len,sheet,allow,n].every(Number.isFinite)||w<=0||h<=0||len<=0||sheet<=0||allow<0||allow>=sheet||n<2||n>512||Math.floor(n)!==n)throw Error('Dữ kiện không hợp lệ; kiểm tra số dương, mép giữ và số đoạn chia nguyên 2–512.');
+ const f=x=>h*(1-4*x*x/(w*w)),slope=x=>-8*h*x/(w*w),dx=w/n;
+ let lower=0,upper=0;
+ for(let i=0;i<n;i++){let x=-w/2+i*dx;lower+=Math.hypot(dx,f(x+dx)-f(x));upper+=dx*(Math.hypot(1,slope(x))+Math.hypot(1,slope(x+dx)))/2;}
+ // Simpson composite for illustration ONLY, not a student proof.
+ const N=4096,step=w/N;let sum=Math.hypot(1,slope(-w/2))+Math.hypot(1,slope(w/2));
+ for(let i=1;i<N;i++)sum+=(i%2?4:2)*Math.hypot(1,slope(-w/2+i*step));
+ const approximation=sum*step/3,usable=sheet-allow;
+ const verdict=lower>usable+1e-10?'insufficient':upper<=usable+1e-10?'sufficient':'uncertain';
+ return {w,h,len,sheet,allow,n,dx,lower,upper,approximation,usable,verdict};
+}
+function renderRoof(m){
+ const s=$('roof'),W=m.w,H=m.h;
+ const PX=x=>43+(x/W+.5)*235, PY=y=>227-y/H*153;
+ const front=Array.from({length:61},(_,i)=>{const x=-W/2+W*i/60;return [PX(x),PY(H*(1-4*x*x/W/W))]});
+ const back=front.map(([x,y])=>[x+74,y-45]);
+ const line=arr=>arr.map((p,i)=>(i?'L':'M')+p.map(z=>z.toFixed(1)).join(' ')).join(' ');
+ const frontp=line(front),backp=line(back),lo=front[0],ro=front.at(-1),lb=back[0],rb=back.at(-1);
+ const mapped=Array.from({length:m.n+1},(_,i)=>{let x=-W/2+W*i/m.n;return [PX(x),PY(H*(1-4*x*x/W/W))]});
+ const shade='<path d="'+frontp+' L '+back.slice().reverse().map(p=>p.join(' ')).join(' L ')+' Z" fill="#a6cfdf" fill-opacity=".53" stroke="#3c8299" stroke-width="1.5"/>';
+ const face='<path d="'+frontp+'" fill="none" stroke="#0c6d89" stroke-width="3"/>';
+ const ribs=mapped.filter((_,i)=>i%Math.max(1,Math.round(m.n/10))===0).map(p=>'<path d="M'+p.join(' ')+' l74 -45" stroke="#5299ae" stroke-width="1" opacity=".65"/>').join('');
+ const L=m.approximation,rectW=220,rectH=83, rx=407,ry=100;
+ s.innerHTML='<text x="42" y="30" fill="#24485a" font-weight="700" font-size="16">Mái trụ parabol</text>'+shade+face+ribs+
+ '<line x1="'+lo[0]+'" y1="'+lo[1]+'" x2="'+ro[0]+'" y2="'+ro[1]+'" stroke="#688294" stroke-dasharray="4 4"/>'+
+ '<text x="140" y="245" font-size="13">Nhịp '+fmt(W,2)+' m</text><text x="310" y="157" font-size="13">Dài '+fmt(m.len,2)+' m</text>'+
+ '<path d="M330 145 H385" stroke="#087e83" stroke-width="2" marker-end="url(#arrow)"/>'+
+ '<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L7 3 L0 6" fill="none" stroke="#087e83"/></marker></defs>'+
+ '<rect x="'+rx+'" y="'+ry+'" width="'+rectW+'" height="'+rectH+'" fill="#c5e7e2" stroke="#0c6d89" stroke-width="2" rx="1"/>'+
+ '<text x="440" y="30" font-size="16" font-weight="700" fill="#24485a">Trải thành hình chữ nhật</text>'+
+ '<text x="'+(rx+rectW/2)+'" y="'+(ry-12)+'" font-size="14" text-anchor="middle">Bề rộng cung ≈ '+fmt(L,3)+' m</text>'+
+ '<text x="'+(rx+rectW/2)+'" y="'+(ry+rectH+26)+'" font-size="14" text-anchor="middle">Chiều dài '+fmt(m.len,2)+' m</text>'+
+ '<text x="438" y="240" font-size="13" fill="#667f8b">Không co giãn, không chồng mép</text>';
+}
+function render(){
+ try{
+ const m=model(); $('notice').textContent='';
+ const a=(4*m.h/(m.w*m.w));$('equation').textContent='y = '+fmt(m.h,2)+' − '+fmt(a,5)+'x², |x| ≤ '+fmt(m.w/2,2);
+ $('flat').textContent=fmt(m.len,2)+' m × L m';
+ $('usable').textContent=fmt(m.usable)+' m';
+ $('lower').textContent=fmt(m.lower)+' m (n = '+m.n+')';
+ $('upper').textContent=fmt(m.upper)+' m (n = '+m.n+')';
+ $('approx').textContent=fmt(m.approximation)+' m';
+ const z=$('status');z.className='status '+m.verdict;
+ z.textContent=m.verdict==='insufficient'?'KHÔNG ĐỦ TÔN — chứng minh được bằng chặn dưới.':m.verdict==='sufficient'?'ĐỦ TÔN — chứng minh được bằng chặn trên.':'CHƯA KẾT LUẬN — tăng số đoạn chia để làm chặt khoảng kẹp.';
+ const difference=m.lower-m.usable;
+ $('proof').textContent=
+ '1) Đặt mặt cắt y = h(1 − 4x²/w²), từ −w/2 đến w/2; các đường sinh song song tạo mặt trụ khả triển, có hình trải chữ nhật L × chiều dài mái.\n\n'+
+ '2) Chia đoạn [−w/2,w/2] thành n = '+m.n+' đoạn bằng nhau, Δx = '+fmt(m.dx)+' m. Với xᵢ = −w/2 + iΔx:\n'+
+ '   Dây thứ i: dᵢ = √[(Δx)² + (f(xᵢ₊₁) − f(xᵢ))²].\n'+
+ '   Tổng dây Pₙ = Σdᵢ = '+fmt(m.lower)+' m. Do dây ngắn hơn cung, Pₙ ≤ L.\n\n'+
+ '3) Tại mỗi cặp đầu mút, dùng hai tiếp tuyến làm đường gấp khúc bao cung. Với f\x27(x) = −8hx/w², tổng độ dài các cạnh tiếp tuyến là\n'+
+ '   Tₙ = (Δx/2)[√(1+m₀²)+2Σ√(1+mᵢ²)+√(1+mₙ²)]\n'+
+ '   trong đó mᵢ = f\x27(xᵢ). Khi đó L ≤ Tₙ = '+fmt(m.upper)+' m.\n\n'+
+ '4) Chiều rộng khả dụng = '+fmt(m.sheet,2)+' − '+fmt(m.allow,2)+' = '+fmt(m.usable)+' m.\n'+
+ (m.verdict==='insufficient'?'   Pₙ = '+fmt(m.lower)+' > '+fmt(m.usable)+' ⇒ L > chiều rộng khả dụng. Kết luận: KHÔNG ĐỦ, thiếu ít nhất '+fmt(difference*1000,2)+' mm so với chặn dưới.':
+ m.verdict==='sufficient'?'   Tₙ = '+fmt(m.upper)+' ≤ '+fmt(m.usable)+' ⇒ L ≤ chiều rộng khả dụng. Kết luận: ĐỦ.':
+ '   Pₙ ≤ chiều rộng khả dụng < Tₙ nên chưa đủ chứng cứ để kết luận bằng n đoạn. Hãy tăng n hoặc đổi phương án tôn.');
+ $('task').textContent='Yêu cầu học sinh:\n(a) Chọn hệ trục và lập phương trình parabol.\n(b) Giải thích vì sao mặt trụ parabol trải thành hình chữ nhật.\n(c) Không dùng tích phân độ dài cung: chọn phương pháp kẹp độ dài bằng dây cung và tiếp tuyến để quyết định tôn đủ hay không.\n(d) Nêu giả thiết mô hình, độ tin cậy và ý nghĩa kỹ thuật.\n\nTiêu chí: lời giải hình học đúng; điều kiện mô hình rõ; kết luận có bất đẳng thức bảo đảm; không tuyên bố VDC khi chưa được phản biện.';
+ renderRoof(m);
+ }catch(e){$('notice').textContent=String(e.message);}
+}
+$('calc').addEventListener('click',render);
+$('reset').addEventListener('click',()=>{for(const [id,value] of Object.entries({span:6,rise:2,length:12,sheet:7.5,allow:.05,pieces:8}))$(id).value=value;render();});
+$('print').addEventListener('click',()=>window.print());
+$('copy').addEventListener('click',async()=>{const m=model();const text='Bài toán MATHORA: Mái trụ parabol dài '+m.len+' m, nhịp '+m.w+' m, cao '+m.h+' m. Tôn phẳng rộng '+m.sheet+' m; tổng mép giữ '+m.allow+' m. (a) Lập phương trình parabol. (b) Giải thích hình trải. (c) Không dùng tích phân độ dài cung, dùng chặn dây cung/tiếp tuyến để chứng minh đủ hay không. (d) Nêu giả thiết mô hình.';try{await navigator.clipboard.writeText(text);$('notice').textContent='Đã sao chép đề bài.';}catch(e){$('notice').textContent='Trình duyệt không cho sao chép tự động; hãy chọn và chép từ phần đề bài.';}});
+render();
+</script></body></html>
