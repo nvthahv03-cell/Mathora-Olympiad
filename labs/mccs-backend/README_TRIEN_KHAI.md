@@ -3,7 +3,7 @@
 Cập nhật 17/11/2026. **Mã nguồn đã đưa lên MATHORA, nhưng dịch vụ Gemini CHƯA được triển khai / chưa được nghiệm thu.**
 
 ## 1. Các tệp
-- `labs/mccs-backend/MCCS_LAB.gs`: Apps Script **độc lập**; kiểm Google ID token và email whitelist trước khi gọi Gemini; hai chế độ `propose` và `review`.
+- `labs/mccs-backend/MCCS_LAB.gs`: Apps Script **độc lập**; kiểm Google ID token và email whitelist trước khi gọi Gemini; hai chế độ `propose` và `review3` (ba cuộc gọi Gemini riêng trong lượt phản biện).
 - `labs/mccs-runtime-config.js`: cấu hình công khai của LAB, mặc định `enabled:false`.
 - `labs/creative-command-console.html`: trang 18 lệnh, 10 tình huống, phiếu đánh giá và khu vực chạy Gemini (chỉ hoạt động khi đã xác thực).
 - Không đổi `mathora-backend-config.js`, không thay cơ chế AI đang khóa của ứng dụng V2.6.
@@ -21,7 +21,7 @@ Cập nhật 17/11/2026. **Mã nguồn đã đưa lên MATHORA, nhưng dịch v�
 6. Kiểm tra `GET /exec`: có `service=MCCS_LAB`, `version=mccs-lab-1.0`. GET health không xác minh quyền gọi AI.
 7. Trước khi mở `enabled:true`, **kiểm thử POST từ đúng domain GitHub Pages**. Apps Script có thể trả HTTP redirect hoặc bị trình duyệt chặn CORS; nếu thất bại phải đặt một gateway an toàn phía máy chủ. Không dùng `mode:no-cors`, không nhúng API key hay khóa giáo viên trong JS.
 8. Khi POST có thể đọc phản hồi JSON và đã kiểm tra các ca bảo mật, điền **chỉ thông tin công khai** vào `labs/mccs-runtime-config.js`: `endpoint`, `googleClientId`, rồi mới chuyển `enabled:true`.
-9. Trong bảng MCCS, giáo viên đăng nhập Google, nhập nhiệm vụ, chạy tạo nháp, sau đó chạy phản biện độc lập. Kết quả luôn `teacher_approved:false`. Có thể xuất log JSON **không chứa ID token**.
+9. Trong bảng MCCS, giáo viên đăng nhập Google, nhập nhiệm vụ, chạy tạo nháp, sau đó chạy `review3`: ba cuộc gọi Gemini lần lượt đánh giá toán học, CT2018–khảo thí, tính mới–Casio với chỉ dẫn hệ thống riêng; không lấy kết luận vòng trước làm giả thiết vòng sau. Kết quả luôn `teacher_approved:false`. Có thể xuất log JSON **không chứa ID token**.
 
 ## 3. Bảo mật / không được bỏ qua
 - Token đầu vào là ID token ngắn hạn, được gửi trong thân POST; backend phải xác thực token qua Google tokeninfo, kiểm `aud`, `email_verified`, whitelist email.
@@ -29,10 +29,10 @@ Cập nhật 17/11/2026. **Mã nguồn đã đưa lên MATHORA, nhưng dịch v�
 - Mọi câu hỏi gửi Gemini **vẫn phải được kiểm duyệt nội dung**. Không dùng đề chưa công bố hoặc thông tin cá nhân HS.
 - Có giới hạn tần suất sơ bộ bằng CacheService 15 giây; đây không phải bộ hạn mức đầy đủ. Trước khi mở rộng cần quotas, audit, chống lạm dụng, quản lý đồng thời và chính sách lưu dữ liệu.
 - Ngay cả khi model nói "PASS", cổng máy chủ **không cấp APPROVED**.
-- Mode `review` là một **cuộc gọi Gemini mới** với system instruction người phản biện, không phải hệ thống 2 mô hình độc lập hoặc biên bản đánh giá của chuyên gia. Giáo viên vẫn phải nghiệm thu.
+- Mode `review3` gồm **ba cuộc gọi Gemini mới**, lần lượt với ba system instruction khác nhau. Đây vẫn có thể là cùng một mô hình Gemini, nên không tương đương ba người phản biện độc lập về nhân sự; cần giáo viên nghiệm thu. Giáo viên vẫn phải nghiệm thu.
 
 ## 4. Những gì đã kiểm thử và chưa kiểm thử
-**Đã kiểm chứng bằng đọc lại file từ GitHub:** tính hợp lệ JavaScript của ứng dụng, mô-đun Apps Script và bảng MCCS; `MCCS_selfTest()` chạy logic cục bộ; cấu hình mặc định khóa; mã có cơ chế kiểm whitelist và audience.
+**Đã kiểm chứng:** cú pháp JavaScript của ứng dụng, Apps Script và bảng MCCS; `MCCS_selfTest()` chạy cục bộ; cấu hình mặc định khóa; 15/15 phép kiểm thử mock backend đã qua bao gồm audience, whitelist, trạng thái không tự phê duyệt, 3 lần gọi reviewer có chỉ dẫn khác nhau. Tất cả là giả lập, không dùng khóa Gemini thật.
 
 **Chưa kiểm chứng:** cấp quyền OAuth thực tế, URL Web App hoạt động, CORS khi POST, kết nối Gemini trả JSON, chi phí và quota, kết quả 10 bài test AI, chất lượng lời giải. Vì vậy trạng thái **CHƯA PASS LIVE**.
 
