@@ -111,3 +111,22 @@ footer{font-size:11px;color:#7a909c}
  #ecosystemMccs .btn,#mccsInlineRuntime .btn{display:none!important}
  pre{max-height:none!important;white-space:pre-wrap!important;overflow:visible!important}
 }
+
+/* MCCS: concise reading surface, advanced data only on demand */
+.mccs-readable{display:grid;gap:12px;margin-top:12px}
+.mccs-result-card{background:#fff;border:1px solid #e0e9ed;border-radius:12px;padding:17px 18px}
+.mccs-result-card h4{margin:0 0 12px;color:#123b4d;font-size:15px;font-weight:750;padding-bottom:10px;border-bottom:1px solid #e6eef1}
+.mccs-result-row{margin:0 0 12px}
+.mccs-result-row:last-child{margin-bottom:0}
+.mccs-result-row strong{display:block;color:#486879;font-size:12px;margin:0 0 3px}
+.mccs-result-row p{white-space:pre-wrap;overflow-wrap:anywhere;margin:0;font-size:14px;line-height:1.72;color:#223946}
+.mccs-result-warning{background:#fff8eb;border-left:3px solid #d8a04b;border-radius:8px;padding:10px 13px;margin-top:12px}
+.mccs-result-warning strong{font-size:13px}
+.mccs-result-warning ul{padding-left:19px;margin:6px 0}
+.mccs-result-warning li{margin:6px 0;font-size:13px;line-height:1.6}
+.mccs-technical{margin-top:12px;background:#f8fafb;border:1px solid #e0e8ed;border-radius:12px;padding:12px 14px}
+.mccs-technical summary{cursor:pointer;font-weight:650;font-size:13px;color:#476a7d}
+.mccs-technical summary:hover{color:#087b80}
+.mccs-technical pre{margin:12px 0 0}
+#mccsCopyFeedback:empty{display:none}
+@media(max-width:730px){.mccs-result-card{padding:14px}.mccs-result-row p{font-size:13px}}
