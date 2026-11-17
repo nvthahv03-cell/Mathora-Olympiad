@@ -28,8 +28,10 @@ const html=`<section class="panel" id="mccsInlineRuntime" style="margin-top:16px
 <button type="button" class="btn secondary small" data-mccs-review="review_curriculum" disabled>2. CT2018 – Ma trận</button>
 <button type="button" class="btn secondary small" data-mccs-review="review_novelty" disabled>3. Tính mới – Casio</button>
 </div>
-<h3 style="margin-top:16px">Kết quả thực thi</h3>
-<pre id="mccsAiResult" style="white-space:pre-wrap;overflow-wrap:anywhere;max-height:480px;overflow:auto;background:#f5f8fa;border:1px solid #dbe7eb;border-radius:10px;padding:13px">Chưa có phản hồi Gemini để đánh giá.</pre>
+<div class="row between" style="margin-top:18px"><h3 style="margin:0">Kết quả AI</h3><div class="row"><button type="button" class="btn secondary small" id="mccsCopyText" disabled>Sao chép nội dung</button><button type="button" class="btn ghost small" id="mccsCopyJson" disabled>Sao chép JSON</button></div></div>
+<p id="mccsCopyFeedback" class="tiny muted" role="status" aria-live="polite" style="margin:7px 0"></p>
+<div id="mccsReadable" class="mccs-readable">Chưa có kết quả. Thầy chọn lệnh và bấm “Thực hiện lệnh AI”.</div>
+<details class="mccs-technical"><summary>Xem dữ liệu kỹ thuật (JSON)</summary><pre id="mccsAiResult">Chưa có phản hồi Gemini để đánh giá.</pre></details>
 <div class="notice" style="margin-top:12px">Không tự phê duyệt sản phẩm. Trạng thái luôn RESEARCH_ONLY cho tới khi giáo viên thẩm định theo quy trình MATHORA.</div>
 </section>`;
 function write(s){const e=byId('mccsMessage');if(e)e.textContent=s;}
@@ -38,13 +40,96 @@ function controls(){
  if(byId('mccsGenerate'))byId('mccsGenerate').disabled=state.busy||!state.ready;
  document.querySelectorAll('[data-mccs-review]').forEach(btn=>btn.disabled=state.busy||!state.ready||!state.draft);
 }
-function renderResult(){
- const host=byId('mccsAiResult');if(!host)return;
- host.textContent=JSON.stringify({
-  status:'RESEARCH_ONLY',teacherApproved:false,stored:false,
+function resultObject(){
+ return {status:'RESEARCH_ONLY',teacherApproved:false,stored:false,
   draft:state.draft?.payload||null,reviews:state.reviews,
-  completed_review_rounds:phases.filter(([id])=>!!state.reviews[id]).length
- },null,2);
+  completed_review_rounds:phases.filter(([id])=>!!state.reviews[id]).length};
+}
+function resultText(){
+ const lines=['MATHORA OLYMPIAD · HỒ SƠ PHẢN BIỆN','Trạng thái: NGHIÊN CỨU – CHƯA ĐƯỢC GIÁO VIÊN DUYỆT',''];
+ const sections=[['BẢN NHÁP',state.draft?.payload],...phases.map(([id,title])=>[title,state.reviews[id]])];
+ for(const [name,payload] of sections){
+  if(!payload)continue;
+  lines.push('── '+name+' ──');
+  const r=payload.result||{};
+  const q=r.cau_hoi||r.question||r.problem||'';
+  if(q)lines.push('Đề bài: '+String(q));
+  const p=r.phan_bien||r.phan_bien_noi_dung||r;
+  for(const [label,keys] of [
+   ['Kết luận',['ket_luan','conclusion']],
+   ['Lập luận / lời giải',['chung_minh','chung_minh_ngan_nhat','solution']],
+   ['Điều kiện / giới hạn',['dieu_kien_bien','conditions']],
+   ['Tính mới',['phan_tich_tinh_moi','diem_moi']],
+   ['Độ khó',['phan_tich_do_kho']],
+   ['Casio',['phan_tich_casio']],
+   ['Đối chiếu cấu trúc',['nhan_dien_trung_cau_truc']]
+  ]){
+   const val=keys.map(k=>p?.[k]??r?.[k]).find(v=>typeof v==='string'&&v.trim());
+   if(val)lines.push(label+': '+val);
+  }
+  if(Array.isArray(payload.blockers)&&payload.blockers.length){
+   lines.push('Điểm cần sửa:');payload.blockers.forEach((b,i)=>lines.push('  '+(i+1)+'. '+b));
+  }
+  lines.push('');
+ }
+ return lines.join('\n').trim();
+}
+function renderResult(){
+ const host=byId('mccsAiResult'),readable=byId('mccsReadable');
+ if(!host||!readable)return;
+ host.textContent=JSON.stringify(resultObject(),null,2);
+ readable.replaceChildren();
+ const sections=[['Bản nháp AI',state.draft?.payload],...phases.map(([id,title])=>[title,state.reviews[id]])];
+ for(const [label,payload] of sections){
+  if(!payload)continue;
+  const card=document.createElement('section');card.className='mccs-result-card';
+  const h=document.createElement('h4');h.textContent=label;card.appendChild(h);
+  const r=payload.result||{};
+  const p=r.phan_bien||r.phan_bien_noi_dung||r;
+  const rows=[
+   ['Đề bài',r.cau_hoi||r.question||r.problem],
+   ['Kết luận',p?.ket_luan||p?.conclusion],
+   ['Lời giải / lập luận',p?.chung_minh||p?.chung_minh_ngan_nhat||p?.solution],
+   ['Điều kiện',p?.dieu_kien_bien],
+   ['Tính mới',r.phan_tich_tinh_moi||p?.diem_moi],
+   ['Độ khó',r.phan_tich_do_kho],
+   ['Casio',r.phan_tich_casio]
+  ];
+  let any=false;
+  rows.forEach(([name,value])=>{
+   if(typeof value!=='string'||!value.trim())return;
+   any=true;const d=document.createElement('div');d.className='mccs-result-row';
+   const strong=document.createElement('strong');strong.textContent=name;
+   const valueNode=document.createElement('p');valueNode.textContent=value;
+   d.append(strong,valueNode);card.appendChild(d);
+  });
+  if(Array.isArray(payload.blockers)&&payload.blockers.length){
+   any=true;const warning=document.createElement('div');warning.className='mccs-result-warning';
+   const title=document.createElement('strong');title.textContent='Cần chỉnh sửa';
+   const list=document.createElement('ul');
+   payload.blockers.forEach(msg=>{const li=document.createElement('li');li.textContent=String(msg);list.appendChild(li);});
+   warning.append(title,list);card.appendChild(warning);
+  }
+  if(!any){const d=document.createElement('p');d.className='muted tiny';d.textContent='Chi tiết nằm trong dữ liệu JSON.';card.appendChild(d);}
+  readable.appendChild(card);
+ }
+ const hasData=!!state.draft||Object.keys(state.reviews).length>0;
+ if(!hasData)readable.textContent='Chưa có kết quả AI.';
+ ['mccsCopyText','mccsCopyJson'].forEach(id=>{const btn=byId(id);if(btn)btn.disabled=!hasData;});
+}
+async function copyToClipboard(text){
+ if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(text);return;}
+ const el=document.createElement('textarea');el.value=text;el.setAttribute('readonly','');el.style.position='fixed';el.style.opacity='0';
+ document.body.appendChild(el);el.select();
+ const ok=document.execCommand('copy');el.remove();if(!ok)throw Error('Trình duyệt từ chối sao chép.');
+}
+async function copyResult(type){
+ const target=byId('mccsCopyFeedback');
+ if(!state.draft){if(target)target.textContent='Chưa có kết quả để sao chép.';return;}
+ try{
+  await copyToClipboard(type==='json'?JSON.stringify(resultObject(),null,2):resultText());
+  if(target)target.textContent=type==='json'?'Đã sao chép JSON.':'Đã sao chép nội dung dễ đọc.';
+ }catch(err){if(target)target.textContent='Chưa sao chép được: '+String(err.message||err);}
 }
 async function request(action,payload){
  const bridge=window.MathoraBridge;
@@ -129,6 +214,8 @@ function mount(){
  byId('mccsCheck').addEventListener('click',check);
  byId('mccsGenerate').addEventListener('click',()=>execute('propose'));
  byId('mccsExport').addEventListener('click',exportLog);
+ byId('mccsCopyText').addEventListener('click',()=>copyResult('text'));
+ byId('mccsCopyJson').addEventListener('click',()=>copyResult('json'));
  document.querySelectorAll('[data-mccs-review]').forEach(btn=>
    btn.addEventListener('click',()=>execute(btn.dataset.mccsReview)));
  controls();
