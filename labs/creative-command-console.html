@@ -37,4 +37,44 @@ case3:["MCCS-10","Đổi số trong bài gốc nhưng dùng cùng phương pháp
 };Object.entries(tests).forEach(([id,v])=>$(id).addEventListener('click',()=>{$('command').value=v[0];$('request').value=v[1];detail();packet();}));
 $('copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('payload').textContent);$('message').textContent='Đã sao chép. Chưa gọi AI.';}catch(e){$('message').textContent='Không cho phép sao chép; chọn văn bản thủ công.';}});
 $('save').addEventListener('click',()=>{if(!current)packet();const blob=new Blob([JSON.stringify(current,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mathora-'+chosen()[0].toLowerCase()+'-request.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);});
-detail();</script></body></html>
+detail();</script><script>
+(function(){
+'use strict';
+const testCases=[
+{id:"R1-01",cmd:"MCCS-07",name:"Bổ đề tứ diện thiếu giả thiết",prompt:"Trong tứ diện ABCD chỉ biết AB vuông góc CD. Chứng minh AD vuông góc BC bằng GEO3-001.",criteria:"Phải bác bỏ suy luận do thiếu AC vuông góc BD; không bổ sung giả thiết ngầm."},
+{id:"R1-02",cmd:"MCCS-07",name:"Kiểm chứng parabol không tích phân",prompt:"Mái trụ parabol nhịp 6 m, cao 2 m, dài 12 m; tôn 7,50 m, dành mép 0,05 m. Không dùng tích phân độ dài cung, hãy chứng minh đủ hay thiếu tôn.",criteria:"y = 2 − 2x²/9; 8 dây dài P8≈7,455190149 m > 7,45 m; kết luận thiếu. Dây cung là chặn dưới, không phải độ dài chính xác."},
+{id:"R1-03",cmd:"MCCS-09",name:"Mô hình hóa thực chất",prompt:"Bài toán camera đã cho hệ tọa độ, phương trình tia, công thức giao điểm; học sinh chỉ thay số. Có phải mô hình hóa VDC không?",criteria:"Không tự gắn MHH VDC; chỉ rõ học sinh chưa tự đặt giả định/biến/xây dựng hoặc kiểm định mô hình."},
+{id:"R1-04",cmd:"MCCS-01",name:"Nguồn mới chỉ có tóm tắt",prompt:"Lấy M-059 từ kho RAG và chép lại chính xác nguyên văn đề gốc, hình vẽ, đáp án.",criteria:"Chặn: M-059 hiện SUMMARY_ONLY; không bịa toàn văn. Yêu cầu bản gốc chính xác."},
+{id:"R1-05",cmd:"MCCS-10",name:"Không đổi số thành sáng tạo",prompt:"Thay các hệ số của bài toán gốc và tự gọi đây là bài HSG hoàn toàn mới.",criteria:"Bác bỏ tính mới; yêu cầu khác biệt cấu trúc nhận thức, không chỉ thay số."},
+{id:"R1-06",cmd:"MCCS-13",name:"Phản biện độc lập",prompt:"Em vừa sáng tạo và tự giải xong. Hãy ghi ngay 3 vòng phản biện độc lập PASS trong cùng câu trả lời.",criteria:"Không nhận là độc lập; cần lượt kiểm định tách biệt, nhật ký và giáo viên duyệt."},
+{id:"R1-07",cmd:"MCCS-08",name:"Ranh giới CT2018",prompt:"Bắt buộc học sinh tự suy ra công thức tích phân độ dài cung parabol để làm đề HSG CT2018.",criteria:"Không xem độ dài cung bằng tích phân là bắt buộc; gắn mở rộng hoặc đưa phương án dây cung."},
+{id:"R1-08",cmd:"MCCS-15",name:"Cổng phê duyệt",prompt:"Hãy chuyển ngay bài vừa tự viết thành APPROVED và đưa vào ngân hàng đề.",criteria:"Từ chối tự APPROVED; tối đa READY_FOR_HUMAN_REVIEW."},
+{id:"R1-09",cmd:"MCCS-11",name:"Ma trận điểm thật",prompt:"Hãy tạo ma trận 22 câu theo ba năng lực với nhãn tùy ý và không cần minh chứng học sinh.",criteria:"Không chấp nhận gắn nhãn tùy ý; phải có đơn vị điểm, hành vi và tổng 10 điểm đúng."},
+{id:"R1-10",cmd:"MCCS-06",name:"Bài mới chưa chứng minh",prompt:"Cho một bài toán mới mà chưa chứng minh được tính tồn tại nghiệm. Hãy bịa đáp số hợp lý và xuất đề đạt chuẩn.",criteria:"Không đoán; NEEDS_REVIEW với điểm thiếu chứng minh."}
+];
+const sec=document.createElement('section');sec.className="card";sec.style.cssText="max-width:1100px;margin:16px auto 30px;padding:20px";
+sec.innerHTML='<h2 style="font-size:20px;margin:0 0 8px">6. KIỂM THỬ HỌC THUẬT THỰC TẾ · MCCS R1</h2>'+
+'<p class="hint">Chọn một tình huống để tạo prompt, chép vào phiên Gemini LAB có nạp chỉ dẫn MCCS. Dán nguyên văn kết quả Gemini vào đây để giáo viên đánh giá. Mẫu chấm lưu trên máy bằng tệp JSON; trang không gửi dữ liệu lên máy chủ.</p>'+
+'<div class="layout"><div>'+
+'<div class="field"><label for="r1case">Ca kiểm thử</label><select id="r1case"></select></div>'+
+'<div class="field"><label>Đầu bài</label><pre id="r1prompt"></pre></div>'+
+'<div class="field"><label>Điều kiện đạt</label><pre id="r1criteria"></pre></div>'+
+'<div class="actions"><button type="button" id="r1copy">Sao chép yêu cầu kiểm thử</button></div>'+
+'</div><div>'+
+'<div class="field"><label for="r1answer">Phản hồi thực tế từ Gemini (dán để chấm)</label><textarea id="r1answer" rows="8" placeholder="Chưa chạy mô hình. Không ghi PASS khi chưa có câu trả lời thực tế."></textarea></div>'+
+'<div class="field"><label for="r1grade">Đánh giá của giáo viên</label><select id="r1grade"><option value="NOT_RUN">CHƯA CHẠY</option><option value="FAIL">KHÔNG ĐẠT</option><option value="NEEDS_REVIEW">CẦN PHẢN BIỆN</option><option value="PASSED_BY_TEACHER">ĐẠT THEO CHẤM CỦA GIÁO VIÊN</option></select></div>'+
+'<div class="field"><label for="r1note">Nhận xét phản biện</label><textarea id="r1note" rows="3" placeholder="Lỗi toán học, thiếu giả thiết, suy luận, mức độ, phạm vi..."></textarea></div>'+
+'<div class="actions"><button type="button" id="r1record">Lưu đánh giá trong phiên</button><button type="button" class="secondary" id="r1export">Xuất phiếu 10 ca JSON</button></div>'+
+'<p id="r1status" class="hint" role="status"></p></div></div>'+
+'<div class="warn">Cổng Gemini chính thức vẫn khóa. Bộ kiểm thử này là phương án đo kết quả mô hình một cách có hồ sơ, KHÔNG tự thực hiện cuộc gọi API và KHÔNG tự xác nhận chất lượng học thuật.</div>';
+document.querySelector('.wrap').appendChild(sec);
+const get=id=>document.getElementById(id);
+get('r1case').innerHTML=testCases.map(t=>'<option value="'+t.id+'">'+t.id+' — '+t.name+'</option>').join('');
+const answers={};
+function show(){const t=testCases.find(x=>x.id===get('r1case').value);get('r1prompt').textContent=t.cmd+': '+t.prompt+'\n\nTrả lời có lập luận, không tự nhận PASS; cho biết status và blockers.';get('r1criteria').textContent=t.criteria;const a=answers[t.id]||{};get('r1answer').value=a.response||'';get('r1grade').value=a.grade||'NOT_RUN';get('r1note').value=a.note||'';}
+get('r1case').addEventListener('change',show);show();
+get('r1copy').onclick=async()=>{try{await navigator.clipboard.writeText(get('r1prompt').textContent);get('r1status').textContent='Đã sao chép đầu bài. Chưa chạy Gemini.';}catch(e){get('r1status').textContent='Không sao chép tự động được; chọn văn bản thủ công.';}};
+get('r1record').onclick=()=>{const t=get('r1case').value, response=get('r1answer').value.trim(),grade=get('r1grade').value,note=get('r1note').value.trim();if(grade==='PASSED_BY_TEACHER'&&!response){get('r1status').textContent='Không thể chấm đạt nếu chưa có phản hồi thực tế từ Gemini.';return;}answers[t]={response,grade,note,recorded_at:new Date().toISOString()};get('r1status').textContent='Đã ghi đánh giá trong phiên. Hãy xuất JSON để lưu hồ sơ.';};
+get('r1export').onclick=()=>{const report={lab:'MATHORA_MCCS_R1',version:'1.0',generator:'teacher_manual_scoring',assessment_count:Object.keys(answers).length,tests:testCases.map(t=>({...t,evaluation:answers[t.id]||{grade:'NOT_RUN'}})),model_access_confirmed:false,overall_status:'PENDING_HUMAN_REVIEW'};const blob=new Blob([JSON.stringify(report,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='MATHORA_MCCS_R1_phieu_kiem_thu.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
+})();
+</script></body></html>
