@@ -77,4 +77,82 @@ get('r1copy').onclick=async()=>{try{await navigator.clipboard.writeText(get('r1p
 get('r1record').onclick=()=>{const t=get('r1case').value, response=get('r1answer').value.trim(),grade=get('r1grade').value,note=get('r1note').value.trim();if(grade==='PASSED_BY_TEACHER'&&!response){get('r1status').textContent='Không thể chấm đạt nếu chưa có phản hồi thực tế từ Gemini.';return;}answers[t]={response,grade,note,recorded_at:new Date().toISOString()};get('r1status').textContent='Đã ghi đánh giá trong phiên. Hãy xuất JSON để lưu hồ sơ.';};
 get('r1export').onclick=()=>{const report={lab:'MATHORA_MCCS_R1',version:'1.0',generator:'teacher_manual_scoring',assessment_count:Object.keys(answers).length,tests:testCases.map(t=>({...t,evaluation:answers[t.id]||{grade:'NOT_RUN'}})),model_access_confirmed:false,overall_status:'PENDING_HUMAN_REVIEW'};const blob=new Blob([JSON.stringify(report,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='MATHORA_MCCS_R1_phieu_kiem_thu.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
 })();
+</script><script src="./mccs-runtime-config.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+(function(){
+'use strict';
+const cfg=window.MCCS_LAB_CONFIG||{};
+const section=document.createElement('section');
+section.className='card';section.style.cssText='max-width:1100px;margin:16px auto;padding:20px';
+section.innerHTML='<h2 style="font-size:20px;margin:0 0 8px">7. THỰC THI GEMINI LAB CÓ XÁC THỰC</h2>'+
+'<p class="hint">Dùng hai cuộc gọi model tách biệt: tạo bản nháp và phản biện từ ngữ cảnh mới. Chỉ bật khi quản trị viên đã cấu hình backend LAB, Google OAuth và thử nghiệm CORS. Không dán khóa Gemini vào đây.</p>'+
+'<div id="mccsConnection" class="warn" role="status"></div>'+
+'<div id="mccsAuth" style="margin:12px 0"></div>'+
+'<div class="actions"><button id="mccsPropose" disabled type="button">1. Chạy lệnh sáng tạo</button><button id="mccsReview" disabled type="button" class="secondary">2. Phản biện từ ngữ cảnh mới</button><button id="mccsExport" type="button" class="secondary">Xuất hồ sơ chạy AI</button></div>'+
+'<p class="hint">Phản hồi thô, không qua phê duyệt của giáo viên:</p><pre id="mccsOutput">Chưa có phiên thực thi.</pre>'+
+'<p class="hint" id="mccsAudit"></p>';
+document.querySelector('.wrap').appendChild(section);
+const $=id=>document.getElementById(id);
+const enabled=cfg.enabled===true&&typeof cfg.endpoint==='string'&&/^https:\/\//.test(cfg.endpoint)&&
+  typeof cfg.googleClientId==='string'&&cfg.googleClientId.length>20;
+let idToken=null,creating=false,draft=null,review=null;const history=[];
+const note=(v)=>{$('mccsConnection').textContent=v;};
+function authInit(){
+ if(!enabled){note('CHƯA KẾT NỐI: Chưa triển khai hoặc chưa cấp cấu hình Google OAuth/endpoint của MCCS LAB. Các nút gọi Gemini được khóa để bảo vệ hệ thống.');return;}
+ if(!window.google||!window.google.accounts||!window.google.accounts.id){note('Không tải được Google Identity Services. Vui lòng kiểm tra mạng hoặc chặn trình duyệt.');return;}
+ try{
+ google.accounts.id.initialize({client_id:cfg.googleClientId,callback:function(resp){
+   if(!resp||!resp.credential){note('Google không trả ID token.');return;}
+   idToken=String(resp.credential);$('mccsPropose').disabled=false;note('Đã nhận Google ID token trong bộ nhớ phiên. Khi gọi máy chủ, quyền sẽ được kiểm tra lại tại backend.');
+ }});
+ google.accounts.id.renderButton($('mccsAuth'),{theme:'outline',size:'large',text:'signin_with'});
+ note('Chưa xác thực. Chỉ dùng tài khoản giáo viên đã được cho phép trên backend MCCS LAB.');
+ }catch(e){note('Không khởi tạo được Google Sign-In: '+String(e.message||e));}
+}
+function packet(){
+ const request=$('request').value.trim();
+ if(!request||request.length>6000)throw Error('Yêu cầu phải có nội dung và không quá 6000 ký tự.');
+ const command_id=$('command').value;
+ if(!/^MCCS-(0[0-9]|1[0-7])$/.test(command_id))throw Error('Mã lệnh không hợp lệ.');
+ return {command_id,topic:$('topic').value.trim(),source_id:$('source').value.trim(),request};
+}
+async function invoke(mode){
+ if(creating||!enabled||!idToken)return;
+ let p;try{p=packet();}catch(e){note(String(e.message||e));return;}
+ if(mode==='review'&&!draft){note('Phải tạo bản nháp trước khi phản biện riêng.');return;}
+ creating=true;$('mccsPropose').disabled=true;$('mccsReview').disabled=true;
+ note('Đang gửi yêu cầu tới MCCS LAB; chưa có kết quả.');
+ try{
+  const payload={...p,mode,id_token:idToken};
+  if(mode==='review')payload.draft_json=JSON.stringify(draft.result||draft);
+  const response=await fetch(cfg.endpoint,{method:'POST',mode:'cors',credentials:'omit',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify(payload)});
+  if(!response.ok)throw Error('HTTP '+response.status);
+  const result=await response.json();
+  if(result.service && result.service!==cfg.service)throw Error('Backend không đúng dịch vụ MCCS');
+  if(result.version!==cfg.expectedVersion)throw Error('Backend phiên bản khác cấu hình');
+  if(!result.ok){note('Backend từ chối: '+String(result.code||'ERROR'));return;}
+  if(mode==='propose'){draft=result;review=null;}else review=result;
+  history.push({mode,command_id:p.command_id,request:p.request,returned:result,recorded_at:new Date().toISOString()});
+  $('mccsOutput').textContent=JSON.stringify({draft:draft&&draft.result,review:review&&review.result},null,2);
+  $('mccsAudit').textContent='Bản nháp: '+(draft?'đã sinh':'chưa sinh')+' · Phản biện: '+(review?'đã gọi lượt riêng':'chưa có')+' · Phê duyệt: CHƯA CÓ';
+  note(mode==='propose'?'Đã nhận bản nháp — chưa phản biện.':'Đã nhận phản biện từ cuộc gọi model riêng — cần GV kiểm chứng.');
+ }catch(err){
+  note('CHƯA THỰC THI THÀNH CÔNG: '+String(err.message||err)+'. Nếu bị CORS/redirect Apps Script, phải dùng gateway máy chủ phù hợp; không được tắt cơ chế xác thực.');
+ }finally{
+   creating=false;$('mccsPropose').disabled=!idToken;$('mccsReview').disabled=!idToken||!draft;
+ }
+}
+$('mccsPropose').onclick=()=>invoke('propose');$('mccsReview').onclick=()=>invoke('review');
+$('mccsExport').onclick=()=>{
+ const obj={lab:'MCCS_GEMINI_LAB',version:'1.0',exported_at:new Date().toISOString(),
+   model_run_count:history.length,teacher_approved:false,history,
+   note:'No Google identity token or server secret is exported.'};
+ const a=document.createElement('a'),blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});
+ a.href=URL.createObjectURL(blob);a.download='MCCS_GEMINI_LAB_runlog.json';a.click();
+ setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+if(!enabled)authInit();else if(window.google?.accounts?.id)authInit();
+else window.addEventListener('load',authInit,{once:true});
+})();
 </script></body></html>
