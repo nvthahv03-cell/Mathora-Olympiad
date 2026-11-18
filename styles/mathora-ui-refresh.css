@@ -147,3 +147,9 @@ footer{font-size:11px;color:#7a909c}
 #maProResult>.row{display:flex;flex-wrap:wrap;gap:8px}
 #maProResult>p{font-size:13px;color:#607782;margin:0}
 @media(max-width:730px){#maProResult>.row .btn{flex:1 1 150px}.ma-pro-field{padding:11px}}
+
+.ma-pro-reviews{padding:15px 0;border-top:1px solid #dbe8ed}
+.ma-pro-reviews h3{font-size:15px;margin-bottom:9px}
+.ma-pro-review-card{margin-top:10px;border:1px solid #dfe8ed;border-radius:10px;padding:12px;background:#f8fbfc}
+.ma-pro-review-card summary{font-size:13px;font-weight:700;color:#264f60;cursor:pointer}
+.ma-pro-review-card pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:390px;overflow:auto;font-size:12px;margin:10px 0 0}
