@@ -1,0 +1,124 @@
+/* MATHORA · Premium Academic Interface 2026-11-18
+ * Visual layer only; preserves routing, auth, AI, forms and export workflows.
+ * Design goals: quiet elegance, sharp hierarchy, legibility, reduced clutter.
+ */
+:root{
+  --ma-ink:#173447;
+  --ma-sub:#506a7a;
+  --ma-teal:#087b81;
+  --ma-teal-deep:#086c74;
+  --ma-canvas:#f4f7f9;
+  --ma-edge:#dbe6eb;
+  --ma-gold:#d8af64;
+  --ma-shadow-soft:0 8px 28px rgba(19,50,71,.045);
+}
+body{background:var(--ma-canvas);color:var(--ma-ink);-webkit-font-smoothing:antialiased}
+.app{grid-template-columns:246px minmax(0,1fr)}
+aside{
+ background:linear-gradient(172deg,#0d2b3d 0%,#11374a 54%,#102e40 100%);
+ border-right:1px solid #ffffff0b;padding:25px 13px 19px;
+ scrollbar-width:thin;
+}
+.mark{padding:6px 10px 23px;border-bottom:1px solid #ffffff24}
+.symbol{width:43px;height:43px;border-radius:13px;background:linear-gradient(140deg,#10a4a4,#0a7179);border:1px solid #ffffff2a}
+.mark strong{font-size:18px;letter-spacing:.035em!important}
+.mark small{font-size:10px;color:#c4d7e0}
+.nav-label{font-size:10px;color:#8aafbf;font-weight:750;letter-spacing:.105em!important}
+.nav{margin:2px 0;padding:10px 12px;gap:10px;border:1px solid transparent;color:#d6e5ed;border-radius:11px;font-size:13px;font-weight:600}
+.nav:hover{background:rgba(255,255,255,.075);border-color:#ffffff0e;transform:none}
+.nav.active{background:rgba(255,255,255,.12);box-shadow:inset 3px 0 var(--ma-gold);border-color:rgba(255,255,255,.1)}
+.nav span:first-child{color:#a9ced2}
+.nav.active span:first-child{color:#f1d7a2}
+.aside-foot{font-size:10.5px;color:#9cb8c7;line-height:1.65;border-top-color:#ffffff26}
+main{padding-top:29px}
+.top{background:transparent;border-bottom:1px solid #dce6ea;padding-bottom:15px;margin-bottom:21px}
+.top .kicker{color:#588391;font-size:10px;font-weight:800;letter-spacing:.13em!important}
+#breadcrumb{color:#23475d;font-size:13px}
+.top .badge.warn{background:#fff7e9;border-color:#efdfbf;color:#8a642a;box-shadow:none}
+h1,h2,h3{color:#163549}
+h1,.hero h1{letter-spacing:-.03em!important}
+h1{font-size:clamp(27px,2.7vw,36px)}
+h2,.panel h2{font-size:20px}
+h3{font-size:16px}
+.sub{color:#627b8a;line-height:1.65}
+.hero{
+ background:radial-gradient(ellipse 350px 230px at 100% -20%,rgba(102,210,205,.17),transparent 75%),linear-gradient(118deg,#102e42 0%,#125867 100%);
+ padding:36px 37px;border:1px solid rgba(255,255,255,.14);
+ border-radius:20px;box-shadow:0 16px 32px rgba(9,49,66,.14);
+}
+.hero:after{font-size:208px;top:-30px;right:30px;color:#ffffff0c}
+.hero .eyebrow{color:#b4d9db;font-size:11px;letter-spacing:.08em!important}
+.hero h1{font-size:clamp(30px,3.1vw,43px);line-height:1.18;font-weight:780}
+.hero p{font-size:14px;line-height:1.75;color:#deecef;max-width:680px}
+.hero .btn.secondary{color:#103c4d;border-color:#f3ffff;background:#fff;box-shadow:0 5px 18px #031c2733}
+.hero .btn.secondary:hover{background:#eaf9f7}
+.panel{
+ border:1px solid #dfe8ed;
+ border-radius:17px;
+ box-shadow:var(--ma-shadow-soft);
+ background:#fff;
+}
+.panel.soft{background:linear-gradient(140deg,#f3fbf9,#eef7f7);border-color:#d2e6e2}
+.grid>.panel:has(.stat){min-height:108px;display:flex;flex-direction:column;justify-content:center;padding:22px 24px}
+.stat{font-size:34px;color:#103b50;letter-spacing:-.03em;line-height:1.16}
+.stat-caption{font-size:12px;color:#6a8290;line-height:1.4}
+.step{padding-left:17px;border-left-color:#badad7}
+.step b{font-size:13px;color:#24495c}
+.step small{font-size:11px;color:#718897}
+.btn{background:#087d82;border-color:#087d82;border-radius:11px;min-height:42px;padding:10px 16px;box-shadow:none}
+.btn:hover:not(:disabled){background:#076c70;transform:translateY(-1px);box-shadow:0 6px 14px #0c677019}
+.btn.secondary{background:#fff;color:#22495c;border-color:#c9dfe6}
+.btn.secondary:hover:not(:disabled){background:#f1f8f9}
+.btn.ghost{background:#eef4f7;color:#385d70;border-color:#dce8ed}
+.btn.ghost:hover:not(:disabled){background:#e2eff2}
+.btn:focus-visible, .nav:focus-visible{outline:3px solid #e2af56;outline-offset:2px}
+.field label{font-size:12px;color:#345569;margin-bottom:2px}
+.field input,.field select,.field textarea{border:1px solid #ccdde5;border-radius:11px;background:#fcfdfd;color:#1c3b4e}
+.field input:focus,.field select:focus,.field textarea:focus{background:#fff;border-color:#16868a;box-shadow:0 0 0 3px #0d899019}
+.field textarea{min-height:102px;line-height:1.7}
+.pill{border-radius:999px}
+.notice{background:#fff8ed;color:#755a32;border-color:#daa758}
+.good{background:#effaf5;color:#286451}
+.divider{background:#e4ecef}
+.panel .row.between{row-gap:9px}
+.panel .row.between>h2{margin-bottom:0}
+#ecosystemMccs,#maOlympiadPro,#mccsInlineRuntime{margin-top:17px}
+#ecosystemMccs{border-top:3px solid #0b8490}
+#maOlympiadPro{border-top:3px solid #d1a453}
+#mccsInlineRuntime{border-top:3px solid #7999ad}
+#maOlympiadPro .grid.two{gap:12px;margin-top:13px}
+#maOlympiadPro .field textarea{min-height:110px}
+#maOlympiadPro>p.tiny{max-width:720px}
+#maProResult{border-top:1px solid #e2ebef;padding-top:12px}
+.ma-pro-field{background:#fafcfd;border-color:#dbe7ec;border-radius:12px}
+.ma-pro-field strong{color:#305869}
+.ma-pro-field pre{background:transparent;color:#193e4f}
+.ma-pro-reviews{border-top:1px solid #e1eaee}
+.ma-pro-review-card{background:#f8fbfc}
+#mccsReviewActions{border:1px solid #dfe9ed;background:#f7fafb;padding:11px}
+#mccsAiResult,#ecosystemResult{background:#f8fafb!important}
+.mccs-result-card{border-color:#dce7eb;border-radius:13px;box-shadow:0 2px 10px #173e4906}
+.mccs-result-card h4{color:#163e54}
+.mccs-result-row p{line-height:1.73}
+.mccs-technical{background:#fafcfd}
+.ma-auth-screen{background:radial-gradient(circle at 15% 0%,#188a8c88,transparent 30%),linear-gradient(130deg,#0c2c40,#0d4754)}
+.ma-auth-card{border-radius:22px;box-shadow:0 24px 75px #001b2d6b}
+.ma-auth-card h1{letter-spacing:-.025em!important}
+.ma-auth-submit{border-radius:11px}
+footer{margin-top:32px;padding-top:14px;border-top:1px solid #e0e8ed}
+@media(max-width:1130px){.app{grid-template-columns:224px minmax(0,1fr)}main{padding-left:25px;padding-right:25px}.hero{padding:30px}}
+@media(max-width:730px){
+ .app{display:block}main{padding:19px 15px 44px}
+ aside{width:min(300px,89vw)}
+ .mobbar{background:#102e42}
+ .hero{padding:25px 23px}
+ .hero h1{font-size:30px}
+ .hero:after{right:-38px;top:4px;font-size:155px}
+ .grid>.panel:has(.stat){min-height:92px;padding:17px 20px}
+ .panel{padding:17px}
+ .stat{font-size:29px}
+ #ecosystemMccs .row>.btn,#mccsInlineRuntime .row>.btn,#maOlympiadPro .row>.btn{flex:1 1 155px}
+}
+@media(max-width:420px){.hero{padding:23px 19px}.hero h1{font-size:27px}.panel{padding:15px}.top{gap:7px}.badge.warn{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.btn,.nav{transition:none!important;transform:none!important}}
+@media print{.panel{box-shadow:none!important}.hero{background:#fff!important;color:#111!important;border:0;box-shadow:none}.hero h1,.hero p{color:#111!important}#maOlympiadPro .row>.btn{display:none!important}}
