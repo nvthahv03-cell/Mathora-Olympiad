@@ -130,3 +130,26 @@ footer{font-size:11px;color:#7a909c}
 .mccs-technical pre{margin:12px 0 0}
 #mccsCopyFeedback:empty{display:none}
 @media(max-width:730px){.mccs-result-card{padding:14px}.mccs-result-row p{font-size:13px}}
+
+/* Advanced Olympiad creation studio */
+#maOlympiadPro{margin-top:16px;border-top:3px solid #087b80}
+#maOlympiadPro h2{margin-bottom:4px}
+#maOlympiadPro .field{margin-bottom:4px}
+#maOlympiadPro .field textarea{min-height:115px}
+#maOlympiadPro .ma-pro-check{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:650;color:#355b6a;margin:13px 0}
+#maOlympiadPro .ma-pro-check input{width:17px;height:17px;accent-color:#087b80}
+#maProResult{display:grid;gap:14px;margin-top:18px}
+#maProResult:empty{display:none}
+#maProResult>h3{padding-top:14px;border-top:1px solid var(--line);font-size:17px}
+.ma-pro-field{background:#f9fbfc;border:1px solid #e1eaee;border-radius:11px;padding:12px 14px}
+.ma-pro-field strong{display:block;font-size:12px;color:#446475;margin-bottom:5px}
+.ma-pro-field pre{white-space:pre-wrap;overflow-wrap:anywhere;margin:0;max-height:340px;overflow:auto;font-size:13px;color:#1d3a49}
+#maProResult>.row{display:flex;flex-wrap:wrap;gap:8px}
+#maProResult>p{font-size:13px;color:#607782;margin:0}
+@media(max-width:730px){#maProResult>.row .btn{flex:1 1 150px}.ma-pro-field{padding:11px}}
+
+.ma-pro-reviews{padding:15px 0;border-top:1px solid #dbe8ed}
+.ma-pro-reviews h3{font-size:15px;margin-bottom:9px}
+.ma-pro-review-card{margin-top:10px;border:1px solid #dfe8ed;border-radius:10px;padding:12px;background:#f8fbfc}
+.ma-pro-review-card summary{font-size:13px;font-weight:700;color:#264f60;cursor:pointer}
+.ma-pro-review-card pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:390px;overflow:auto;font-size:12px;margin:10px 0 0}
