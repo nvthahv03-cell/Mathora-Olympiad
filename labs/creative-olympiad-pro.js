@@ -14,7 +14,12 @@ function prompt(){const topic=$('maProTopic').value.trim(),desc=$('maProInput').
 function say(s){$('maProStatus').textContent=s;}
 async function copy(s){if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(s);return;}const t=T('textarea');t.value=s;document.body.append(t);t.select();const ok=document.execCommand('copy');t.remove();if(!ok)throw Error('Sao chép không thành công.');}
 function source(p){return p?.result||p?.draft?.result||p;}
-function valid(p){return ['statement_latex','solution_latex'].every(k=>{const v=p?.[k];if(typeof v!=='string'||v.trim().length<=10||v.includes('```'))return false;let braces=0;for(const ch of v){if(ch==='{')braces++;if(ch==='}')braces--;if(braces<0)return false;}return braces===0&&(v.split('\\\\(').length===v.split('\\\\)').length)&&(v.split('\\\\[').length===v.split('\\\\]').length);});}
+function valid(p){return ['statement_latex','solution_latex'].every(k=>{
+ const v=p?.[k];if(typeof v!=='string'||v.trim().length<=10||v.includes('```'))return false;
+ let depth=0;for(const ch of v){if(ch==='{')depth++;if(ch==='}')depth--;if(depth<0)return false;}
+ const count=t=>v.split(t).length-1;
+ return depth===0&&count('\(')===count('\)')&&count('\[')===count('\]');
+});}
 function tex(p){return ['\\documentclass[12pt,a4paper]{article}','\\usepackage[T5]{fontenc}','\\usepackage[utf8]{inputenc}','\\usepackage[vietnamese]{babel}','\\usepackage{amsmath,amssymb,geometry}','\\geometry{margin=2.2cm}','\\begin{document}','\\begin{center}\\Large MATHORA OLYMPIAD\\\\ Nghiên cứu – chưa duyệt\\end{center}','\\section*{Đề bài}',p.statement_latex,'\\section*{Lời giải}',p.solution_latex,'\\section*{Lời giải ngắn}',p.short_solution_latex||'Chưa có.','\\section*{Đáp án}',p.answer_latex||'Chưa có.','\\end{document}'].join('\n\n');}
 function download(content){const b=new Blob([content],{type:'text/plain;charset=utf-8'}),a=T('a');a.href=URL.createObjectURL(b);a.download='MATHORA_HSG_BAN_NHAP.tex';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000);}
 function figure(p){return ['VẼ HÌNH TOÁN HỌC CHUẨN MATHORA','ĐỀ BÀI:',p.statement_latex||'','GỢI Ý DỰNG HÌNH (CHƯA KIỂM ĐỊNH):',p.figure_prompt||'Chưa có.','YÊU CẦU: Hình rõ nét, đúng quan hệ, vị trí và nhãn; không tự bổ sung dữ kiện, số đo, dấu góc vuông hay tỷ lệ. Hình không gian cần nét khuất/nét thấy; thực tế cần đơn vị. Nếu thiếu dữ kiện phải chỉ rõ. Xuất SVG/TikZ nếu làm được. Giáo viên kiểm tra hình trước khi dùng.'].join('\n\n');}
