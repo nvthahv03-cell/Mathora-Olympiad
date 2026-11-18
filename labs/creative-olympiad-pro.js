@@ -18,7 +18,7 @@ function valid(p){return ['statement_latex','solution_latex'].every(k=>{
  const v=p?.[k];if(typeof v!=='string'||v.trim().length<=10||v.includes('```'))return false;
  let depth=0;for(const ch of v){if(ch==='{')depth++;if(ch==='}')depth--;if(depth<0)return false;}
  const count=t=>v.split(t).length-1;
- return depth===0&&count('\(')===count('\)')&&count('\[')===count('\]');
+ return depth===0&&count('\\(')===count('\\)')&&count('\\[')===count('\\]');
 });}
 function tex(p){return ['\\documentclass[12pt,a4paper]{article}','\\usepackage[T5]{fontenc}','\\usepackage[utf8]{inputenc}','\\usepackage[vietnamese]{babel}','\\usepackage{amsmath,amssymb,geometry}','\\geometry{margin=2.2cm}','\\begin{document}','\\begin{center}\\Large MATHORA OLYMPIAD\\\\ Nghiên cứu – chưa duyệt\\end{center}','\\section*{Đề bài}',p.statement_latex,'\\section*{Lời giải}',p.solution_latex,'\\section*{Lời giải ngắn}',p.short_solution_latex||'Chưa có.','\\section*{Đáp án}',p.answer_latex||'Chưa có.','\\end{document}'].join('\n\n');}
 function download(content){const b=new Blob([content],{type:'text/plain;charset=utf-8'}),a=T('a');a.href=URL.createObjectURL(b);a.download='MATHORA_HSG_BAN_NHAP.tex';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000);}
