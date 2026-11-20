@@ -48,7 +48,7 @@ function updateAuditStatus(){
  const done=['review_math','review_curriculum','review_novelty'].filter(k=>!!reviewResults[k]).length;
  const issues=Object.entries(reviewResults).filter(([,v])=>v?.status!=='READY_FOR_HUMAN_REVIEW'||(Array.isArray(v?.blockers)&&v.blockers.length));
  const verdict=independentResult?'Có lời giải AI độc lập':'Chưa có lời giải độc lập';
- const independentOk=independentResult?.status==='READY_FOR_HUMAN_REVIEW'&&(!Array.isArray(independentResult?.blockers)||independentResult.blockers.length===0);const state=independentOk&&done===3&&!issues.length?'Đã đủ bước thử bằng AI; KHÔNG đồng nghĩa bài toán đúng hoặc được duyệt.':'Chưa đủ minh chứng để xem là ứng viên nghiệm thu.';
+ const independentOk=independentResult?.status==='READY_FOR_HUMAN_REVIEW'&&(!Array.isArray(independentResult?.blockers)||independentResult.blockers.length===0)&&typeof independentResult?.result?.solution_latex==='string'&&independentResult.result.solution_latex.trim().length>10;const state=independentOk&&done===3&&!issues.length?'Đã đủ bước thử bằng AI; KHÔNG đồng nghĩa bài toán đúng hoặc được duyệt.':'Chưa đủ minh chứng để xem là ứng viên nghiệm thu.';
  target.textContent=verdict+' · Phản biện '+done+'/3 · '+state;
 }
 async function runIndependent(btn){
