@@ -122,3 +122,14 @@ footer{margin-top:32px;padding-top:14px;border-top:1px solid #e0e8ed}
 @media(max-width:420px){.hero{padding:23px 19px}.hero h1{font-size:27px}.panel{padding:15px}.top{gap:7px}.badge.warn{font-size:10px}}
 @media(prefers-reduced-motion:reduce){.btn,.nav{transition:none!important;transform:none!important}}
 @media print{.panel{box-shadow:none!important}.hero{background:#fff!important;color:#111!important;border:0;box-shadow:none}.hero h1,.hero p{color:#111!important}#maOlympiadPro .row>.btn{display:none!important}}
+
+/* Proof Challenge: show verification stages without suggesting academic approval */
+#maProIndependentBtn{margin:8px 0 12px;background:#edf8f6;border-color:#b9d9d5;color:#126c69}
+#maProIndependentBtn:hover:not(:disabled){background:#e0f2ef}
+#maProIndependentResult{display:grid;gap:10px;margin-top:8px}
+#maProIndependentResult .ma-pro-review-card{border-left:3px solid #13837c}
+#maProIndependentResult .ma-pro-field{margin-top:10px}
+#maProIndependentResult .notice{margin-top:12px}
+#maProAuditStatus{border:1px solid #e0e8ed;background:#f8fafb;border-radius:10px;padding:10px 13px;font-weight:650}
+.ma-pro-reviews>p.tiny{max-width:800px;line-height:1.6}
+@media(max-width:600px){#maProIndependentBtn{width:100%;white-space:normal}}
