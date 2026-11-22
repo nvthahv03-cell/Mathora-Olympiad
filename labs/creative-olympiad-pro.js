@@ -43,6 +43,7 @@ const actions=T('div');actions.className='row';const create=(title,fn)=>{const b
 create('Sao chép đề + lời giải',async()=>{try{await copy([p.statement_latex,p.solution_latex].join('\n\n'));say('Đã sao chép đề và lời giải.');}catch(e){say(String(e));}});
 const e=create('Xuất LaTeX (.tex)',()=>download(tex(p)));e.disabled=!valid(p)||warnings.length>0||(figureRequested&&!p.figure_prompt);
 if(figureRequested||p.needs_figure===true||p.figure_prompt)create('Sao chép prompt vẽ hình',async()=>{try{await copy(figure(p));say('Đã sao chép prompt dựng hình.');}catch(err){say(String(err));}});
+create('Tái sáng tạo · Tăng chiều sâu',async()=>await reinvent());
 create('Sao chép JSON',async()=>{try{await copy(JSON.stringify({status:'RESEARCH_ONLY',teacherApproved:false,payload},null,2));say('Đã sao chép JSON.');}catch(err){say(String(err));}});
 host.append(actions);
  const reviewPanel=T('div');reviewPanel.id='maProReviews';reviewPanel.className='ma-pro-reviews';
@@ -64,6 +65,36 @@ function updateAuditStatus(){
  const verdict=independentResult?'Có lời giải AI độc lập':'Chưa có lời giải độc lập';
  const independentOk=independentResult?.status==='READY_FOR_HUMAN_REVIEW'&&(!Array.isArray(independentResult?.blockers)||independentResult.blockers.length===0)&&typeof independentResult?.result?.solution_latex==='string'&&independentResult.result.solution_latex.trim().length>10;const state=independentOk&&done===3&&!issues.length?'Đã đủ bước thử bằng AI; KHÔNG đồng nghĩa bài toán đúng hoặc được duyệt.':'Chưa đủ minh chứng để xem là ứng viên nghiệm thu.';
  target.textContent=verdict+' · Phản biện '+done+'/3 · '+state;
+}
+async function reinvent(){
+ if(!output||!lastInput)return;
+ const p=source(output);
+ if(!p||typeof p.statement_latex!=='string'){say('Cần có bài toán gốc trước khi tái sáng tạo.');return;}
+ const request=[
+ 'MATHORA – TÁI SÁNG TẠO CÓ KIỂM SOÁT.',
+ 'Hãy sáng tạo một bài toán KHÁC CẤU TRÚC, không chỉ thay số hoặc kéo dài phép tính.',
+ 'Bài cũ:',p.statement_latex,
+ 'Rủi ro và hạn chế:',String(p.shortcut_risk||p.proof_risk||p.novelty_rationale||'Chưa phân tích').slice(0,700),
+ 'Điểm cần vượt qua: tìm ít nhất 2 hướng sửa đổi cấu trúc khác nhau, bác bỏ hướng quá dễ, chọn một hướng có chứng minh đúng và độ khó có căn cứ.',
+ 'Độ khó phù hợp CTGDPT 2018, kiểm tra cách giải tắt, trường hợp biên, Casio và khả năng biên dịch công thức.',
+ 'Trả về đúng JSON cùng cấu trúc đề bài/lời giải LaTeX, blockers, creative_core, alternative_paths, shortcut_risk, proof_risk, source_check.',
+ 'Tính mới CHƯA XÁC MINH khi chưa có nguồn so sánh. Không lưu và không phê duyệt.'
+ ].join('\n');
+ if(request.length>6000){say('Nội dung tái sáng tạo quá dài.');return;}
+ const buttons=$('maProResult')?.querySelectorAll('button')||[];
+ buttons.forEach(b=>b.disabled=true);
+ say('Đang tái sáng tạo trên cơ sở phản biện bài gốc...');
+ try{
+  const r=await window.MathoraBridge.mccsCall('mccsExecute',{commandId:'MCCS-05',topic:lastInput.topic,sourceId:'',phase:'propose',request});
+  if(r.service!=='MATHORA_MCCS'||r.status!=='RESEARCH_ONLY'||r.teacherApproved!==false||r.stored!==false||r.approved!==false||!r.payload)
+   throw Error('Backend trả về bản nháp không hợp lệ.');
+  const proposed=source(r.payload);
+  if(!proposed||typeof proposed.statement_latex!=='string'||typeof proposed.solution_latex!=='string')
+   throw Error('AI chưa trả đủ đề bài và lời giải LaTeX; giữ nguyên bài cũ.');
+  lastInput={topic:lastInput.topic,request};
+  render(r.payload);
+  say('Đã có ứng viên tái sáng tạo. Các phản biện cũ không còn áp dụng; cần kiểm định lại.');
+ }catch(e){buttons.forEach(b=>b.disabled=false);say('Chưa hoàn thành tái sáng tạo: '+String(e.message||e));}
 }
 async function runIndependent(btn){
  if(!output||!lastInput||independentBusy)return;
