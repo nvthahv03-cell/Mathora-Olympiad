@@ -3,7 +3,7 @@
 const $=id=>document.getElementById(id);
 const T=(tag,value)=>{const e=document.createElement(tag);if(value!==undefined)e.textContent=String(value);return e;};
 let output=null,lastInput=null,figureRequested=false,independentResult=null,independentBusy=false;const reviewResults={};
-const html='<section class="panel" id="maOlympiadPro"><div class="row between"><h2>Sáng tạo đề HSG chuyên sâu</h2><span class="pill gold">NGHIÊN CỨU</span></div><p class="tiny muted">Tạo bài toán có nút thắt thực chất, lời giải độc lập và bản LaTeX. Giáo viên duyệt trước khi sử dụng.</p><div class="grid two"><div class="field"><label for="maProTopic">Chuyên đề</label><input id="maProTopic" maxlength="160" placeholder="Ví dụ: Mũ – lôgarit và cực trị"></div><div class="field"><label for="maProLevel">Độ khó</label><select id="maProLevel"><option>Nâng cao HSG thành phố</option><option selected>Rất khó HSG thành phố</option><option>Thử thách chuyên sâu</option></select></div></div><div class="grid two"><div class="field"><label for="maProFormat">Dạng câu hỏi</label><select id="maProFormat"><option>Tự luận có chứng minh</option><option>Trả lời ngắn (tối đa 4 ký tự)</option><option>Trắc nghiệm nhiều lựa chọn</option><option>Đúng / Sai có lập luận</option></select></div><div class="field"><label for="maProFocus">Định hướng nâng độ khó</label><select id="maProFocus"><option>Nâng chiều sâu lập luận</option><option>Phân tích tham số và trường hợp biên</option><option>Đảo điều kiện và xây phản ví dụ</option><option>Liên kết nhiều cấu trúc trong CT2018</option></select></div></div><div class="grid two"><div class="field"><label for="maProStrategy">Chiến lược siêu sáng tạo</label><select id="maProStrategy"><option value="structural">Biến đổi cấu trúc sâu</option><option value="inverse">Đảo vấn đề – truy ngược điều kiện</option><option value="bridge">Kết nối hai chuyên đề</option><option value="parameter">Tham số hóa – phân tầng nghiệm</option><option value="counterexample">Phản ví dụ – sửa mệnh đề</option><option value="extremal">Cực trị hóa cấu trúc bất biến</option></select></div><div class="field"><label for="maProNovelty">Tiêu chuẩn sáng tạo</label><select id="maProNovelty"><option value="balanced">Khó thực chất và phù hợp CT2018</option><option value="fresh">Ưu tiên cấu trúc khác biệt</option><option value="elegant">Ưu tiên lời giải đẹp và ngắn</option></select></div></div><div class="field" style="margin:12px 0"><label for="maProInput">Đề gốc / yêu cầu sáng tạo / phạm vi được học</label><textarea id="maProInput" rows="4" maxlength="1800" placeholder="Nêu cấu trúc muốn khai thác, điều kiện, giới hạn kiến thức, dạng đáp án..."></textarea></div><label class="ma-pro-check"><input type="checkbox" id="maProNeedFigure"> Yêu cầu bài toán có hình vẽ / mô hình thực tế</label><div class="row"><button class="btn" id="maProRun" type="button">Tạo bài toán chuyên sâu</button><button class="btn secondary" id="maProCopyPrompt" type="button">Sao chép yêu cầu AI</button></div><p class="tiny muted" role="status" id="maProStatus">Đầu ra chưa được kiểm định hoặc phê duyệt.</p><div id="maProResult"></div></section>';
+const html='<section class="panel" id="maOlympiadPro"><div class="row between"><h2>Sáng tạo đề HSG chuyên sâu</h2><span class="pill gold">NGHIÊN CỨU</span></div><p class="tiny muted">Tạo bài toán có nút thắt thực chất, lời giải độc lập và bản LaTeX. Giáo viên duyệt trước khi sử dụng.</p><div class="grid two"><div class="field"><label for="maProTopic">Chuyên đề</label><input id="maProTopic" maxlength="160" placeholder="Ví dụ: Mũ – lôgarit và cực trị"></div><div class="field"><label for="maProLevel">Độ khó</label><select id="maProLevel"><option>Nâng cao HSG thành phố</option><option selected>Rất khó HSG thành phố</option><option>Thử thách chuyên sâu</option></select></div></div><div class="grid two"><div class="field"><label for="maProFormat">Dạng câu hỏi</label><select id="maProFormat"><option>Tự luận có chứng minh</option><option>Trả lời ngắn (tối đa 4 ký tự)</option><option>Trắc nghiệm nhiều lựa chọn</option><option>Đúng / Sai có lập luận</option></select></div><div class="field"><label for="maProFocus">Định hướng nâng độ khó</label><select id="maProFocus"><option>Nâng chiều sâu lập luận</option><option>Phân tích tham số và trường hợp biên</option><option>Đảo điều kiện và xây phản ví dụ</option><option>Liên kết nhiều cấu trúc trong CT2018</option></select></div></div><div class="grid two"><div class="field"><label for="maProStrategy">Chiến lược siêu sáng tạo</label><select id="maProStrategy"><option value="structural">Biến đổi cấu trúc sâu</option><option value="inverse">Đảo vấn đề – truy ngược điều kiện</option><option value="bridge">Kết nối hai chuyên đề</option><option value="parameter">Tham số hóa – phân tầng nghiệm</option><option value="counterexample">Phản ví dụ – sửa mệnh đề</option><option value="extremal">Cực trị hóa cấu trúc bất biến</option></select></div><div class="field"><label for="maProNovelty">Tiêu chuẩn sáng tạo</label><select id="maProNovelty"><option value="balanced">Khó thực chất và phù hợp CT2018</option><option value="fresh">Ưu tiên cấu trúc khác biệt</option><option value="elegant">Ưu tiên lời giải đẹp và ngắn</option></select></div></div><div class="field" style="margin:12px 0"><label for="maProInput">Đề gốc / yêu cầu sáng tạo / phạm vi được học</label><textarea id="maProInput" rows="4" maxlength="1800" placeholder="Nêu cấu trúc muốn khai thác, điều kiện, giới hạn kiến thức, dạng đáp án..."></textarea></div><label class="ma-pro-check"><input type="checkbox" id="maProNeedFigure"> Yêu cầu bài toán có hình vẽ / mô hình thực tế</label><div class="row"><button class="btn" id="maProRun" type="button">Tạo bài toán chuyên sâu</button><button class="btn secondary" id="maProQuickRun" type="button">Tạo nhanh · kiểm tra kết nối AI</button><button class="btn secondary" id="maProCopyPrompt" type="button">Sao chép yêu cầu AI</button></div><p class="tiny muted" role="status" id="maProStatus">Đầu ra chưa được kiểm định hoặc phê duyệt.</p><div id="maProResult"></div></section>';
 const innovation={
  structural:'Phân tích bất biến/đối xứng/ẩn phụ, đổi cấu trúc lõi nhưng giữ tính giải được; không thay số đơn thuần.',
  inverse:'Xuất phát từ kết luận/đáp số, truy ngược giả thiết tối thiểu, kiểm tra tính đủ và tính cần.',
@@ -25,6 +25,19 @@ const policy=[
 'Các trường *_latex phải là LaTeX chuẩn, dùng \\( ... \\) hoặc \\[ ... \\] cho công thức; không dùng ký hiệu ASCII thay toán. Nếu hình vẽ cần thiết: needs_figure=true, figure_prompt mô tả nhãn, quan hệ, kích thước, góc nhìn chính xác; không tự bịa giả thiết. Nếu thiếu chứng minh hoặc dữ liệu, ghi blockers; không tự duyệt, không ghi Kho.'
 ].join('\n');
 function prompt(){const topic=$('maProTopic').value.trim(),desc=$('maProInput').value.trim();if(!topic||!desc)throw Error('Cần nhập chuyên đề và yêu cầu sáng tạo.');return policy+'\nCHUYÊN ĐỀ: '+topic+'\nMỨC KHÓ: '+$('maProLevel').value+'\nDẠNG CÂU HỎI: '+$('maProFormat').value+'\nCHIỀU SÂU CẦN KHAI THÁC: '+$('maProFocus').value+'\nCHIẾN LƯỢC SIÊU SÁNG TẠO: '+innovation[$('maProStrategy').value]+'\nTIÊU CHUẨN CHỌN: '+novelty[$('maProNovelty').value]+'\nDỮ KIỆN / YÊU CẦU: '+desc+'\nBẮT BUỘC CÓ HÌNH: '+($('maProNeedFigure').checked?'CÓ; phải có figure_prompt đủ dữ kiện':'chỉ khi cần thiết');}
+function quickPrompt(){
+ const topic=$('maProTopic').value.trim(),desc=$('maProInput').value.trim();
+ if(!topic||!desc)throw Error('Cần nhập chuyên đề và yêu cầu sáng tạo.');
+ return [
+ 'Tạo MỘT bản nháp bài toán HSG Toán 12 theo dữ kiện. Đây là lượt thử nhanh; không tự xác nhận lời giải đúng.',
+ 'Chỉ trả JSON không markdown: {"status":"NEEDS_REVIEW","blockers":[],"result":{"title":"...","statement_latex":"...","solution_latex":"...","short_solution_latex":"...","answer_latex":"...","difficulty_rationale":"...","needs_figure":false,"figure_prompt":""}}.',
+ 'Đề, lời giải dùng LaTeX chuẩn; giới hạn lời giải khoảng 250 từ, nêu điều kiện xác định và bước toán cốt lõi. Nếu không chứng minh được thì ghi rõ blockers, không đoán đáp số.',
+ 'Chuyên đề: '+topic,
+ 'Dạng câu hỏi: '+$('maProFormat').value,
+ 'Yêu cầu: '+desc.slice(0,750),
+ 'Cần hình vẽ: '+($('maProNeedFigure').checked?'có, bắt buộc figure_prompt':'chỉ nếu thật cần')
+ ].join('\n');
+}
 function say(s){$('maProStatus').textContent=s;}
 async function copy(s){if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(s);return;}const t=T('textarea');t.value=s;document.body.append(t);t.select();const ok=document.execCommand('copy');t.remove();if(!ok)throw Error('Sao chép không thành công.');}
 function source(p){return p?.result||p?.draft?.result||p;}
@@ -143,9 +156,34 @@ async function runIndependent(btn){
  finally{independentBusy=false;btn.disabled=false;}
 }
 async function runReview(phase,btn){if(!output||!lastInput)return;const draftJson=JSON.stringify(output);if(draftJson.length>16000){say('Bản nháp quá dài để gửi phản biện.');return;}btn.disabled=true;say('Đang phản biện: '+phase+'...');try{const r=await window.MathoraBridge.mccsCall('mccsExecute',{commandId:'MCCS-05',topic:lastInput.topic,sourceId:'',request:lastInput.request,phase,draftJson});if(r.service!=='MATHORA_MCCS'||r.phase!==phase||r.status!=='RESEARCH_ONLY'||r.teacherApproved!==false||r.stored!==false||r.approved!==false||!r.payload)throw Error('Phản hồi phản biện không hợp lệ.');reviewResults[phase]=r.payload;updateAuditStatus();const card=T('details');card.open=true;card.className='ma-pro-review-card';card.append(T('summary',phase+' · '+(r.payload.status||'CHƯA XÁC ĐỊNH')));const pre=T('pre',JSON.stringify(r.payload,null,2));card.append(pre);$('maProReviews').append(card);say('Đã nhận phản biện '+phase+'. Giáo viên cần kiểm tra từng nhận xét.');}catch(e){say('Vòng phản biện chưa hoàn tất: '+String(e.message||e));}finally{btn.disabled=false;}}
-async function run(){const b=$('maProRun');if(b.disabled)return;let request;try{request=prompt();if(request.length>6000)throw Error('Yêu cầu quá dài.');}catch(e){say(e.message);return;}
-b.disabled=true;say('Đang gọi Gemini qua Backend MCCS...');
-try{if(!window.MathoraBridge?.mccsCall)throw Error('Chưa có kết nối tài khoản giáo viên.');const r=await window.MathoraBridge.mccsCall('mccsExecute',{commandId:'MCCS-05',topic:$('maProTopic').value.trim(),sourceId:'',phase:'propose',request});if(r.service!=='MATHORA_MCCS'||r.status!=='RESEARCH_ONLY'||r.teacherApproved!==false||r.stored!==false||r.approved!==false||!r.payload)throw Error('Phản hồi không đúng hợp đồng MCCS.');lastInput={topic:$('maProTopic').value.trim(),request};figureRequested=$('maProNeedFigure').checked;render(r.payload);say('Đã có bản nháp. Cần giáo viên kiểm định lời giải, độ khó và LaTeX.');}catch(e){say('Chưa hoàn tất: '+(e.message||e));}finally{b.disabled=false;}}
-function mount(){const root=$('mccsInlineRuntime')||$('ecosystemMccs');if(!root||$('maOlympiadPro'))return;root.insertAdjacentHTML('afterend',html);$('maProRun').addEventListener('click',run);$('maProCopyPrompt').addEventListener('click',async()=>{try{await copy(prompt());say('Đã sao chép yêu cầu AI.');}catch(e){say(e.message||String(e));}});}
+async function run(quick=false){
+ const primary=$('maProRun'),secondary=$('maProQuickRun');
+ if(primary.disabled||secondary.disabled)return;
+ let request;
+ try{
+  request=quick?quickPrompt():prompt();
+  if(request.length>6000)throw Error('Yêu cầu quá dài.');
+ }catch(e){say(String(e.message||e));return;}
+ primary.disabled=true;secondary.disabled=true;
+ const start=Date.now();
+ say(quick?'Đang kiểm tra bằng yêu cầu ngắn. Chỉ tạo bản nháp nghiên cứu...':'Đang yêu cầu Gemini tạo bài HSG chuyên sâu. Không tự lưu STAGING...');
+ try{
+  if(!window.MathoraBridge?.mccsCall)throw Error('Chưa có kết nối tài khoản giáo viên.');
+  const r=await window.MathoraBridge.mccsCall('mccsExecute',{commandId:'MCCS-05',topic:$('maProTopic').value.trim(),sourceId:'',phase:'propose',request});
+  if(r.service!=='MATHORA_MCCS'||r.status!=='RESEARCH_ONLY'||r.teacherApproved!==false||r.stored!==false||r.approved!==false||!r.payload)
+   throw Error('Phản hồi không đúng hợp đồng MCCS.');
+  lastInput={topic:$('maProTopic').value.trim(),request};
+  figureRequested=$('maProNeedFigure').checked;
+  render(r.payload);
+  say('Đã nhận bản nháp ('+Math.round((Date.now()-start)/1000)+' giây). Chưa kiểm chứng lời giải/LaTeX, chưa lưu Kho.');
+ }catch(e){
+  const msg=String(e.message||e),time=Math.round((Date.now()-start)/1000);
+  const timeout=/20\s*giây|timeout|time.?out|không phản hồi|quá thời gian|timed out/i.test(msg);
+  say(timeout
+   ?'Gemini/Backend hết thời gian xử lý ('+time+' giây đo từ trình duyệt). Chưa tạo bài, KHÔNG lưu STAGING. Có thể thử nút “Tạo nhanh”; nếu vẫn lỗi, cần sửa hạn thời gian ở Apps Script. Chi tiết: '+msg
+   :'Chưa hoàn tất: '+msg+'. KHÔNG lưu STAGING.');
+ }finally{primary.disabled=false;secondary.disabled=false;}
+}
+function mount(){const root=$('mccsInlineRuntime')||$('ecosystemMccs');if(!root||$('maOlympiadPro'))return;root.insertAdjacentHTML('afterend',html);$('maProRun').addEventListener('click',()=>run(false));$('maProQuickRun').addEventListener('click',()=>run(true));$('maProCopyPrompt').addEventListener('click',async()=>{try{await copy(prompt());say('Đã sao chép yêu cầu AI.');}catch(e){say(e.message||String(e));}});}
 new MutationObserver(mount).observe(document.documentElement,{childList:true,subtree:true});mount();
 })();
