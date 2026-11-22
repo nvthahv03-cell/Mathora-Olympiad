@@ -178,7 +178,7 @@ async function run(quick=false){
   say('Đã nhận bản nháp ('+Math.round((Date.now()-start)/1000)+' giây). Chưa kiểm chứng lời giải/LaTeX, chưa lưu Kho.');
  }catch(e){
   const msg=String(e.message||e),time=Math.round((Date.now()-start)/1000);
-  const timeout=/20\\s*giây|timeout|time.?out|không phản hồi|quá thời gian|timed out/i.test(msg);
+  const timeout=/20\s*giây|timeout|time.?out|không phản hồi|quá thời gian|timed out/i.test(msg);
   say(timeout
    ?'Gemini/Backend hết thời gian xử lý ('+time+' giây đo từ trình duyệt). Chưa tạo bài, KHÔNG lưu STAGING. Có thể thử nút “Tạo nhanh”; nếu vẫn lỗi, cần sửa hạn thời gian ở Apps Script. Chi tiết: '+msg
    :'Chưa hoàn tất: '+msg+'. KHÔNG lưu STAGING.');
