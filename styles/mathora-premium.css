@@ -133,3 +133,11 @@ footer{margin-top:32px;padding-top:14px;border-top:1px solid #e0e8ed}
 #maProAuditStatus{border:1px solid #e0e8ed;background:#f8fafb;border-radius:10px;padding:10px 13px;font-weight:650}
 .ma-pro-reviews>p.tiny{max-width:800px;line-height:1.6}
 @media(max-width:600px){#maProIndependentBtn{width:100%;white-space:normal}}
+
+/* Super-creative strategy controls and candidate refinement */
+#maOlympiadPro #maProStrategy,#maOlympiadPro #maProNovelty{background-color:#f8fcfb;border-color:#bfd9d9;font-weight:600}
+#maOlympiadPro #maProStrategy:focus,#maOlympiadPro #maProNovelty:focus{border-color:#138489}
+#maOlympiadPro .ma-pro-field:has(strong){border-left:3px solid #d3e6e6}
+#maProResult .row{row-gap:9px}
+#maProResult .row .btn{white-space:normal;line-height:1.4}
+@media(max-width:730px){#maOlympiadPro .grid.two{grid-template-columns:minmax(0,1fr)}#maProResult .row .btn{flex:1 1 170px}}
