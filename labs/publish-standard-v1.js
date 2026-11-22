@@ -85,12 +85,13 @@ function show(payload){
   try{await copy(value);status('Đã sao chép: '+label+'.');}
   catch(e){status('Chưa sao chép được: '+String(e.message||e));}
  }));
- copyAction('Copy đề',p.statement_latex||'');
- copyAction('Copy lời giải',p.solution_latex||'');
+ if(p.statement_latex)copyAction('Copy đề',p.statement_latex);
+ if(p.solution_latex)copyAction('Copy lời giải',p.solution_latex);
  copyAction('Copy toàn bộ',[p.statement_latex,p.solution_latex,p.short_solution_latex||p.fast_solution_latex,p.answer_latex].filter(Boolean).join('\n\n'));
  copyAction('Copy LaTeX',latexDocument(p));
  if(p.figure_prompt||p.needs_figure)copyAction('Copy prompt hình',p.figure_prompt||'AI chưa cung cấp prompt. Yêu cầu giáo viên bổ sung và kiểm định giả thiết.');
  const schemaErrors=verifySchema(p);
+ if(Array.isArray(payload?.blockers)&&payload.blockers.length)schemaErrors.push('AI báo '+payload.blockers.length+' vấn đề cần sửa.');
  toolbar.append(button('Tải LaTeX (.tex)',()=>{exportTex(p);status('Đã tạo file LaTeX nguồn; chưa xác nhận biên dịch.');},!!schemaErrors.length));
  const word=button('Word Equation · Chưa hỗ trợ',()=>{},true);word.title='Không xuất Word chứa công thức thô. Chỉ mở khi có bộ chuyển TeX→OMML được kiểm thử.';toolbar.append(word);
  host.append(toolbar);
