@@ -141,3 +141,20 @@ footer{margin-top:32px;padding-top:14px;border-top:1px solid #e0e8ed}
 #maProResult .row{row-gap:9px}
 #maProResult .row .btn{white-space:normal;line-height:1.4}
 @media(max-width:730px){#maOlympiadPro .grid.two{grid-template-columns:minmax(0,1fr)}#maProResult .row .btn{flex:1 1 170px}}
+
+/* MATHORA Publish Standard V1 — print-like reading, accessible copying */
+.ma-publish-host{margin:18px 0;padding:19px;border:1px solid #cddfe3;background:linear-gradient(160deg,#f7fbfa,#fff 40%);border-radius:16px}
+.ma-publish-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:13px}
+.ma-publish-head h3{margin:0;font-size:17px;font-weight:750;color:#173b4b}
+.ma-publish-toolbar{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 11px}
+.ma-publish-toolbar .btn{min-height:37px;font-size:12px;padding:8px 11px}
+.ma-publish-toolbar .btn:disabled{opacity:.55}
+.ma-publish-paper{padding:24px 30px;border:1px solid #e0e6e9;border-radius:12px;background:#fff;box-shadow:0 8px 18px #21445209;color:#18313f}
+.ma-publish-section{margin:0 0 23px}
+.ma-publish-section:last-child{margin-bottom:0}
+.ma-publish-section h4{font-size:13px;font-weight:760;color:#385b6d;margin:0 0 9px;padding-bottom:5px;border-bottom:1px solid #e7eef0}
+.ma-publish-math{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:17px;line-height:1.85;overflow-wrap:anywhere;overflow-x:auto;max-width:100%}
+.ma-publish-math mjx-container[display="true"]{margin:1.15em 0!important;max-width:100%;overflow-x:auto;overflow-y:hidden}
+#maPublishStatus{line-height:1.5}
+@media(max-width:730px){.ma-publish-host{padding:12px}.ma-publish-paper{padding:18px 14px}.ma-publish-math{font-size:15px}.ma-publish-toolbar .btn{flex:1 1 125px}}
+@media print{.ma-publish-host{border:0;padding:0;background:#fff}.ma-publish-toolbar,.ma-publish-head>.pill,#maPublishStatus{display:none!important}.ma-publish-paper{border:0;box-shadow:none;padding:0}.ma-publish-math{font-size:12pt}}
