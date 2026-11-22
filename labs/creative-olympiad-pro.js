@@ -46,6 +46,8 @@ if(figureRequested||p.needs_figure===true||p.figure_prompt)create('Sao chép pro
 create('Tái sáng tạo · Tăng chiều sâu',async()=>await reinvent());
 create('Sao chép JSON',async()=>{try{await copy(JSON.stringify({status:'RESEARCH_ONLY',teacherApproved:false,payload},null,2));say('Đã sao chép JSON.');}catch(err){say(String(err));}});
 host.append(actions);
+ const publishHost=T('section');publishHost.id='maPublishHost';publishHost.className='ma-publish-host';host.append(publishHost);
+ document.dispatchEvent(new CustomEvent('mathora:creative-result',{detail:payload}));
  const reviewPanel=T('div');reviewPanel.id='maProReviews';reviewPanel.className='ma-pro-reviews';
  const reviewTitle=T('h3','Kiểm định chuyên sâu');reviewPanel.append(reviewTitle);
  const proofInfo=T('p','Trước khi phản biện, yêu cầu Gemini giải lại độc lập chỉ từ đề bài (không gửi lời giải gốc). Một mô hình có thể lặp lại lỗi; kết quả không thay thế thẩm định của giáo viên.');proofInfo.className='tiny muted';reviewPanel.append(proofInfo);
