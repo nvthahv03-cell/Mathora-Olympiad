@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MATHORA | Phòng thực hành nhập Toán</title>
+<style>
+:root{font-family:system-ui,"Segoe UI",Arial,sans-serif;color:#173448;background:#f4f7f9}
+*{box-sizing:border-box}body{margin:0}header{background:#102d40;color:#fff;padding:16px clamp(16px,4vw,48px)}
+header strong{font-size:19px}header small{display:block;color:#bbd8e1}
+main{max-width:1200px;margin:25px auto;padding:0 16px}
+h1{font-size:25px}h2{font-size:18px;margin:0 0 14px}
+p{line-height:1.6}.layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(290px,.8fr);gap:17px}
+.card{background:#fff;border:1px solid #dce6eb;border-radius:16px;padding:22px;box-shadow:0 4px 18px #183a4908}
+label{display:block;font-weight:700;margin:15px 0 8px}
+textarea,input{width:100%;border:1px solid #a9c4d1;border-radius:10px;padding:12px;font:16px/1.6 Consolas,monospace;color:#173448;background:white}
+textarea{min-height:120px;resize:vertical}
+button{font:600 14px system-ui;cursor:pointer;border:1px solid #bfd3de;background:#fff;color:#163d52;border-radius:9px;padding:9px 12px}
+button:hover{background:#edf5f7}button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #e4ab45;outline-offset:2px}
+button.primary{background:#087f82;color:white;border-color:#087f82}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.preview{padding:20px;min-height:100px;background:#f5f9fa;border:1px solid #d9e7eb;border-radius:12px;overflow:auto;font-size:20px}
+.guide{display:grid;gap:10px}.guide-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border-bottom:1px solid #e4ebef;padding:8px 0}
+.guide code{display:block;overflow-wrap:anywhere;font-size:12px;color:#125b68}
+.guide small{color:#587384}
+.notice{border-left:3px solid #e4ab45;background:#fff8e9;padding:10px 14px;border-radius:8px;font-size:13px}
+#status{min-height:24px;font-size:13px;color:#486476}#status.error{color:#a32c2c}
+summary{cursor:pointer;font-weight:700}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.card{padding:16px}}
+</style>
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},options:{enableMenu:false},startup:{typeset:false}};
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head>
+<body>
+<header><strong>Σ MATHORA</strong><small>HSG Toán 12 · Phòng thực hành nhập Toán · BẢN THỬ NGHIỆM</small></header>
+<main>
+<h1>Nhập Toán thông minh</h1>
+<p>Gõ biểu thức theo cách quen thuộc, xem công thức chuẩn và luyện cú pháp LaTeX. <strong>Không tính hộ, không tự chấm và không gửi dữ liệu lên máy chủ.</strong></p>
+<div class="layout">
+<section class="card" aria-labelledby="editor-title">
+<h2 id="editor-title">Bài làm của học sinh</h2>
+<label for="expression">Biểu thức cần trình bày</label>
+<input id="expression" spellcheck="false" autocomplete="off" value="x^2+2x+3" aria-describedby="status">
+<div class="toolbar">
+<button type="button" data-insert="^2">x²</button>
+<button type="button" data-insert="sqrt()">√</button>
+<button type="button" data-insert="()/()">Phân số</button>
+<button type="button" data-insert="int()dx">∫</button>
+<button type="button" data-insert="sin()">sin</button>
+<button type="button" data-insert="ln()">ln</button>
+</div>
+<label for="syntax">Chế độ nhập</label>
+<select id="syntax" style="padding:10px;border-radius:9px;border:1px solid #a9c4d1">
+<option value="quick">Nhập nhanh (cú pháp đơn giản)</option>
+<option value="latex">LaTeX trực tiếp</option>
+</select>
+<label>Công thức xem trước</label>
+<div class="preview" id="preview" aria-live="polite"></div>
+<div id="status" role="status"></div>
+<div class="toolbar">
+<button id="copy-latex" type="button" class="primary">Sao chép LaTeX</button>
+<button id="clear" type="button">Xóa biểu thức</button>
+</div>
+<label for="explanation">Lời giải bằng lời (tùy chọn)</label>
+<textarea id="explanation" placeholder="Ta có... Do đó..."></textarea>
+<p class="notice">Bản thử nghiệm chỉ hỗ trợ xem trước <em>một biểu thức</em>. Văn bản lời giải chưa được chuyển tự động thành công thức. Chức năng nộp bài và lưu máy chủ chưa có ở trang này.</p>
+</section>
+<aside class="card">
+<h2>Hướng dẫn nhập Toán</h2>
+<p>Nhấn <strong>Chèn</strong> để đưa mẫu vào vị trí con trỏ. Có thể dùng chế độ LaTeX khi đã quen.</p>
+<div class="guide" id="guide"></div>
+<details><summary>Quy tắc nhập nhanh</summary>
+<p>Dùng dấu ngoặc cho phân số và căn; viết <code>^</code> cho lũy thừa. Ví dụ: <code>(x+1)/(x-2)</code>. Với biểu thức ngoài tập mẫu hỗ trợ, chuyển sang chế độ LaTeX.</p></details>
+</aside>
+</div>
+</main>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id);
+const expr=$('expression'),syntax=$('syntax'),preview=$('preview'),status=$('status');
+const samples=[
+['Lũy thừa','x^2','x^{2}'],
+['Phân số','(x+1)/(x-2)',String.raw`\frac{x+1}{x-2}`],
+['Căn thức','sqrt(x+1)',String.raw`\sqrt{x+1}`],
+['Lượng giác','sin(x)',String.raw`\sin(x)`],
+['Lôgarit','ln(x)',String.raw`\ln(x)`],
+['Nguyên hàm','int(x^2+2x+3)dx',String.raw`\int (x^{2}+2x+3)\,dx`]
+];
+function insertAtCursor(value){
+ const start=expr.selectionStart??expr.value.length,end=expr.selectionEnd??expr.value.length;
+ expr.setRangeText(value,start,end,'end');expr.focus();render();
+}
+for(const button of document.querySelectorAll('[data-insert]'))button.addEventListener('click',()=>insertAtCursor(button.dataset.insert));
+const guide=$('guide');
+for(const [title,quick,latex] of samples){
+ const row=document.createElement('div');row.className='guide-row';
+ const col=document.createElement('div');
+ const name=document.createElement('strong');name.textContent=title;
+ const code=document.createElement('code');code.textContent=quick;
+ const small=document.createElement('small');small.textContent=latex;
+ col.append(name,code,small);
+ const btn=document.createElement('button');btn.type='button';btn.textContent='Chèn';
+ btn.addEventListener('click',()=>insertAtCursor(syntax.value==='quick'?quick:latex));
+ row.append(col,btn);guide.append(row);
+}
+function matchingParen(s,start){
+ if(s[start]!=='(')throw Error('Thiếu dấu mở ngoặc.');
+ let depth=0;
+ for(let i=start;i<s.length;i++){if(s[i]==='(')depth++;if(s[i]===')'&&--depth===0)return i;}
+ throw Error('Ngoặc chưa đóng.');
+}
+function topFraction(s){
+ let depth=0;
+ for(let i=0;i<s.length;i++){
+  if(s[i]==='(')depth++;else if(s[i]===')')depth--;
+  else if(s[i]==='/'&&depth===0)return i;
+  if(depth<0)throw Error('Ngoặc chưa cân đối.');
+ }
+ if(depth!==0)throw Error('Ngoặc chưa cân đối.');
+ return -1;
+}
+function unwrap(s){while(s.startsWith('(')&&matchingParen(s,0)===s.length-1)s=s.slice(1,-1);return s;}
+function toTex(raw,depth=0){
+ if(depth>15)throw Error('Biểu thức lồng quá sâu.');
+ let s=raw.replace(/\s/g,'');
+ if(!s)throw Error('Chưa nhập biểu thức.');
+ if(s.length>400)throw Error('Biểu thức quá dài cho bản thử nghiệm.');
+ if(!/^[a-zA-Z0-9+\-*/^().,_]+$/.test(s))throw Error('Có ký tự chưa hỗ trợ. Hãy dùng chế độ LaTeX.');
+ s=unwrap(s);
+ if(s.startsWith('int(')){
+  const close=matchingParen(s,3);
+  if(s.slice(close+1)!=='dx')throw Error('Nguyên hàm cần dạng int(bieu_thuc)dx.');
+  return String.raw`\int `+toTex(s.slice(4,close),depth+1)+String.raw`\,dx`;
+ }
+ const slash=topFraction(s);
+ if(slash!==-1){
+  if(!s.slice(0,slash)||!s.slice(slash+1))throw Error('Phân số thiếu tử hoặc mẫu.');
+  return String.raw`\frac{`+toTex(s.slice(0,slash),depth+1)+'}{'+toTex(s.slice(slash+1),depth+1)+'}';
+ }
+ let out='';
+ for(let i=0;i<s.length;){
+  const func=['sqrt','sin','cos','tan','ln','log'].find(f=>s.startsWith(f+'(',i));
+  if(func){
+   const start=i+func.length,close=matchingParen(s,start),inner=toTex(s.slice(start+1,close),depth+1);
+   out+=func==='sqrt'?String.raw`\sqrt{`+inner+'}':'\\'+func+'\\left('+inner+'\\right)';
+   i=close+1;continue;
+  }
+  const ch=s[i];
+  if(ch==='^'){
+   let exponent;
+   if(s[i+1]==='('){const close=matchingParen(s,i+1);exponent=toTex(s.slice(i+2,close),depth+1);i=close+1;}
+   else{const match=s.slice(i+1).match(/^[a-zA-Z0-9]+/);if(!match)throw Error('Thiếu số mũ.');exponent=match[0];i+=1+match[0].length;}
+   out+='^{'+exponent+'}';continue;
+  }
+  if(ch==='*'){out+=String.raw`\cdot `;i++;continue;}
+  if(ch==='(')out+=String.raw`\left(`;
+  else if(ch===')')out+=String.raw`\right)`;
+  else if(ch==='_')throw Error('Chỉ số dưới: vui lòng chuyển chế độ LaTeX.');
+  else out+=ch;
+  i++;
+ }
+ return out;
+}
+let lastLatex='';
+async function render(){
+ const old=expr.value.trim();
+ preview.textContent='';status.className='';
+ if(!old){status.textContent='Nhập biểu thức để xem trước.';lastLatex='';return;}
+ try{
+  if(syntax.value==='latex'){
+   if(old.length>1000)throw Error('LaTeX quá dài cho bản thử nghiệm.');
+   lastLatex=old;
+  }else lastLatex=toTex(old);
+  preview.textContent='\\['+lastLatex+'\\]';
+  if(window.MathJax?.typesetPromise)await window.MathJax.typesetPromise([preview]);
+  else status.textContent='Đang tải thư viện hiển thị công thức. Cần có Internet.';
+ }catch(e){lastLatex='';preview.textContent=old;status.className='error';status.textContent='Chưa chuyển được: '+e.message;}
+}
+expr.addEventListener('input',render);syntax.addEventListener('change',render);
+$('clear').addEventListener('click',()=>{expr.value='';render();expr.focus()});
+$('copy-latex').addEventListener('click',async()=>{
+ if(!lastLatex){status.textContent='Chưa có công thức hợp lệ để sao chép.';return;}
+ try{await navigator.clipboard.writeText(lastLatex);status.textContent='Đã sao chép LaTeX.';}
+ catch{status.textContent='Trình duyệt chưa cho phép sao chép. Hãy sử dụng kết nối HTTPS.';}
+});
+window.addEventListener('load',render);
+render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MATHORA EXAM | Thử nghiệm ba dạng thức & học từ sai lầm</title>
+<style>
+:root{font-family:system-ui,"Segoe UI",Arial,sans-serif;color:#173448;background:#f4f7f9}
+*{box-sizing:border-box}body{margin:0}header{background:#102d40;color:#fff;padding:17px clamp(16px,4vw,48px)}
+header strong{font-size:20px}header small{display:block;color:#c0dce4}
+main{max-width:1050px;margin:24px auto;padding:0 16px 48px}
+h1{font-size:25px;margin:0 0 6px}h2{font-size:18px;margin:0 0 12px}
+p{line-height:1.6}.sub{color:#527082;margin:0 0 20px}
+.card{background:#fff;border:1px solid #dbe5eb;border-radius:17px;padding:23px;margin:0 0 16px;box-shadow:0 5px 20px #17455b07}
+.problem{font-size:18px;line-height:1.75;padding:12px 0}
+.group{display:grid;gap:8px;margin-top:14px}
+.option{padding:11px;border:1px solid #d4e1e7;border-radius:10px;display:flex;gap:11px;align-items:center;cursor:pointer}
+.option:has(input:checked){border-color:#087f82;background:#eaf6f4}
+.tf-row{display:grid;grid-template-columns:minmax(0,1fr) 80px 80px;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #e8eef1}
+.tf-row label{cursor:pointer}.tf-row input{accent-color:#087f82}
+input[type=text],textarea{width:100%;border:1px solid #b6c9d5;border-radius:10px;padding:12px;font:16px/1.5 system-ui;color:#173448}
+textarea{resize:vertical;min-height:120px}
+button{border-radius:10px;border:1px solid #bfd1dd;padding:10px 16px;font:600 14px system-ui;cursor:pointer;color:#174357;background:white}
+button.primary{background:#087f82;color:#fff;border-color:#087f82}
+button:disabled{opacity:.55;cursor:not-allowed}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #e4ab45;outline-offset:2px}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.notice{background:#fff8e8;border-left:4px solid #e4ab45;padding:11px 15px;border-radius:8px}
+.good{background:#eaf6ef;border-left:4px solid #18946b;padding:11px 15px;border-radius:8px}
+.error{color:#a1322c;font-weight:600}
+.tag{font-size:12px;color:#446579;background:#edf4f7;padding:4px 8px;border-radius:99px}
+.hint{padding:12px;background:#f4f8fa;border-radius:9px;margin-top:9px}
+.remediation{border-top:1px solid #dce6eb;margin-top:17px;padding-top:17px}
+.hidden{display:none!important}
+.preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.gallery img{max-width:100%;height:150px;object-fit:contain;border:1px solid #c5d9e3;border-radius:8px}
+small{color:#597687}
+@media(max-width:700px){.card{padding:16px}.preview-grid{grid-template-columns:1fr}.tf-row{grid-template-columns:1fr 66px 66px;gap:5px}}
+</style>
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},options:{enableMenu:false}};
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head>
+<body>
+<header><strong>Σ MATHORA EXAM</strong><small>HSG Toán 12 · 3 dạng thức · Học từ sai lầm · BẢN THỬ NGHIỆM</small></header>
+<main>
+<h1>Phòng thi thử và sửa sai</h1>
+<p class="sub">Bản mẫu tương tác. Ba câu minh họa dưới đây không phải đề HSG Đà Nẵng chính thức và không phản ánh độ khó HSG. Không có đăng nhập, đồng hồ thi hoặc lưu máy chủ.</p>
+<div class="notice">Quy trình thử nghiệm: <strong>Làm bài → Chấm kết quả mẫu → Nhận gợi ý → Giải lại bằng tự luận hoặc ảnh</strong>. Bài viết và ảnh chỉ hiển thị trong phiên trình duyệt hiện tại; chưa được gửi cho giáo viên.</div>
+<form id="exam" novalidate>
+<section class="card">
+<div class="toolbar"><h2>Phần I – Nhiều lựa chọn</h2><span class="tag">Chọn 1 phương án</span></div>
+<div class="problem" id="q1-prompt"></div>
+<div class="group" id="q1-options"></div>
+</section>
+<section class="card">
+<div class="toolbar"><h2>Phần II – Đúng/Sai</h2><span class="tag">Chọn Đ/S cho từng ý</span></div>
+<div class="problem" id="q2-prompt"></div>
+<div id="q2-statements"></div>
+</section>
+<section class="card">
+<div class="toolbar"><h2>Phần III – Trả lời ngắn</h2><span class="tag">Nhập kết quả</span></div>
+<div class="problem" id="q3-prompt"></div>
+<label for="shortAnswer">Đáp số:</label>
+<input id="shortAnswer" type="text" inputmode="decimal" autocomplete="off" placeholder="Ví dụ: 7 hoặc 7,0">
+</section>
+<div class="toolbar" style="margin-bottom:16px">
+<button type="submit" class="primary" id="grade">Hoàn thành bài thi thử</button>
+<button type="button" id="reset">Làm lại từ đầu</button>
+</div>
+<p id="validation" role="status" class="error"></p>
+</form>
+<section id="outcome" class="card hidden" aria-live="polite">
+<h2>Kết quả đánh giá mẫu</h2>
+<div id="score"></div>
+<p><small>Quy tắc Đúng/Sai: đúng 0/1/2/3/4 ý lần lượt được 0 / 0,1 / 0,25 / 0,5 / 1,0 điểm cho cả câu. Dạng A–B–C–D: 0,25 điểm/câu; dạng trả lời ngắn: 0,5 điểm/câu. Tổng điểm của ba câu ví dụ là 1,75. Đây không phải cấu trúc đề HSG chính thức. Điểm ban đầu không đổi khi sửa sai.</small></p>
+<div id="mistake-list"></div>
+</section>
+</main>
+<script type="module">
+import {demoQuestions,evaluateAttempt,isComplete,buildRemediationAssignments} from "./mathora-exam-core.mjs";
+const $=(id)=>document.getElementById(id);
+const state={answers:{Q02:["","","",""]},submitted:false};
+const math=(tex)=>"\\("+tex+"\\)";
+async function typeset(el){if(window.MathJax?.typesetPromise){try{await window.MathJax.typesetPromise([el])}catch(err){console.warn("MathJax",err)}}}
+function build(){
+ const [mc,tf,sh]=demoQuestions;
+ $("q1-prompt").textContent=math(mc.prompt);
+ for(let i=0;i<mc.choices.length;i++){
+  const letter="ABCD"[i], label=document.createElement("label");label.className="option";
+  const input=document.createElement("input");input.type="radio";input.name="mc";input.value=letter;
+  input.addEventListener("change",()=>state.answers.Q01=letter);
+  const span=document.createElement("span");span.textContent=letter+". "+mc.choices[i];
+  label.append(input,span);$("q1-options").append(label);
+ }
+ $("q2-prompt").textContent=math(tf.prompt);
+ for(let i=0;i<tf.statements.length;i++){
+  const row=document.createElement("div");row.className="tf-row";
+  const body=document.createElement("div");body.textContent="abcd"[i]+") "+math(tf.statements[i]);row.append(body);
+  for(const [val,labelText] of [["D","Đúng"],["S","Sai"]]){
+   const label=document.createElement("label");
+   const input=document.createElement("input");input.type="radio";input.name="tf"+i;input.value=val;
+   input.addEventListener("change",()=>state.answers.Q02[i]=val);
+   label.append(input,document.createTextNode(" "+labelText));row.append(label);
+  }
+  $("q2-statements").append(row);
+ }
+ $("q3-prompt").textContent=math(sh.prompt);typeset(document.querySelector("main"));
+}
+function collectAnswers(){state.answers.Q03=$("shortAnswer").value;return state.answers;}
+function addText(parent,tag,text,className){
+ const e=document.createElement(tag);e.textContent=text;if(className)e.className=className;parent.append(e);return e;
+}
+const selectedFiles=new Map();
+function showRemediation(m,parent,index){
+ const box=document.createElement("section");box.className="remediation";
+ addText(box,"strong","Giải lại toàn bộ câu "+m.id+" – "+m.topic);
+ addText(box,"p","Yêu cầu: Trình bày lời giải tự luận đầy đủ cho câu này.","notice");
+ if(m.kind==="tf"){
+   addText(box,"p","Câu Đúng/Sai có ít nhất một ý chưa chính xác. Em cần giải thích và kết luận lần lượt cả bốn ý a), b), c), d).");
+   for(let k=0;k<m.question.statements.length;k++) addText(box,"p","Ý "+"abcd"[k]+"): "+m.question.statements[k]);
+ }
+ addText(box,"p","Gợi ý: "+m.hint,"hint");
+ const label=document.createElement("label");label.textContent="Trình bày lời giải tự luận (không bắt buộc nếu nộp ảnh)";
+ const txt=document.createElement("textarea");txt.placeholder="Ghi lập luận, giải thích vì sao mệnh đề đúng/sai, hoặc các bước tính...";
+ label.append(txt);box.append(label);
+ const help=document.createElement("p");help.innerHTML='<a href="./math-input-practice.html" target="_blank" rel="noopener noreferrer">Mở công cụ nhập Toán/LaTeX</a> (trang thử nghiệm riêng)';
+ box.append(help);
+ const uploadLabel=document.createElement("label");uploadLabel.textContent="Chọn ảnh bài làm (JPG/PNG/WebP; nhiều ảnh, tối đa 5 tệp, 5 MB/tệp)";
+ const upload=document.createElement("input");upload.type="file";upload.accept="image/jpeg,image/png,image/webp";upload.multiple;
+ uploadLabel.append(upload);box.append(uploadLabel);
+ const gallery=document.createElement("div");gallery.className="gallery";box.append(gallery);
+ const report=addText(box,"p","Chưa có bài giải nào được gửi.","");
+ let urls=[];
+ function revoke(){urls.forEach(url=>URL.revokeObjectURL(url));urls=[];}
+ upload.addEventListener("change",()=>{
+  revoke();gallery.replaceChildren();
+  const files=[...upload.files];
+  if(files.length>5||files.some(f=>f.size>5*1024*1024||!["image/jpeg","image/png","image/webp"].includes(f.type))){
+   report.textContent="Tệp không hợp lệ. Chỉ nhận tối đa 5 ảnh, mỗi ảnh tối đa 5 MB.";
+   upload.value="";selectedFiles.delete(index);return;
+  }
+  selectedFiles.set(index,files);
+  for(const f of files){
+   const src=URL.createObjectURL(f);urls.push(src);
+   const img=document.createElement("img");img.src=src;img.alt="Ảnh xem trước bài làm "+f.name;gallery.append(img);
+  }
+  report.textContent=files.length+" ảnh được chọn, chưa tải lên máy chủ.";
+ });
+ const button=document.createElement("button");button.type="button";button.textContent="Xác nhận bản sửa sai (trên máy này)";
+ button.addEventListener("click",()=>{
+  const hasWritten=txt.value.trim().length>0,hasFile=(selectedFiles.get(index)||[]).length>0;
+  if(!hasWritten&&!hasFile){report.textContent="Em cần nhập lời giải hoặc chọn ảnh trước khi xác nhận.";return;}
+  report.textContent="Đã ghi nhận trên màn hình bản sửa sai của em. Chưa nộp lên hệ thống, chưa được AI hoặc giáo viên chấm.";
+ });
+ box.append(button);parent.append(box);
+}
+$("exam").addEventListener("submit",event=>{
+ event.preventDefault();const answers=collectAnswers();
+ if(!isComplete(answers)){$("validation").textContent="Em cần trả lời đủ 1 câu nhiều lựa chọn, 4 ý Đúng/Sai và 1 câu trả lời ngắn.";return;}
+ $("validation").textContent="";
+ state.submitted=true;const result=evaluateAttempt(answers),outcome=$("outcome");
+ $("score").replaceChildren();addText($("score"),"p","Điểm minh họa: "+result.earned.toLocaleString("vi-VN")+"/"+result.total.toLocaleString("vi-VN")+" điểm.");
+ const mistakes=$("mistake-list");mistakes.replaceChildren();
+ if(!result.mistakes.length)addText(mistakes,"p","Em trả lời đúng tất cả câu hỏi mẫu. Có thể làm lại để luyện tập.","good");
+ else{
+  addText(mistakes,"h2","Những nội dung cần giải lại");
+  buildRemediationAssignments(result).forEach((m,i)=>showRemediation(m,mistakes,i));
+ }
+ outcome.classList.remove("hidden");
+ for(const control of $("exam").querySelectorAll("input"))control.disabled=true;
+ $("grade").disabled=true;
+ outcome.scrollIntoView({behavior:"smooth",block:"start"});
+});
+$("reset").addEventListener("click",()=>{
+ window.location.reload();
+});
+build();
+</script>
+</body></html>

@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MATHORA | Phòng thi & sửa sai kết nối (thử nghiệm)</title>
+<style>
+:root{font-family:"Segoe UI",system-ui,sans-serif;color:#143648;background:#f4f7fa}
+*{box-sizing:border-box}body{margin:0}header{background:#102d40;color:#fff;padding:17px 4vw}
+header strong{font-size:21px}header small{display:block;color:#b9d4df}
+main{max-width:1100px;margin:24px auto;padding:0 16px 50px}
+h1{font-size:25px}h2{font-size:19px;margin:0 0 10px}h3{font-size:16px}
+.card{background:#fff;padding:22px;border-radius:16px;margin:0 0 16px;border:1px solid #d8e4e9;box-shadow:0 6px 20px #11425508}
+label{display:block;font-weight:650;margin:10px 0 5px}
+input:not([type=radio]),select,textarea{font:inherit;width:100%;padding:11px;border:1px solid #b5cbd6;border-radius:9px;color:#143648}
+textarea{min-height:120px;resize:vertical}
+button{font:600 14px system-ui;cursor:pointer;padding:9px 15px;border:1px solid #bed0d8;border-radius:9px;background:white;color:#123c50}
+button.primary{background:#087f82;border-color:#087f82;color:white}
+button:disabled{opacity:.5;cursor:default}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #e4ab45;outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.hide{display:none!important}.notice{background:#fff7e7;border-left:4px solid #e4ab45;padding:12px;border-radius:8px}
+.info{background:#ecf6f5;border-left:4px solid #087f82;padding:12px;border-radius:8px}
+.error{color:#9b2828;font-weight:650}.muted{color:#5a7886;font-size:13px}
+.item{border:1px solid #d8e5eb;padding:15px;border-radius:12px;margin:11px 0}
+.answer{display:block;margin:10px 0;padding:8px;border:1px solid #d8e5eb;border-radius:8px;cursor:pointer}
+.tf{display:grid;grid-template-columns:minmax(0,1fr) 85px 85px;align-items:center;gap:8px;border-bottom:1px solid #e6edf1;padding:9px 0}
+pre{white-space:pre-wrap;word-break:break-word}
+@media(max-width:760px){.grid,.tf{grid-template-columns:1fr}.card{padding:15px}}
+</style>
+<script src="../mathora-backend-config.js"></script>
+<script>window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},options:{enableMenu:false}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+</head>
+<body>
+<header><strong>Σ MATHORA EXAM</strong><small>Thi thử ba dạng thức · Sửa sai bằng tự luận · TÍCH HỢP THỬ NGHIỆM</small></header>
+<main>
+<div class="notice">Đây là giao diện kiểm thử nhánh phát triển, chưa phát hành chính thức. Không nhập dữ liệu học sinh thật trước khi xác nhận Apps Script đã triển khai và kiểm thử quyền truy cập. Phiên đăng nhập chỉ lưu trong bộ nhớ của tab.</div>
+<h1>Phòng thi và học từ sai lầm</h1>
+<section class="card" id="login">
+<h2>Đăng nhập MATHORA</h2>
+<div class="grid">
+<div><label for="role">Vai trò</label><select id="role"><option value="student">Học sinh</option><option value="teacher">Giáo viên / Quản trị</option></select></div>
+<div><label for="username">Tên đăng nhập</label><input id="username" autocomplete="username"></div>
+</div>
+<label for="password">Mật khẩu</label><input id="password" type="password" autocomplete="current-password">
+<div class="row" style="margin-top:15px"><button id="signIn" class="primary">Đăng nhập</button><span id="loginStatus" role="status"></span></div>
+</section>
+<section id="workspace" class="hide">
+<div class="card row">
+<strong id="identity"></strong><button id="signOut">Đăng xuất</button>
+<span class="muted">Giao diện chỉ được phép truy cập theo phiên đã xác thực tại Backend.</span>
+</div>
+<div id="studentUi" class="hide">
+<section class="card">
+<h2>Danh sách đề thi</h2>
+<button id="refreshExams">Tải danh sách đề</button><div id="examList"></div>
+</section>
+<section id="examArea" class="card hide">
+<h2 id="examTitle"></h2><form id="examForm"><div id="questionList"></div>
+<button class="primary" type="submit">Nộp bài thi</button></form>
+<div id="examMessage" role="status"></div>
+</section>
+<section class="card">
+<h2>Câu sai phải giải lại bằng tự luận</h2>
+<div class="row"><button id="refreshTasks">Cập nhật nhiệm vụ sửa sai</button>
+<a href="./math-input-practice.html" target="_blank" rel="noopener noreferrer">Công cụ nhập Toán/LaTeX</a></div>
+<div id="taskList"></div>
+</section>
+</div>
+<div id="teacherUi" class="hide">
+<section class="card">
+<h2>Tạo đề thi thử (dự thảo)</h2>
+<p class="muted">Giáo viên nhập danh sách câu hỏi JSON theo cấu trúc mẫu. Quản trị viên mới được phát hành. Đáp án được giữ ở Backend.</p>
+<label for="examName">Tên đề</label><input id="examName" placeholder="Ví dụ: Luyện tập HSG 12 – Chuyên đề hàm số">
+<label for="examJson">Danh sách câu hỏi JSON</label>
+<textarea id="examJson" spellcheck="false" rows="13"></textarea>
+<div class="row"><button id="createExam" class="primary">Lưu dự thảo đề</button><button id="refreshTeacherExams">Danh sách đề của tôi</button></div>
+<div id="teacherExams"></div>
+</section>
+<section class="card">
+<h2>Chấm và phản hồi bài sửa sai</h2>
+<label for="filterStudent">Lọc theo tên tài khoản học sinh (có thể bỏ trống)</label><input id="filterStudent">
+<button id="refreshTeacherTasks">Tải bài sửa sai</button>
+<div id="teacherTasks"></div>
+</section>
+</div>
+</section>
+<p id="globalStatus" role="status"></p>
+</main>
+<script type="module">
+const $=id=>document.getElementById(id);
+let sessionToken="",authenticatedRole="",currentExam=null,busy=false;
+const sample=[
+ {id:"Q1",kind:"mc",topic:"Đại số",prompt:"Giải phương trình \\log_2(x-1)=3.",choices:["x=7","x=8","x=9","x=10"],correct:"C"},
+ {id:"Q2",kind:"tf",topic:"Giải tích",prompt:"Cho f(x)=x^3-3x. Xét đúng/sai.",statements:["f'(x)=3x^2-3","f đạt cực đại tại x=1","f(-1)=2","f đồng biến trên (1; +∞)"],correct:["D","S","D","D"]},
+ {id:"Q3",kind:"short",topic:"Tích phân",prompt:"Tính I=\\int_0^1 6x(1+x^2)^2\\,dx.",correct:"7"}
+];
+$("examJson").value=JSON.stringify(sample,null,2);
+function info(text,isError=false){$("globalStatus").textContent=text;$("globalStatus").className=isError?'error':'muted';}
+function node(tag,text,className){
+ const el=document.createElement(tag);if(text!==undefined)el.textContent=String(text);if(className)el.className=className;return el;
+}
+function button(label,handler){const b=node('button',label);b.type='button';b.addEventListener('click',handler);return b;}
+function labelInput(parent,label,type='text'){
+ const l=node('label',label),i=document.createElement(type==='textarea'?'textarea':'input');
+ if(type!=='textarea')i.type=type;l.append(i);parent.append(l);return i;
+}
+async function api(action,payload={}){
+ if(busy)throw Error('Đang thực hiện yêu cầu khác.');
+ const endpoint=window.MATHORA_BACKEND_CONFIG?.endpoint||'';
+ if(!/^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(endpoint))
+  throw Error('Chưa có đường dẫn Backend hợp lệ.');
+ if(action!=='login'&&!sessionToken)throw Error('Chưa đăng nhập.');
+ busy=true;
+ try{
+  const response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},
+   redirect:'follow',body:JSON.stringify({action,...payload,...(action==='login'?{}:{sessionToken})})});
+  if(!response.ok)throw Error('Backend trả HTTP '+response.status);
+  const out=await response.json();
+  if(!out||out.ok!==true)throw Error(out?.error||'Yêu cầu bị từ chối.');
+  return out;
+ }catch(e){
+  if(e instanceof TypeError)throw Error('Không thể kết nối Backend. Kiểm tra triển khai Web App, quyền truy cập hoặc chính sách CORS.');
+  throw e;
+ }finally{busy=false;}
+}
+async function typeset(el){if(window.MathJax?.typesetPromise)await window.MathJax.typesetPromise([el]);}
+async function perform(work){try{info('Đang xử lý...');await work();info('Đã hoàn tất thao tác.');}catch(e){info(e.message,true);}}
+async function signOut(){
+ const old=sessionToken;sessionToken='';authenticatedRole='';currentExam=null;
+ $("workspace").classList.add('hide');$("login").classList.remove('hide');
+ if(old){try{await fetch(window.MATHORA_BACKEND_CONFIG.endpoint,{method:'POST',
+  headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({action:'logout',sessionToken:old})});}catch{}}
+}
+$("signIn").addEventListener('click',()=>perform(async()=>{
+ const login=await api('login',{role:$("role").value,username:$("username").value.trim(),password:$("password").value});
+ if(typeof login.sessionToken!=='string'||!login.sessionToken)throw Error('Backend không trả phiên đăng nhập hợp lệ.');
+ sessionToken=login.sessionToken;authenticatedRole=login.authenticatedRole;
+ $("password").value="";
+ $("identity").textContent=(login.displayName||$("username").value)+' – '+authenticatedRole;
+ $("login").classList.add('hide');$("workspace").classList.remove('hide');
+ $("studentUi").classList.toggle('hide',authenticatedRole!=='student');
+ $("teacherUi").classList.toggle('hide',authenticatedRole==='student');
+ if(authenticatedRole==='student'){await listExams();await listTasks();}
+ else{await listTeacherExams();await listTeacherTasks();}
+}));
+$("signOut").addEventListener('click',()=>perform(signOut));
+async function listExams(){
+ const r=await api('examList'),box=$("examList");box.replaceChildren();
+ for(const exam of r.exams){
+  const item=node('div',undefined,'item');item.append(node('strong',exam.title+' – '+exam.questionCount+' câu'));
+  item.append(node('p',exam.submitted?'Đã nộp bài; không thể thi lại cùng đề.':'Chưa nộp bài.'));
+  if(!exam.submitted)item.append(button('Mở đề',()=>perform(()=>loadExam(exam.examId))));
+  else item.append(button('Xem điểm',()=>perform(()=>showResults(exam.examId))));
+  box.append(item);
+ }
+ if(!r.exams.length)box.append(node('p','Chưa có đề thi được phát hành.'));
+}
+async function loadExam(examId){
+ const r=await api('examGet',{examId});currentExam=r;
+ $("examTitle").textContent=r.title;
+ const list=$("questionList");list.replaceChildren();
+ $("examForm").classList.remove("hide");
+ for(const q of r.questions){
+  const item=node('div',undefined,'item');item.append(node('h3',q.id+' – '+(q.topic||q.kind)));
+  item.append(node('pre',q.prompt));
+  if(q.kind==='mc'){
+   for(let i=0;i<4;i++){
+    const label=node('label',undefined,'answer'),radio=document.createElement('input');
+    radio.type='radio';radio.name=q.id;radio.value='ABCD'[i];
+    label.append(radio,document.createTextNode(' '+('ABCD'[i])+'. '+q.choices[i]));item.append(label);
+   }
+  }else if(q.kind==='tf'){
+   for(let i=0;i<4;i++){
+    const row=node('div',undefined,'tf');row.append(node('span','abcd'[i]+') '+q.statements[i]));
+    for(const value of ['D','S']){
+     const label=node('label'),radio=document.createElement('input');
+     radio.type='radio';radio.name=q.id+'_'+i;radio.value=value;
+     label.append(radio,document.createTextNode(value==='D'?' Đúng':' Sai'));row.append(label);
+    }item.append(row);
+   }
+  }else if(q.kind==='short'){
+   const inp=labelInput(item,'Đáp án');inp.name=q.id;inp.inputMode='decimal';
+  }
+  list.append(item);
+ }
+ $("examMessage").replaceChildren();$("examArea").classList.remove('hide');
+ $("examArea").scrollIntoView({behavior:'smooth',block:'start'});
+}
+function collect(){
+ const out={},form=$("examForm");
+ for(const q of currentExam.questions){
+  if(q.kind==='mc')out[q.id]=form.querySelector('input[name="'+q.id+'"]:checked')?.value||'';
+  else if(q.kind==='tf')out[q.id]=[0,1,2,3].map(i=>form.querySelector('input[name="'+q.id+'_'+i+'"]:checked')?.value||'');
+  else out[q.id]=form.querySelector('input[name="'+q.id+'"]')?.value||'';
+ }
+ return out;
+}
+$("examForm").addEventListener('submit',e=>{
+ e.preventDefault();perform(async()=>{
+  if(!currentExam)throw Error('Chưa chọn đề thi.');
+  const answers=collect(),r=await api('examSubmit',{examId:currentExam.examId,answers});
+  $("examMessage").textContent='Điểm lần đầu: '+r.score+'/'+r.maxScore+'. Số câu phải giải lại: '+r.remediationCount+'.';
+  $("examForm").querySelectorAll('input,button').forEach(i=>i.disabled=true);
+  await listExams();await listTasks();
+ });
+});
+async function showResults(examId){
+ const r=await api('examResults',{examId}),item=r.results?.[0];
+ if(!item)throw Error('Chưa có kết quả.');
+ $("examArea").classList.remove('hide');$("examForm").classList.add('hide');
+ $("examTitle").textContent='Kết quả: '+item.score+'/'+item.maxScore;
+ $("examMessage").textContent='Các câu phải giải tự luận: '+(item.wrongQuestionIds.join(', ')||'Không có');
+}
+async function listTasks(){
+ const r=await api('remMyTasks'),box=$("taskList");box.replaceChildren();
+ for(const t of r.tasks){
+  const item=node('div',undefined,'item');
+  item.append(node('h3',t.questionId+' – '+t.status));
+  item.append(node('pre',t.prompt));
+  if(t.kind==='tf')item.append(node('p','Cần giải thích bằng tự luận cả bốn ý a), b), c), d). Các ý sai: '+t.wrongParts,'notice'));
+  if(t.feedback)item.append(node('p','Nhận xét giáo viên: '+t.feedback,'info'));
+  item.append(node('p','Số lần đã nộp: '+t.revisionCount,'muted'));
+  if(['OPEN','NEEDS_REVISION'].includes(t.status)){
+   const solution=labelInput(item,'Bài giải tự luận (nhập văn bản hoặc LaTeX)');
+   item.append(button('Nộp lời giải',()=>perform(async()=>{
+    const saved=await api('remSubmit',{taskId:t.taskId,solution:solution.value});
+    item.append(node('p','Đã nộp lần '+saved.revision+'; chờ giáo viên xem.','info'));
+    await listTasks();
+   })));
+  }
+  box.append(item);
+ }
+ if(!r.tasks.length)box.append(node('p','Không có câu sai cần giải lại.'));
+}
+async function listTeacherExams(){
+ const r=await api('examList'),box=$("teacherExams");box.replaceChildren();
+ for(const exam of r.exams){
+  const row=node('div',undefined,'item');row.append(node('strong',exam.title+' – '+exam.status));
+  row.append(node('p','Mã đề: '+exam.examId));
+  if(exam.status==='DRAFT'&&authenticatedRole==='admin')
+   row.append(button('Phát hành đề',()=>perform(async()=>{
+    await api('examPublish',{examId:exam.examId});await listTeacherExams();
+   })));
+  if(exam.status==='ACTIVE')
+   row.append(button('Xem kết quả',()=>perform(async()=>{
+    const result=await api('examResults',{examId:exam.examId});
+    row.append(node('pre',result.results.map(x=>x.student+': '+x.score+'/'+x.maxScore).join('\n')||'Chưa có bài.'));
+   })));
+  box.append(row);
+ }
+}
+$("createExam").addEventListener('click',()=>perform(async()=>{
+ let questions;try{questions=JSON.parse($("examJson").value);}catch{throw Error('Danh sách câu hỏi phải là JSON hợp lệ.');}
+ const r=await api('examCreate',{title:$("examName").value,questions});
+ info('Đã tạo đề dự thảo '+r.examId);await listTeacherExams();
+}));
+async function listTeacherTasks(){
+ const r=await api('remTeacherTasks',{student:$("filterStudent").value.trim()}),box=$("teacherTasks");box.replaceChildren();
+ for(const t of r.tasks){
+  const item=node('div',undefined,'item');
+  item.append(node('h3',t.student+' – '+t.questionId+' – '+t.status));
+  if(t.feedback)item.append(node('p','Nhận xét: '+t.feedback));
+  if(t.status==='SUBMITTED')item.append(button('AI phản biện sơ bộ (GV kiểm tra)',()=>perform(async()=>{
+   const feedback=await api('remAiReview',{taskId:t.taskId});
+   const review=feedback.review||{};
+   item.append(node('p','AI sơ bộ: '+(review.verdict||'UNCERTAIN'),'notice'));
+   item.append(node('p','Nhận xét AI: '+(review.observations||'')));
+   item.append(node('p','Gợi ý: '+(review.hint||'')));
+   item.append(node('p','Kết quả này chưa được giáo viên duyệt và không thay đổi điểm thi.','muted'));
+ }))); 
+ item.append(button('Xem lịch sử nộp',()=>perform(async()=>{
+   const history=await api('remHistory',{taskId:t.taskId});
+   const area=node('div');history.submissions.forEach(s=>{
+    area.append(node('p','Lần '+s.revision));area.append(node('pre',s.solution));
+   });item.append(area);
+  })));
+  if(t.status==='SUBMITTED'){
+   const fb=labelInput(item,'Nhận xét, căn cứ đánh giá');
+   item.append(button('Yêu cầu sửa tiếp',()=>perform(async()=>{
+    await api('remReview',{taskId:t.taskId,decision:'NEEDS_REVISION',feedback:fb.value});
+    await listTeacherTasks();
+   })));
+   item.append(button('Xác nhận đạt',()=>perform(async()=>{
+    await api('remReview',{taskId:t.taskId,decision:'APPROVED',feedback:fb.value});
+    await listTeacherTasks();
+   })));
+  }
+  box.append(item);
+ }
+ if(!r.tasks.length)box.append(node('p','Chưa có bài sửa sai thuộc quyền quản lý.'));
+}
+$("refreshExams").addEventListener('click',()=>perform(listExams));
+$("refreshTasks").addEventListener('click',()=>perform(listTasks));
+$("refreshTeacherExams").addEventListener('click',()=>perform(listTeacherExams));
+$("refreshTeacherTasks").addEventListener('click',()=>perform(listTeacherTasks));
+</script>
+</body></html>

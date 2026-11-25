@@ -82,6 +82,15 @@ function doPost(e){try{
   if(action==='logout')return maJson_(maAccountLogout_(p));
   const identity=p.sessionToken?maAccountSession_(p.sessionToken):null;
   if(p.sessionToken&&!identity)return maJson_({ok:false,error:'Phiên đăng nhập không hợp lệ hoặc đã hết hạn.'});
+  // MATHORA written-remediation sidecar: session authentication is mandatory.
+  if(MA_EXAM_ACTIONS.includes(action)){
+    if(!identity)return maJson_({ok:false,error:'Yêu cầu đăng nhập MATHORA để sử dụng phòng thi.'});
+    return maJson_(maExamRoute_(action,p,identity));
+  }
+  if(MA_REMEDIATION_ACTIONS.includes(action)){
+    if(!identity)return maJson_({ok:false,error:'Yêu cầu đăng nhập MATHORA để gửi hoặc xem bài sửa sai.'});
+    return maJson_(maRemRoute_(action,p,identity));
+  }
   const permission=identity?maAccountPermission_(identity,action,p):null;
   const webIdentity=identity?{owner:false,teacher:false}:maWebGoogleAuth_(p.idToken);
   const owner=identity?permission.owner:(webIdentity.owner||maAuthorized_(p.key,'MATHORA_OWNER_KEY'));
