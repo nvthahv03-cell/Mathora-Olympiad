@@ -1,0 +1,21 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MATHORA – Kiểm định sáng tạo</title><style>
+body{font:15px/1.6 "Segoe UI",Arial,sans-serif;color:#16394b;background:#f5f8fa;margin:0}
+header{background:#102d40;color:white;padding:20px 5vw}main{max-width:1060px;padding:0 18px;margin:24px auto}
+section{background:white;border:1px solid #dce5ec;border-radius:15px;padding:22px;margin-bottom:15px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}textarea{width:100%;box-sizing:border-box;min-height:320px;border:1px solid #bbccd6;border-radius:8px;padding:12px}
+button{background:#087f82;color:white;border:0;border-radius:8px;padding:10px 15px;cursor:pointer}button:focus-visible,textarea:focus-visible{outline:3px solid #dba63d}
+.warn{color:#9d2d29}li{margin:6px 0}@media(max-width:740px){.grid{grid-template-columns:1fr}}
+</style><script defer src="./mathora-creative-quality-gate.js"></script></head><body>
+<header><strong>Σ MATHORA — XƯỞNG SÁNG TẠO</strong><div>Kiểm định sơ bộ: không phải chứng nhận tính mới</div></header>
+<main><h1>Rà soát bài toán trước khi giao học sinh</h1>
+<p>Bộ rà soát này chỉ phát hiện một số dấu hiệu hình thức và thiếu sót hồ sơ. Không tự xác minh nguồn, không chứng minh Toán, không tự phê duyệt.</p>
+<div class="grid"><section><h2>Hồ sơ JSON từ xưởng sáng tạo</h2><textarea id="source" aria-label="Hồ sơ bài toán JSON"></textarea><p><button id="demo">Nạp ví dụ quen thuộc</button> <button id="run">Kiểm tra</button></p></section>
+<section><h2>Kết luận sơ bộ</h2><strong id="verdict" role="status">Chưa kiểm tra</strong><ul id="issues"></ul><p id="footer"></p></section></div>
+<section><h2>Điều kiện bắt buộc</h2>Giải độc lập, phản biện Toán, phân tích cấu trúc, đánh giá độ khó, đối chiếu nguồn thật và giáo viên duyệt. Chưa có chức năng xuất bản cho học sinh.</section></main>
+<script>
+(()=>{'use strict';const $=id=>document.getElementById(id);
+const example={result:{statement_latex:'Cho f(x)=x^3-3x. Tìm m để f(f(x))=m có đúng 5 nghiệm.',solution_latex:'Đặt t=f(x), xét f(t)=m và f(x)=t, đếm số nghiệm từng lớp.',answer_latex:'m=+-2',creative_core:'Khai thác hợp hàm bậc ba và bảng biến thiên để đếm nghiệm.',alternative_paths:'Cân nhắc khai triển và phương pháp đồ thị bậc ba.',shortcut_risk:'Bài có thể giải nhanh bằng bảng biến thiên quen thuộc.',proof_risk:'Cần kiểm tra các trường hợp cực trị và nghiệm bội.',difficulty_rationale:'Dạng này quen thuộc và không đủ độ khó HSG chuyên sâu.',source_check:'CHƯA XÁC MINH'}};
+$('demo').onclick=()=>{$('source').value=JSON.stringify(example,null,2);run();};
+function run(){const list=$('issues');list.replaceChildren();try{if(!window.MathoraCreativeGate)throw Error('Bộ kiểm định chưa tải');const x=window.MathoraCreativeGate.inspect(JSON.parse($('source').value));$('verdict').textContent=x.status;for(const issue of [...x.blockers,...x.warnings]){const li=document.createElement('li');li.textContent=issue;list.append(li);} $('footer').textContent='Chưa được phát hành: cần giáo viên duyệt và lưu bằng Backend có xác thực.';}catch(e){$('verdict').textContent='Không kiểm tra được: '+e.message;$('verdict').className='warn';}}
+$('run').onclick=run;})();
+</script></body></html>
