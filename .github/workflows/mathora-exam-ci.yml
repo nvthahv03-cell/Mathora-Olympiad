@@ -1,0 +1,30 @@
+name: MATHORA exam demo checks
+on:
+  pull_request:
+    paths:
+      - 'labs/mathora-exam-core.mjs'
+      - 'labs/mathora-exam-core.test.mjs'
+      - 'labs/mathora-exam-remediation.html'
+      - '.github/workflows/mathora-exam-ci.yml'
+  push:
+    branches:
+      - 'feature/math-input-lab-20261125'
+    paths:
+      - 'labs/mathora-exam-core.mjs'
+      - 'labs/mathora-exam-core.test.mjs'
+      - '.github/workflows/mathora-exam-ci.yml'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate exam core and demo script syntax
+        run: |
+          node --check labs/mathora-exam-core.mjs
+          node --test labs/mathora-exam-core.test.mjs
+          node --input-type=module -e "import fs from 'node:fs';import vm from 'node:vm';const html=fs.readFileSync('labs/mathora-exam-remediation.html','utf8');const code=html.match(/<script type=\"module\">([\s\S]*?)<\/script>/)?.[1];if(!code)throw Error('Missing inline module');new vm.SourceTextModule(code);"
+        env:
+          NODE_OPTIONS: --experimental-vm-modules
