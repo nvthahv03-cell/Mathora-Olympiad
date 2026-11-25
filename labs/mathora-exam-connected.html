@@ -160,6 +160,7 @@ async function loadExam(examId){
  const r=await api('examGet',{examId});currentExam=r;
  $("examTitle").textContent=r.title;
  const list=$("questionList");list.replaceChildren();
+ $("examForm").classList.remove("hide");
  for(const q of r.questions){
   const item=node('div',undefined,'item');item.append(node('h3',q.id+' – '+(q.topic||q.kind)));
   item.append(node('pre',q.prompt));
@@ -260,7 +261,15 @@ async function listTeacherTasks(){
   const item=node('div',undefined,'item');
   item.append(node('h3',t.student+' – '+t.questionId+' – '+t.status));
   if(t.feedback)item.append(node('p','Nhận xét: '+t.feedback));
-  item.append(button('Xem lịch sử nộp',()=>perform(async()=>{
+  if(t.status==='SUBMITTED')item.append(button('AI phản biện sơ bộ (GV kiểm tra)',()=>perform(async()=>{
+   const feedback=await api('remAiReview',{taskId:t.taskId});
+   const review=feedback.review||{};
+   item.append(node('p','AI sơ bộ: '+(review.verdict||'UNCERTAIN'),'notice'));
+   item.append(node('p','Nhận xét AI: '+(review.observations||'')));
+   item.append(node('p','Gợi ý: '+(review.hint||'')));
+   item.append(node('p','Kết quả này chưa được giáo viên duyệt và không thay đổi điểm thi.','muted'));
+ }))); 
+ item.append(button('Xem lịch sử nộp',()=>perform(async()=>{
    const history=await api('remHistory',{taskId:t.taskId});
    const area=node('div');history.submissions.forEach(s=>{
     area.append(node('p','Lần '+s.revision));area.append(node('pre',s.solution));
