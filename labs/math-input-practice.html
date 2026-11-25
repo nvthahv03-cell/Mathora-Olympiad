@@ -81,11 +81,11 @@ const $=id=>document.getElementById(id);
 const expr=$('expression'),syntax=$('syntax'),preview=$('preview'),status=$('status');
 const samples=[
 ['Lũy thừa','x^2','x^{2}'],
-['Phân số','(x+1)/(x-2)',String.raw`\\frac{x+1}{x-2}`],
-['Căn thức','sqrt(x+1)',String.raw`\\sqrt{x+1}`],
-['Lượng giác','sin(x)',String.raw`\\sin(x)`],
-['Lôgarit','ln(x)',String.raw`\\ln(x)`],
-['Nguyên hàm','int(x^2+2x+3)dx',String.raw`\\int (x^{2}+2x+3)\\,dx`]
+['Phân số','(x+1)/(x-2)',String.raw`\frac{x+1}{x-2}`],
+['Căn thức','sqrt(x+1)',String.raw`\sqrt{x+1}`],
+['Lượng giác','sin(x)',String.raw`\sin(x)`],
+['Lôgarit','ln(x)',String.raw`\ln(x)`],
+['Nguyên hàm','int(x^2+2x+3)dx',String.raw`\int (x^{2}+2x+3)\,dx`]
 ];
 function insertAtCursor(value){
  const start=expr.selectionStart??expr.value.length,end=expr.selectionEnd??expr.value.length;
@@ -131,19 +131,19 @@ function toTex(raw,depth=0){
  if(s.startsWith('int(')){
   const close=matchingParen(s,3);
   if(s.slice(close+1)!=='dx')throw Error('Nguyên hàm cần dạng int(bieu_thuc)dx.');
-  return String.raw`\\int `+toTex(s.slice(4,close),depth+1)+String.raw`\\,dx`;
+  return String.raw`\int `+toTex(s.slice(4,close),depth+1)+String.raw`\,dx`;
  }
  const slash=topFraction(s);
  if(slash!==-1){
   if(!s.slice(0,slash)||!s.slice(slash+1))throw Error('Phân số thiếu tử hoặc mẫu.');
-  return String.raw`\\frac{`+toTex(s.slice(0,slash),depth+1)+'}{'+toTex(s.slice(slash+1),depth+1)+'}';
+  return String.raw`\frac{`+toTex(s.slice(0,slash),depth+1)+'}{'+toTex(s.slice(slash+1),depth+1)+'}';
  }
  let out='';
  for(let i=0;i<s.length;){
   const func=['sqrt','sin','cos','tan','ln','log'].find(f=>s.startsWith(f+'(',i));
   if(func){
    const start=i+func.length,close=matchingParen(s,start),inner=toTex(s.slice(start+1,close),depth+1);
-   out+=func==='sqrt'?String.raw`\\sqrt{`+inner+'}':'\\\\'+func+'\\\\left('+inner+'\\\\right)';
+   out+=func==='sqrt'?String.raw`\sqrt{`+inner+'}':'\\'+func+'\\left('+inner+'\\right)';
    i=close+1;continue;
   }
   const ch=s[i];
@@ -153,9 +153,9 @@ function toTex(raw,depth=0){
    else{const match=s.slice(i+1).match(/^[a-zA-Z0-9]+/);if(!match)throw Error('Thiếu số mũ.');exponent=match[0];i+=1+match[0].length;}
    out+='^{'+exponent+'}';continue;
   }
-  if(ch==='*'){out+=String.raw`\\cdot `;i++;continue;}
-  if(ch==='(')out+=String.raw`\\left(`;
-  else if(ch===')')out+=String.raw`\\right)`;
+  if(ch==='*'){out+=String.raw`\cdot `;i++;continue;}
+  if(ch==='(')out+=String.raw`\left(`;
+  else if(ch===')')out+=String.raw`\right)`;
   else if(ch==='_')throw Error('Chỉ số dưới: vui lòng chuyển chế độ LaTeX.');
   else out+=ch;
   i++;
@@ -172,7 +172,7 @@ async function render(){
    if(old.length>1000)throw Error('LaTeX quá dài cho bản thử nghiệm.');
    lastLatex=old;
   }else lastLatex=toTex(old);
-  preview.textContent='\\\\['+lastLatex+'\\\\]';
+  preview.textContent='\\['+lastLatex+'\\]';
   if(window.MathJax?.typesetPromise)await window.MathJax.typesetPromise([preview]);
   else status.textContent='Đang tải thư viện hiển thị công thức. Cần có Internet.';
  }catch(e){lastLatex='';preview.textContent=old;status.className='error';status.textContent='Chưa chuyển được: '+e.message;}
