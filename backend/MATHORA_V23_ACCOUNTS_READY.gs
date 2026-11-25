@@ -83,6 +83,10 @@ function doPost(e){try{
   const identity=p.sessionToken?maAccountSession_(p.sessionToken):null;
   if(p.sessionToken&&!identity)return maJson_({ok:false,error:'Phiên đăng nhập không hợp lệ hoặc đã hết hạn.'});
   // MATHORA written-remediation sidecar: session authentication is mandatory.
+  if(MA_EXAM_ACTIONS.includes(action)){
+    if(!identity)return maJson_({ok:false,error:'Yêu cầu đăng nhập MATHORA để sử dụng phòng thi.'});
+    return maJson_(maExamRoute_(action,p,identity));
+  }
   if(MA_REMEDIATION_ACTIONS.includes(action)){
     if(!identity)return maJson_({ok:false,error:'Yêu cầu đăng nhập MATHORA để gửi hoặc xem bài sửa sai.'});
     return maJson_(maRemRoute_(action,p,identity));
