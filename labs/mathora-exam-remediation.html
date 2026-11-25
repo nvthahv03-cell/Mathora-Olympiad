@@ -79,7 +79,7 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},opt
 </section>
 </main>
 <script type="module">
-import {demoQuestions,evaluateAttempt,isComplete} from "./mathora-exam-core.mjs";
+import {demoQuestions,evaluateAttempt,isComplete,buildRemediationAssignments} from "./mathora-exam-core.mjs";
 const $=(id)=>document.getElementById(id);
 const state={answers:{Q02:["","","",""]},submitted:false};
 const math=(tex)=>"\\("+tex+"\\)";
@@ -115,7 +115,12 @@ function addText(parent,tag,text,className){
 const selectedFiles=new Map();
 function showRemediation(m,parent,index){
  const box=document.createElement("section");box.className="remediation";
- addText(box,"strong","Giải lại: "+m.id+(m.part===null?"":" – ý "+"abcd"[m.part]));
+ addText(box,"strong","Giải lại toàn bộ câu "+m.id+" – "+m.topic);
+ addText(box,"p","Yêu cầu: Trình bày lời giải tự luận đầy đủ cho câu này.","notice");
+ if(m.kind==="tf"){
+   addText(box,"p","Câu Đúng/Sai có ít nhất một ý chưa chính xác. Em cần giải thích và kết luận lần lượt cả bốn ý a), b), c), d).");
+   for(let k=0;k<m.question.statements.length;k++) addText(box,"p","Ý "+"abcd"[k]+"): "+m.question.statements[k]);
+ }
  addText(box,"p","Gợi ý: "+m.hint,"hint");
  const label=document.createElement("label");label.textContent="Trình bày lời giải tự luận (không bắt buộc nếu nộp ảnh)";
  const txt=document.createElement("textarea");txt.placeholder="Ghi lập luận, giải thích vì sao mệnh đề đúng/sai, hoặc các bước tính...";
@@ -161,7 +166,7 @@ $("exam").addEventListener("submit",event=>{
  if(!result.mistakes.length)addText(mistakes,"p","Em trả lời đúng tất cả câu hỏi mẫu. Có thể làm lại để luyện tập.","good");
  else{
   addText(mistakes,"h2","Những nội dung cần giải lại");
-  result.mistakes.forEach((m,i)=>showRemediation(m,mistakes,i));
+  buildRemediationAssignments(result).forEach((m,i)=>showRemediation(m,mistakes,i));
  }
  outcome.classList.remove("hidden");
  for(const control of $("exam").querySelectorAll("input"))control.disabled=true;
