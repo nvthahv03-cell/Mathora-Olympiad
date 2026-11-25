@@ -1,4 +1,5 @@
-// MATHORA EXAM: pure demo scoring helpers; NOT official HSG exam rules.
+// MATHORA EXAM: sample questions; true/false grading scale per teacher instruction.
+// Other question-type point values remain demo defaults, not an official exam blueprint.
 export const demoQuestions = Object.freeze([
   {id:"Q01",kind:"mc",topic:"Mũ và lôgarit",prompt:String.raw`Giải phương trình \log_2(x-1)=3.`,
     choices:["x=7","x=8","x=9","x=10"],correct:"C",
@@ -22,6 +23,16 @@ export function normalizeNumber(value) {
   const n=Number(str);
   return Number.isFinite(n)?n:null;
 }
+export const TRUE_FALSE_POINTS=Object.freeze([0,0.1,0.25,0.5,1]);
+export function scoreTrueFalse(correctStatements,studentStatements){
+  if(!Array.isArray(correctStatements)||correctStatements.length!==4)throw new Error("True/false question must have four statements");
+  let correctCount=0;
+  for(let i=0;i<4;i++){
+    const selected=String(studentStatements?.[i]??"").toUpperCase();
+    if(["D","S"].includes(selected)&&selected===String(correctStatements[i]).toUpperCase())correctCount++;
+  }
+  return {correctCount,points:TRUE_FALSE_POINTS[correctCount]};
+}
 export function evaluateAttempt(answers,questions=demoQuestions){
   let earned=0,total=0;const mistakes=[];
   for(const q of questions){
@@ -29,9 +40,12 @@ export function evaluateAttempt(answers,questions=demoQuestions){
       total++;const correct=String(answers[q.id]??"").toUpperCase()===q.correct;
       if(correct) earned++;else mistakes.push({id:q.id,topic:q.topic,part:null,hint:q.hint});
     }else if(q.kind==="tf"){
+      const tfResult=scoreTrueFalse(q.correct,answers[q.id]);
+      total+=1;
+      earned+=tfResult.points;
       for(let i=0;i<q.correct.length;i++){
-        total++;const correct=String(answers[q.id]?.[i]??"").toUpperCase()===q.correct[i];
-        if(correct)earned++;else mistakes.push({id:q.id,topic:q.topic,part:i,hint:q.hints[i]});
+        const correct=String(answers[q.id]?.[i]??"").toUpperCase()===q.correct[i];
+        if(!correct)mistakes.push({id:q.id,topic:q.topic,part:i,hint:q.hints?.[i]??q.hint??"Xem lại kiến thức liên quan."});
       }
     }else if(q.kind==="short"){
       total++;const given=normalizeNumber(answers[q.id]),expected=normalizeNumber(q.correct);
@@ -39,7 +53,7 @@ export function evaluateAttempt(answers,questions=demoQuestions){
       if(correct)earned++;else mistakes.push({id:q.id,topic:q.topic,part:null,hint:q.hint});
     }else throw new Error("Unknown question kind: "+q.kind);
   }
-  return {earned,total,mistakes,correctCount:total-mistakes.length};
+  return {earned:Number(earned.toFixed(10)),total,mistakes,fullyCorrectQuestions:questions.filter(q=>!mistakes.some(m=>m.id===q.id)).length};
 }
 export function isComplete(answers,questions=demoQuestions){
   return questions.every(q=>q.kind==="tf"
