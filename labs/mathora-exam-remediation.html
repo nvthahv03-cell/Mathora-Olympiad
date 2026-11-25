@@ -74,7 +74,7 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},opt
 <section id="outcome" class="card hidden" aria-live="polite">
 <h2>Kết quả đánh giá mẫu</h2>
 <div id="score"></div>
-<p><small>Thang điểm dưới đây chỉ đếm 6 đơn vị đáp án (1 nhiều lựa chọn + 4 ý Đúng/Sai + 1 trả lời ngắn), không phải biểu điểm HSG chính thức. Điểm lần đầu không đổi khi sửa sai.</small></p>
+<p><small>Quy tắc Đúng/Sai: đúng 0/1/2/3/4 ý lần lượt được 0 / 0,1 / 0,25 / 0,5 / 1,0 điểm cho cả câu. Hai câu còn lại tính 1 điểm/câu chỉ để minh họa, không phải biểu điểm HSG chính thức. Điểm ban đầu không đổi khi sửa sai.</small></p>
 <div id="mistake-list"></div>
 </section>
 </main>
@@ -156,7 +156,7 @@ $("exam").addEventListener("submit",event=>{
  if(!isComplete(answers)){$("validation").textContent="Em cần trả lời đủ 1 câu nhiều lựa chọn, 4 ý Đúng/Sai và 1 câu trả lời ngắn.";return;}
  $("validation").textContent="";
  state.submitted=true;const result=evaluateAttempt(answers),outcome=$("outcome");
- $("score").replaceChildren();addText($("score"),"p","Kết quả: "+result.earned+"/"+result.total+" đơn vị đáp án đúng.");
+ $("score").replaceChildren();addText($("score"),"p","Điểm minh họa: "+result.earned.toLocaleString("vi-VN")+"/"+result.total.toLocaleString("vi-VN")+" điểm.");
  const mistakes=$("mistake-list");mistakes.replaceChildren();
  if(!result.mistakes.length)addText(mistakes,"p","Em trả lời đúng tất cả câu hỏi mẫu. Có thể làm lại để luyện tập.","good");
  else{
