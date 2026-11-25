@@ -1,5 +1,5 @@
-// MATHORA EXAM: sample questions; true/false grading scale per teacher instruction.
-// Other question-type point values remain demo defaults, not an official exam blueprint.
+// MATHORA EXAM: sample questions; grading weights supplied by teacher.
+// The sample question set is not an official exam blueprint.
 export const demoQuestions = Object.freeze([
   {id:"Q01",kind:"mc",topic:"Mũ và lôgarit",prompt:String.raw`Giải phương trình \log_2(x-1)=3.`,
     choices:["x=7","x=8","x=9","x=10"],correct:"C",
@@ -23,6 +23,8 @@ export function normalizeNumber(value) {
   const n=Number(str);
   return Number.isFinite(n)?n:null;
 }
+export const MULTIPLE_CHOICE_POINTS=0.25;
+export const SHORT_ANSWER_POINTS=0.5;
 export const TRUE_FALSE_POINTS=Object.freeze([0,0.1,0.25,0.5,1]);
 export function scoreTrueFalse(correctStatements,studentStatements){
   if(!Array.isArray(correctStatements)||correctStatements.length!==4)throw new Error("True/false question must have four statements");
@@ -37,8 +39,8 @@ export function evaluateAttempt(answers,questions=demoQuestions){
   let earned=0,total=0;const mistakes=[];
   for(const q of questions){
     if(q.kind==="mc"){
-      total++;const correct=String(answers[q.id]??"").toUpperCase()===q.correct;
-      if(correct) earned++;else mistakes.push({id:q.id,topic:q.topic,part:null,hint:q.hint});
+      total+=MULTIPLE_CHOICE_POINTS;const correct=String(answers[q.id]??"").toUpperCase()===q.correct;
+      if(correct) earned+=MULTIPLE_CHOICE_POINTS;else mistakes.push({id:q.id,topic:q.topic,part:null,hint:q.hint});
     }else if(q.kind==="tf"){
       const tfResult=scoreTrueFalse(q.correct,answers[q.id]);
       total+=1;
@@ -48,12 +50,12 @@ export function evaluateAttempt(answers,questions=demoQuestions){
         if(!correct)mistakes.push({id:q.id,topic:q.topic,part:i,hint:q.hints?.[i]??q.hint??"Xem lại kiến thức liên quan."});
       }
     }else if(q.kind==="short"){
-      total++;const given=normalizeNumber(answers[q.id]),expected=normalizeNumber(q.correct);
+      total+=SHORT_ANSWER_POINTS;const given=normalizeNumber(answers[q.id]),expected=normalizeNumber(q.correct);
       const correct=given!==null&&expected!==null&&Math.abs(given-expected)<=1e-9;
-      if(correct)earned++;else mistakes.push({id:q.id,topic:q.topic,part:null,hint:q.hint});
+      if(correct)earned+=SHORT_ANSWER_POINTS;else mistakes.push({id:q.id,topic:q.topic,part:null,hint:q.hint});
     }else throw new Error("Unknown question kind: "+q.kind);
   }
-  return {earned:Number(earned.toFixed(10)),total,mistakes,fullyCorrectQuestions:questions.filter(q=>!mistakes.some(m=>m.id===q.id)).length};
+  return {earned:Number(earned.toFixed(10)),total:Number(total.toFixed(10)),mistakes,fullyCorrectQuestions:questions.filter(q=>!mistakes.some(m=>m.id===q.id)).length};
 }
 export function isComplete(answers,questions=demoQuestions){
   return questions.every(q=>q.kind==="tf"
