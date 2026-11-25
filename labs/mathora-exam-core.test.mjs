@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {demoQuestions,evaluateAttempt,isComplete,normalizeNumber,scoreTrueFalse,TRUE_FALSE_POINTS} from "./mathora-exam-core.mjs";
+import {demoQuestions,evaluateAttempt,isComplete,normalizeNumber,scoreTrueFalse,TRUE_FALSE_POINTS,buildRemediationAssignments} from "./mathora-exam-core.mjs";
 
 test("full correct answer gets 1.75 points",()=>{
  const a={Q01:"C",Q02:["D","S","D","D"],Q03:"7"};
@@ -33,6 +33,20 @@ test("MCQ and short answer weigh 0.25 and 0.5 exactly",()=>{
  assert.equal(onlyShort.earned,0.5);
  assert.equal(onlyMC.total,1.75);
  assert.equal(evaluateAttempt({Q01:"C",Q02:["D","S","D","S"],Q03:"7"}).earned,1.25);
+});
+test("one remediation per wrong question and full TF re-solution",()=>{
+ const result=evaluateAttempt({Q01:"A",Q02:["S","D","S","S"],Q03:"8"});
+ const groups=buildRemediationAssignments(result);
+ assert.equal(groups.length,3);
+ assert.deepEqual(groups.map(g=>g.id),["Q01","Q02","Q03"]);
+ assert.deepEqual(groups[1].wrongParts,[0,1,2,3]);
+ assert.equal(groups[1].question.statements.length,4);
+ assert.match(groups[1].hint,/cả bốn ý/);
+ const oneWrong=evaluateAttempt({Q01:"C",Q02:["D","S","D","S"],Q03:"7"});
+ const single=buildRemediationAssignments(oneWrong);
+ assert.equal(single.length,1);
+ assert.deepEqual(single[0].wrongParts,[3]);
+ assert.equal(single[0].question.statements.length,4);
 });
 test("no answer is not silently accepted as correct",()=>{
  assert.equal(isComplete({}),false);
