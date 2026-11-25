@@ -57,6 +57,21 @@ export function evaluateAttempt(answers,questions=demoQuestions){
   }
   return {earned:Number(earned.toFixed(10)),total:Number(total.toFixed(10)),mistakes,fullyCorrectQuestions:questions.filter(q=>!mistakes.some(m=>m.id===q.id)).length};
 }
+// One remediation assignment per wrong question, not per wrong true/false statement.
+export function buildRemediationAssignments(result,questions=demoQuestions){
+  const byId=new Map(questions.map(q=>[q.id,q]));
+  const grouped=new Map();
+  for(const mistake of result.mistakes){
+    if(!grouped.has(mistake.id)){
+      const question=byId.get(mistake.id);
+      if(!question)throw new Error("Missing question for remediation: "+mistake.id);
+      grouped.set(mistake.id,{id:mistake.id,kind:question.kind,topic:question.topic,question,
+        wrongParts:[],hint:question.kind==="tf"?"Giải thích bằng tự luận cả bốn ý a), b), c), d).":mistake.hint});
+    }
+    if(mistake.part!==null)grouped.get(mistake.id).wrongParts.push(mistake.part);
+  }
+  return [...grouped.values()];
+}
 export function isComplete(answers,questions=demoQuestions){
   return questions.every(q=>q.kind==="tf"
      ?q.correct.every((_,i)=>["D","S"].includes(answers[q.id]?.[i]))
