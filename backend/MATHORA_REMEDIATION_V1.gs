@@ -89,10 +89,11 @@ function maRemSubmit_(p,identity){
   }finally{lock.releaseLock();}
 }
 function maRemTeacherTasks_(p,identity){
-  maRemIdentity_(identity,['teacher','admin']);
+  const teacher=maRemIdentity_(identity,['teacher','admin']);
   const student=maRemGuardText_(p.student,100,'tài khoản học sinh',false).toLowerCase();
   const rows=maRemRows_(maRemTasks_(),MA_REMED_TASK_HEADERS.length,20000)
-    .filter(row=>!student||String(row[1]).toLowerCase()===student);
+    .filter(row=>(!student||String(row[1]).toLowerCase()===student)&&
+      (identity.role==='admin'||String(row[7])===teacher));
   return {ok:true,tasks:rows.map(row=>({
     taskId:row[0],student:row[1],questionId:row[2],kind:row[3],
     status:row[8],updatedAt:row[9],revisionCount:row[10],feedback:row[11]
