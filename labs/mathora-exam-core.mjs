@@ -1,19 +1,19 @@
 // MATHORA EXAM: pure demo scoring helpers; NOT official HSG exam rules.
 export const demoQuestions = Object.freeze([
-  {id:"Q01",kind:"mc",topic:"Mũ và lôgarit",prompt:String.raw\`Giải phương trình \log_2(x-1)=3.\`,
+  {id:"Q01",kind:"mc",topic:"Mũ và lôgarit",prompt:String.raw`Giải phương trình \log_2(x-1)=3.`,
     choices:["x=7","x=8","x=9","x=10"],correct:"C",
     hint:"Đừng quên điều kiện x>1. Dựa vào định nghĩa lôgarit để tìm x."},
   {id:"Q02",kind:"tf",topic:"Đạo hàm và cực trị",
-    prompt:String.raw\`Cho f(x)=x^3-3x. Xét tính đúng, sai của các mệnh đề sau.\`,
+    prompt:String.raw`Cho f(x)=x^3-3x. Xét tính đúng, sai của các mệnh đề sau.`,
     statements:[
-      String.raw\`f'(x)=3x^2-3\`,
-      String.raw\`f \text{ đạt cực đại tại } x=1\`,
-      String.raw\`f(-1)=2\`,
-      String.raw\`f \text{ đồng biến trên } (1;+\infty)\`
+      String.raw`f'(x)=3x^2-3`,
+      String.raw`f \text{ đạt cực đại tại } x=1`,
+      String.raw`f(-1)=2`,
+      String.raw`f \text{ đồng biến trên } (1;+\infty)`
     ],correct:["D","S","D","D"],
     hints:["Em hãy tính đạo hàm rồi so sánh.","Hãy xét dấu f' khi x đi qua 1.","Tính f(-1) trực tiếp.","Xét dấu f' trên (1; +∞)."]},
   {id:"Q03",kind:"short",topic:"Nguyên hàm – Tích phân",
-    prompt:String.raw\`I=\int_0^1 6x(1+x^2)^2\,dx.\ \text{Tính } I.\`,
+    prompt:String.raw`I=\int_0^1 6x(1+x^2)^2\,dx.\ \text{Tính } I.`,
     correct:"7",hint:"Nhận diện vi phân của 1+x² và áp dụng đổi biến."}
 ]);
 export function normalizeNumber(value) {
