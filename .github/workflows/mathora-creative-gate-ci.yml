@@ -1,0 +1,28 @@
+name: MATHORA creative quality gate
+on:
+  push:
+    branches: ['feature/mathora-creative-quality-gate-20261125']
+    paths:
+      - 'labs/mathora-creative-quality-gate.js'
+      - 'labs/mathora-creative-quality-gate.test.mjs'
+      - 'labs/creative-quality-review.html'
+      - '.github/workflows/mathora-creative-gate-ci.yml'
+  pull_request:
+    paths:
+      - 'labs/mathora-creative-quality-gate.js'
+      - 'labs/mathora-creative-quality-gate.test.mjs'
+      - 'labs/creative-quality-review.html'
+      - '.github/workflows/mathora-creative-gate-ci.yml'
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run quality gate tests
+        run: |
+          node --check labs/mathora-creative-quality-gate.js
+          node --test labs/mathora-creative-quality-gate.test.mjs
+          node --input-type=module -e "import fs from 'node:fs';import vm from 'node:vm';const html=fs.readFileSync('labs/creative-quality-review.html','utf8');const scripts=[...html.matchAll(/<script>([\\s\\S]*?)<\\/script>/g)];if(!scripts.length)throw Error('Missing script');for(const m of scripts)new vm.Script(m[1])"
