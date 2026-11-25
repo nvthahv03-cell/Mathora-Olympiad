@@ -6,6 +6,8 @@ on:
       - 'labs/mathora-exam-core.test.mjs'
       - 'labs/mathora-exam-remediation.html'
       - 'labs/mathora-remediation-backend.test.mjs'
+      - 'labs/mathora-exams-backend.test.mjs'
+      - 'backend/MATHORA_EXAMS_V1.gs'
       - 'backend/MATHORA_REMEDIATION_V1.gs'
       - 'backend/MATHORA_V23_ACCOUNTS_READY.gs'
       - '.github/workflows/mathora-exam-ci.yml'
@@ -16,6 +18,8 @@ on:
       - 'labs/mathora-exam-core.mjs'
       - 'labs/mathora-exam-core.test.mjs'
       - 'labs/mathora-remediation-backend.test.mjs'
+      - 'labs/mathora-exams-backend.test.mjs'
+      - 'backend/MATHORA_EXAMS_V1.gs'
       - 'backend/MATHORA_REMEDIATION_V1.gs'
       - 'backend/MATHORA_V23_ACCOUNTS_READY.gs'
       - '.github/workflows/mathora-exam-ci.yml'
@@ -30,7 +34,7 @@ jobs:
       - name: Validate exam core and demo script syntax
         run: |
           node --check labs/mathora-exam-core.mjs
-          node --test labs/mathora-exam-core.test.mjs labs/mathora-remediation-backend.test.mjs
+          node --test labs/mathora-exam-core.test.mjs labs/mathora-remediation-backend.test.mjs labs/mathora-exams-backend.test.mjs
           node --input-type=module -e "import fs from 'node:fs';import vm from 'node:vm';const html=fs.readFileSync('labs/mathora-exam-remediation.html','utf8');const code=html.match(/<script type=\"module\">([\s\S]*?)<\/script>/)?.[1];if(!code)throw Error('Missing inline module');new vm.SourceTextModule(code);"
         env:
           NODE_OPTIONS: --experimental-vm-modules
